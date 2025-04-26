@@ -1,0 +1,239 @@
+/* A partir do seu código atual, algumas melhorias foram feitas */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+nav {
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  display: flex;
+  padding: 15px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+}
+
+.itens {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-item {
+  list-style: none;
+}
+
+.nav-link {
+  color: #20a2f2;
+  text-decoration: none;
+  font-size: 24px;
+  display: flex;
+}
+
+.logo {
+  width: 50px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.btn-login,
+.btn-cadastro {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 3px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.btn-login {
+  background-color: white;
+  color: #20a2f2;
+}
+
+.btn-cadastro {
+  background-color: #20a2f2;
+  border: none;
+  color: white;
+  transition: 700ms;
+}
+
+.btn-cadastro:hover {
+  background-color: #158bd4;
+  transform: scale(1.05);
+}
+
+/* Círculo do usuário */
+.nav-user {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+/* Dropdown */
+
+.username {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.user-circle img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background-color: white;
+  color: black;
+  list-style: none;
+  padding: 0.5rem 0;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  z-index: 10;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Barra de pesquisa */
+.navBar-2 {
+  background-color: #20a2f2;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search {
+  position: relative;
+}
+
+input.form-control {
+  width: 200px;
+  padding: 10px 30px 10px 10px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  transition: width 0.3s ease-in-out;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Resultados da pesquisa */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 25px 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-results ul {
+  list-style: none;
+  padding: 0;
+}
+
+.search-results li {
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .search input {
+    width: 40vh;
+  }
+}
+
+@media (max-width: 670px) {
+  .nav-link {
+    font-size: 18px;
+  }
+
+  .btn-login,
+  .btn-cadastro {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .search input {
+    width: 50vw;
+  }
+
+  .nav-link {
+    font-size: 16px;
+  }
+
+  .btn-login,
+  .btn-cadastro {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 14px;
+  }
+
+  .nav-user {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 360px) {
+  .search input {
+    width: 60vw;
+  }
+}

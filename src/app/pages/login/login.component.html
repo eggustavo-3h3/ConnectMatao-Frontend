@@ -1,0 +1,62 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+  <div class="card">
+    <div class="left-panel">
+      <h2>FAZER LOGIN</h2>
+      <form [formGroup]="loginForm">
+        <mat-form-field class="full-width">
+          <mat-label>Email</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="Digite seu email"
+            formControlName="email"
+          />
+          <mat-error *ngIf="loginForm.controls['email'].hasError('required')"
+            >O campo email é obrigatório</mat-error
+          >
+          <mat-error
+            *ngIf="
+              !loginForm.controls['email'].hasError('required') &&
+              loginForm.controls['email'].hasError('email')
+            "
+            >Preencha com um email válido</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Senha</mat-label>
+          <input
+            type="text"
+            matInput
+            [type]="mostrarSenha ? 'text' : 'password'"
+            formControlName="senha"
+          />
+          <button mat-icon-button matSuffix (click)="toggleSenha()">
+            <mat-icon>{{
+              mostrarSenha ? "visibility" : "visibility_off"
+            }}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.controls['senha'].hasError('required')">
+            O campo senha é obrigatório
+          </mat-error>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onLogin()"
+          class="full-width"
+        >
+          Entrar
+        </button>
+        <p><a href="#">Esqueceu a senha?</a></p>
+      </form>
+    </div>
+
+    <div class="right-panel">
+      <svg class="logo-site" viewBox="0 0 67 65">...</svg>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<div class="carousel-container">
+  <button
+    class="carousel-btn left"
+    (click)="prevSlide()"
+    [disabled]="isPrevDisabled()"
+  >
+    <img class="seta-img" src="../seta-esquerda.png" alt="Voltar" />
+  </button>
+
+  <div
+    class="carousel"
+    [ngStyle]="{
+      transform: 'translateX(' + -currentIndex * cardWidthPercentage + '%)'
+    }"
+    [attr.data-visible-cards]="visibleCards"
+  >
+    <ng-container *ngFor="let evento of eventos">
+      <div class="evento-card">
+        <div class="evento-header">
+          <img
+            [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
+            [alt]="evento.usuarioNome"
+            class="profile-image"
+          />
+          <h1
+            class="userName"
+            [routerLink]="['/perfil/usuario', evento.usuarioParceiroid]"
+          >
+            {{ evento.usuarioNome }}
+          </h1>
+        </div>
+
+        <img
+          [src]="evento.eventoImagem"
+          [alt]="evento.titulo"
+          class="evento-img"
+          [routerLink]="['/detalhe-evento', evento.id]"
+        />
+
+        <div class="info">
+          <h3>{{ evento.titulo }}</h3>
+          <p>{{ evento.descricao }}</p>
+        </div>
+
+        <div class="detalhes">
+          <div class="detalhe-item">
+            <img
+              src="../calendario.png"
+              alt="Data do evento"
+              class="detalhe-icon"
+            />
+            <span>
+              <i class="fa-solid fa-calendar"></i>
+              {{ evento.data | date : "dd/MM/yyyy" }}
+            </span>
+          </div>
+          <div class="detalhe-item">
+            <img
+              src="../relogio.png"
+              alt="Horário do evento"
+              class="detalhe-icon"
+            />
+            <span>
+              <i class="fa-solid fa-clock"></i> {{ evento.horario }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <button
+    class="carousel-btn right"
+    (click)="nextSlide()"
+    [disabled]="isNextDisabled()"
+  >
+    <img class="seta-img" src="../seta-direita.png" alt="Avançar" />
+  </button>
+</div>

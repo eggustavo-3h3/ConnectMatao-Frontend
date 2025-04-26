@@ -1,0 +1,67 @@
+<nav class="navbar">
+  <a routerLink="/" class="navbar-img">
+    <img src="../../assets/logo-sem-fundo.png" alt="Logo" class="logo" />
+  </a>
+
+  <ul class="navbar-links">
+    <li class="nav-item"><a routerLink="/" class="nav-link">Início</a></li>
+    <li class="nav-item">
+      <a routerLink="/divulgarEvento" class="nav-link">Divulgar Evento</a>
+    </li>
+  </ul>
+
+  <div class="itens">
+    <!-- Não logado -->
+    <ng-container *ngIf="!isLoggedIn">
+      <a routerLink="/login" class="btn-login">Login</a>
+      <a routerLink="/cadastre-se" class="btn-cadastro">Cadastre-se</a>
+    </ng-container>
+
+    <!-- Logado -->
+    <!-- Menu suspenso -->
+    <div class="nav-user" *ngIf="isLoggedIn">
+      <div class="user-circle" (click)="toggleDropdown()">
+        <img [src]="userImageUrl" alt="Foto do Usuário" *ngIf="userImageUrl" />
+      </div>
+
+      <ul class="dropdown-menu" [class.show]="isDropdownVisible">
+        <li class="username">{{ userName }}</li>
+        <li><a (click)="goToProfile()">Perfil</a></li>
+        <li><a (click)="logout()">Sair</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Segunda barra de navegação: busca -->
+<div class="navBar-2">
+  <div class="search">
+    <input
+      #searchInput
+      type="search"
+      class="form-control"
+      placeholder="Pesquisar eventos"
+      aria-label="Pesquisar eventos"
+      (input)="onSearchInput($event)"
+      (focus)="onSearchFocus()"
+      (blur)="onSearchBlur()"
+    />
+    <img
+      src="https://cdn-icons-png.flaticon.com/128/2319/2319177.png"
+      alt="Ícone de lupa"
+      class="search-icon"
+    />
+
+    <div
+      *ngIf="isSearchFocused && searchResults.length > 0"
+      class="search-results"
+    >
+      <ul>
+        <!-- (click)="goToEventDetails(event.id)" -->
+        <li *ngFor="let event of searchResults" class="search-result-item">
+          {{ event.titulo }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
