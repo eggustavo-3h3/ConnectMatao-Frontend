@@ -4,17 +4,19 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 90%; /* Ajustado para 100% da largura */
-  margin: auto;
+  width: 80%; /* Ajustado para 80% da largura para maior controle */
+  margin: 50px auto; /* Centraliza com margem no topo e embaixo */
   overflow: hidden;
-  margin-top: 30px;
+  background-color: #f4f4f4; /* Fundo cinza claro */
+  padding: 20px; /* Adiciona um padding interno */
+  border-radius: 10px; /* Adiciona bordas arredondadas */
 }
 
 /* Estilo do Carrossel */
 .carousel {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  width: 100%; /* Certifica-se de que o carrossel ocupe toda a largura */
+  width: 100%;
 }
 
 /* Estilo do botão de navegação do carrossel */
@@ -113,6 +115,19 @@
 
 .userName:hover {
   text-decoration: underline;
+}
+
+.spinner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
 /* Informações principais do evento */

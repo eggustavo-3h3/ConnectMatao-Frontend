@@ -1,4 +1,4 @@
-<div class="carousel-container">
+<div class="carousel-container" *ngIf="!isLoading">
   <button
     class="carousel-btn left"
     (click)="prevSlide()"
@@ -77,3 +77,5 @@
     <img class="seta-img" src="../seta-direita.png" alt="Avançar" />
   </button>
 </div>
+
+<mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>

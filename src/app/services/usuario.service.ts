@@ -12,7 +12,6 @@ export class UsuarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-
   getUserProfileById(userId: string): Observable<IUsuario> {
     const url = `${this.apiUrl}/usuario/${userId}`;
     return this.http.get<IUsuario>(url);
@@ -52,5 +51,13 @@ export class UsuarioService {
           this.handleError('Erro ao atualizar perfil do usuário', error)
         )
       );
+  }
+
+  getPerfilUsuario(): Observable<IUsuario> {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('Usuário não autenticado.'));
+    }
+    return this.getUser(userId);
   }
 }

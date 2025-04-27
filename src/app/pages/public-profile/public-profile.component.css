@@ -1,0 +1,510 @@
+.perfil-container {
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+  background: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Estilos para o Header do Perfil (Banner e Perfil Info) */
+.header {
+  position: relative;
+  height: 180px;
+  margin-bottom: 20px;
+}
+
+.banner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.perfil {
+  position: absolute;
+  top: auto;
+  bottom: 10px;
+  left: 20px;
+  transform: translateY(0);
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  z-index: 1;
+  justify-content: space-between;
+  width: calc(100% - 40px);
+}
+
+.profile-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.perfil-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+  display: block;
+}
+
+.edit-profile-button {
+  background: none;
+  color: white;
+  border: none;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.7em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translate(20%, 20%);
+}
+
+.profile-image-container:hover .edit-profile-button,
+.username-container:hover .edit-profile-button {
+  opacity: 1;
+}
+
+.edit-profile-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.edit-profile-button i {
+  font-size: 1em;
+}
+
+.username-container {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  font-size: 28px;
+  font-weight: 300;
+  color: white;
+  margin: 0;
+}
+
+.username-container .edit-profile-button {
+  margin-left: 10px;
+  position: static;
+  transform: none;
+  opacity: 1;
+}
+
+.username-container:hover .edit-profile-button {
+  opacity: 0.8;
+}
+
+/* Estilos para as Informações Abaixo da Dobra */
+.profile-info-below-fold {
+  padding: 15px;
+  background-color: rgb(255, 255, 255);
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.profile-info-below-fold p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 0.95em;
+}
+
+.avaliacao-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.estrelas {
+  display: flex;
+  gap: 5px;
+}
+
+.estrela {
+  font-size: 1.5em;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.estrela.filled {
+  color: gold;
+}
+
+.estrela.interativa:hover,
+.estrela.interativa.filled {
+  color: gold;
+}
+
+.media-avaliacao {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.avaliar,
+.avaliar-login,
+.avaliar-proprio {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.avaliar .estrela.filled {
+  color: gold;
+}
+
+.avaliar .estrela {
+  color: #ccc;
+}
+
+.avaliar .estrela.interativa {
+  /* Estilos para as estrelas clicáveis */
+}
+
+.avaliar .estrela.interativa:hover,
+.avaliar .estrela.interativa.filled {
+  color: gold;
+}
+
+/* Estilos para a Seção de Eventos */
+.evento-container {
+  max-width: 780px;
+  margin: 20px auto;
+  text-align: left;
+  background: #f8f8f8;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.evento-container h2 {
+  padding: 15px;
+  background-color: #eee;
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.5em;
+  font-weight: 400;
+}
+
+/* Estilos para o Card de Evento */
+.evento-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 20px 0;
+  padding: 15px;
+}
+
+.evento-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.evento-container img {
+  width: 100%;
+  height: 350px;
+  border-radius: 10px;
+  object-fit: cover; /* Adicionado para cobrir o espaço sem distorcer */
+}
+
+.evento-detalhes {
+  font-size: 1em; /* Ajustado para um tamanho mais padrão */
+  color: #777;
+  margin-bottom: 8px;
+}
+
+.evento-card p {
+  color: #555;
+  margin-bottom: 10px;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.view-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.view-button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* Estilos para a Mensagem de Sem Eventos */
+.evento-container p[ng-reflect-ng-if] {
+  padding: 15px;
+  color: #777;
+  font-style: italic;
+}
+
+/* Estilos para o Rodapé */
+.rodadepe-perfil {
+  background-color: #f8f8f8;
+  padding: 15px;
+  text-align: center;
+  color: #777;
+  font-size: 0.8em;
+  border-top: 1px solid #eee;
+  border-radius: 0 0 8px 8px;
+  margin-top: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Estilos para o Modal de Edição */
+.edit-profile-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 90%;
+  max-width: 500px;
+}
+
+.edit-profile-modal h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.evento-actions {
+  margin-top: 20px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.form-group textarea {
+  min-height: 100px;
+}
+
+.image-info {
+  font-size: 0.8em;
+  color: #777;
+  margin-top: 5px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.save-button,
+.cancel-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #1e7e34;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #545b62;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .perfil-container {
+    margin: 10px auto;
+  }
+
+  .header {
+    height: 150px;
+    margin-bottom: 10px;
+  }
+
+  .perfil {
+    bottom: 5px;
+    left: 15px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .username-container {
+    margin-bottom: 10px;
+  }
+
+  .avaliacao-container {
+    margin-left: 0;
+  }
+
+  .perfil-img {
+    width: 60px;
+    height: 60px;
+    border-width: 2px;
+  }
+
+  .username {
+    font-size: 22px;
+  }
+
+  .username-container .edit-profile-button {
+    margin-left: 5px;
+    font-size: 0.6em;
+    padding: 3px;
+  }
+
+  .edit-profile-button i {
+    font-size: 0.8em;
+  }
+
+  .evento-container {
+    margin: 10px auto;
+  }
+
+  .evento-container h2 {
+    font-size: 1.3em;
+  }
+
+  .evento-card {
+    margin: 10px;
+    padding: 10px;
+    border-left-width: 3px;
+  }
+
+  .evento-title {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+
+  .evento-detalhes {
+    font-size: 0.85em;
+    margin-bottom: 5px;
+  }
+
+  .evento-card p {
+    font-size: 0.9em;
+    margin-bottom: 8px;
+  }
+
+  .view-button,
+  .delete-button {
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
+
+  .edit-profile-modal {
+    padding: 15px;
+  }
+
+  .edit-profile-modal h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  .form-group label {
+    font-size: 0.9em;
+  }
+
+  .form-group input[type="text"],
+  .form-group textarea {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  .save-button,
+  .cancel-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+}

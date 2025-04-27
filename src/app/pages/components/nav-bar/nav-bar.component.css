@@ -1,4 +1,3 @@
-/* A partir do seu código atual, algumas melhorias foram feitas */
 * {
   margin: 0;
   padding: 0;
@@ -28,9 +27,16 @@ nav {
   align-items: center;
 }
 
+.navbar-img {
+  margin-right: 65px; /* Espaço entre o logo e os links */
+}
+
 .navbar-links {
   display: flex;
-  gap: 25px;
+  gap: 35px;
+  margin-left: 10px;
+  flex-grow: 1; /* Permite que a lista de links ocupe o máximo de espaço */
+  justify-content: flex-start; /* Garante que os links fiquem alinhados à esquerda */
 }
 
 .nav-item {

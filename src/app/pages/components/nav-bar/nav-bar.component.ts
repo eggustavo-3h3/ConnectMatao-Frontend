@@ -45,6 +45,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isDropdownVisible = false;
   searchResults: IEvento[] = [];
   isSearchFocused = false;
+  userImageUrl: string = '';
+  userName: string = ''; // <- Nome do usuário
+  usuario: IUsuario | null = null;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -62,32 +65,43 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.isLoggedIn$.subscribe(
       (loggedIn) => {
         this.isLoggedIn = loggedIn;
-        // this.loadUserProfile();
+        if (loggedIn) {
+          this.loadUserProfile();
+        } else {
+          this.userImageUrl = '';
+          this.userName = '';
+        }
       }
     );
 
-    this.isLoggedIn = this.authService.isAuthenticated();
-    // this.loadUserProfile();
-
-    // this.searchTerms
-    //   .pipe(
-    //     debounceTime(300),
-    //     distinctUntilChanged(),
-    //     switchMap((term: string) => {
-    //       if (term.trim()) {
-    //         return this.eventoService.searchEvents(term);
-    //       } else {
-    //         return [];
-    //       }
-    //     })
-    //   )
-    //   .subscribe((results: IEvento[]) => {
-    //     this.searchResults = results;
-    //   });
+    if (this.authService.isAuthenticated()) {
+      this.isLoggedIn = true;
+      this.loadUserProfile();
+    }
   }
 
   ngOnDestroy(): void {
     this.authSubscription?.unsubscribe();
+  }
+
+  private loadUserProfile(): void {
+    this.usuarioService
+      .getPerfilUsuario()
+      .pipe(take(1))
+      .subscribe({
+        next: (usuario: IUsuario) => {
+          this.usuario = usuario;
+          this.userImageUrl = usuario.imagem
+            ? `data:image/jpeg;base64,${usuario.imagem}`
+            : 'assets/default-user.png';
+          this.userName = usuario.nome;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar perfil:', err);
+          this.userImageUrl = 'assets/default-user.png';
+          this.userName = '';
+        },
+      });
   }
 
   toggleDropdown(): void {
@@ -99,18 +113,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
     this.isDropdownVisible = false;
     this.isLoggedIn = false;
+    this.userImageUrl = '';
+    this.userName = '';
   }
 
-  // goToProfile(): void {
-  //   const userId = this.authService.getUserId();
-  //   if (userId) {
-  //     this.router.navigate(['/profile/usuario', userId]);
-  //   } else {
-  //     console.warn('ID de usuário não disponível.');
-  //     this.loadUserProfile();
-  //   }
-  //   this.isDropdownVisible = false;
-  // }
+  goToProfile(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.router.navigate(['/profile/usuario', userId]);
+    } else {
+      console.warn('ID de usuário não disponível.');
+      this.loadUserProfile();
+    }
+    this.isDropdownVisible = false;
+  }
 
   onSearchFocus(): void {
     this.isSearchFocused = true;

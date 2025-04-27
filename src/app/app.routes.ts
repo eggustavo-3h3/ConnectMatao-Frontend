@@ -11,4 +11,5 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'profile/usuario/id', component: PublicProfileComponent },
   { path: 'divulgarEvento', component: DivulgarEventoComponent },
+  { path: 'perfil/:id', component: PublicProfileComponent },
 ];
