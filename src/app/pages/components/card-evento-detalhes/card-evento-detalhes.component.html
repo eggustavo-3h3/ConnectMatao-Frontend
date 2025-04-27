@@ -1,12 +1,10 @@
 <div *ngIf="event" class="event-container">
-  <!-- Event Banner -->
   <div
     class="event-banner"
     [style.background-image]="'url(' + event?.imagem + ')'"
   >
     <div class="overlay"></div>
 
-    <!-- User Profile Image -->
     <img
       *ngIf="usuario?.usuarioImagem"
       [src]="usuario?.usuarioImagem"
@@ -15,14 +13,12 @@
       (click)="openModal()"
     />
 
-    <!-- Event Info -->
     <div class="event-info">
       <h3>{{ usuario?.usuarioNome }}</h3>
       <p>{{ event?.data | date : "dd/MM/yyyy" }} - {{ event?.horario }}</p>
     </div>
   </div>
 
-  <!-- Event Card -->
   <div class="event-card">
     <h2>{{ event?.titulo }}</h2>
 
@@ -31,7 +27,6 @@
       {{ event?.descricao || "Sem descrição disponível." }}
     </p>
 
-    <!-- Event Address -->
     <div class="card-footer">
       <p class="event-address">
         <strong>Endereço:</strong>
@@ -47,7 +42,6 @@
         <ng-template #enderecoNaoInformado>Não informado</ng-template>
       </p>
 
-      <!-- Age Rating -->
       <p class="age-rating">
         <strong>Faixa Etária:</strong>
         {{ event?.faixaEtaria === 0 ? "Todas" : event?.faixaEtaria }}
@@ -72,7 +66,6 @@
   </div>
 </div>
 
-<!-- Modal for Profile Picture -->
 <div
   *ngIf="modalOpen"
   class="modal"

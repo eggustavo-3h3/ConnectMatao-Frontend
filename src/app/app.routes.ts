@@ -13,5 +13,5 @@ export const routes: Routes = [
   { path: 'profile/usuario/id', component: PublicProfileComponent },
   { path: 'divulgarEvento', component: DivulgarEventoComponent },
   { path: 'perfil/:id', component: PublicProfileComponent },
-  { path: 'detalhe-evento/:id', component: CardEventoDetalhesComponent },
+  { path: 'detalhe-evento/:eventId', component: CardEventoDetalhesComponent },
 ];

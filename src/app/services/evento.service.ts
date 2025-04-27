@@ -138,13 +138,12 @@ export class EventoService {
         {},
         {
           headers: this.getAuthHeaders(),
-          observe: 'response', // Ensures we only care about the status and headers, not the body
+          observe: 'response', 
         }
       )
       .pipe(
         map((response) => {
           if (response.status === 200) {
-            // Optionally handle the success status or log it
             console.log(
               `Evento ${eventoId} ${
                 tipo === TipoEstatistica.like ? 'curtido' : 'descurtido'
@@ -167,6 +166,6 @@ export class EventoService {
   }
 
   getEventoPorId(eventId: string): Observable<IEvento> {
-    return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}`);
+    return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}/detalhe`);
   }
 }

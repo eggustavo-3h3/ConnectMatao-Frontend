@@ -12,16 +12,15 @@ import { CommonModule } from '@angular/common';
   templateUrl: './card-evento-detalhes.component.html',
   styleUrls: ['./card-evento-detalhes.component.css'],
   imports: [
-    BrowserModule,
-    CommonModule, // Add CommonModule here
+    CommonModule, 
   ],
 })
 export class CardEventoDetalhesComponent implements OnInit {
-  eventId: string | null = null; // Event ID from URL params
-  event: IEvento | null = null; // To store the selected event details
+  eventId: string | null = null; 
+  event: IEvento | null = null; 
   usuario: IEventoCard | null = null;
-  modalOpen = false; // To control modal visibility
-  categoriaId: number | null = null; // Category ID if applicable
+  modalOpen = false; 
+  categoriaId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,21 +29,23 @@ export class CardEventoDetalhesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Extract eventId from URL route parameters
     this.route.paramMap.subscribe((params) => {
-      this.eventId = params.get('eventId'); // Assuming eventId is part of the URL
+      this.eventId = params.get('eventId');
+      console.log('eventId recuperado: ', this.eventId);
+      
       if (this.eventId) {
         this.carregarDetalhesEvento(this.eventId);
+      } else {
+        console.log('eventId não encontrado ');
       }
     });
 
-    // Optionally, you can load other events if needed based on a categoryId
+    
     if (this.categoriaId) {
       this.carregarEventos();
     }
   }
 
-  // Fetch details of a specific event
   carregarDetalhesEvento(eventId: string): void {
     this.eventoService.getEventoPorId(eventId).subscribe({
       next: (evento) => {
@@ -57,7 +58,6 @@ export class CardEventoDetalhesComponent implements OnInit {
     });
   }
 
-  // Fetch list of events (if needed based on categoriaId)
   carregarEventos(): void {
     this.eventoService.listarEventos(this.categoriaId).subscribe({
       next: (eventos) => {
@@ -69,35 +69,31 @@ export class CardEventoDetalhesComponent implements OnInit {
     });
   }
 
-  // Open modal for event image
   openModal(): void {
     this.modalOpen = true;
   }
 
-  // Close modal for event image
   closeModal(): void {
     this.modalOpen = false;
   }
 
-  // Like event
   likeEvento(): void {
     if (this.eventId) {
       this.eventoService
         .interagirEvento(this.eventId, TipoEstatistica.like)
         .subscribe({
-          next: () => this.carregarDetalhesEvento(this.eventId!), // Reload event to update like/dislike count
+          next: () => this.carregarDetalhesEvento(this.eventId!),
           error: (error) => console.error('Erro ao curtir evento:', error),
         });
     }
   }
 
-  // Dislike event
   dislikeEvento(): void {
     if (this.eventId) {
       this.eventoService
         .interagirEvento(this.eventId, TipoEstatistica.deslike)
         .subscribe({
-          next: () => this.carregarDetalhesEvento(this.eventId!), // Reload event to update like/dislike count
+          next: () => this.carregarDetalhesEvento(this.eventId!),
           error: (error) => console.error('Erro ao não curtir evento:', error),
         });
     }
