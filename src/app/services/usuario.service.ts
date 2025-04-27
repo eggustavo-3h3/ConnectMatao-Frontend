@@ -12,7 +12,7 @@ export class UsuarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getUser(userId: number): Observable<IUsuario> {
+  getUser(userId: string | number): Observable<IUsuario> {
     return this.http.get<IUsuario>(`${this.apiUrl}/usuario/${userId}`);
   }
 }

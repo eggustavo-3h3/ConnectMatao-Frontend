@@ -1,111 +1,192 @@
 <app-navbar></app-navbar>
-
 <div class="container">
   <h2 class="title">Divulgue seu evento</h2>
 
-  <!-- Notificações e overlay sempre visíveis agora -->
-  <div class="permission-notification-container show">
-    É necessário estar logado para divulgar um evento
-  </div>
-
-  <div class="form-overlay">
-    <div class="overlay-message">
-      Você não tem permissão para divulgar eventos.
-    </div>
-  </div>
-
-  <div class="image-upload">
-    <label for="imageInput" class="image-upload-label">Selecionar Imagem</label>
-    <input type="file" id="imageInput" class="image-input" />
-  </div>
-
-  <div class="image-preview-container">
-    <img
-      src="assets/default-event-image.png"
-      alt="Pré-visualização"
-      class="image-preview"
-    />
-  </div>
-
-  <div class="form-grid">
-    <div class="form-group">
-      <label for="titulo">Título:</label>
-      <input type="text" id="titulo" maxlength="150" />
+  <form [formGroup]="eventoForm">
+    <div class="image-upload">
+      <label for="imageInput" class="image-upload-label"
+        >Selecionar Imagem</label
+      >
+      <input type="file" id="imageInput" class="image-input" (change)="onFileChange($event)" />
     </div>
 
-    <div class="form-group">
-      <label for="bairro">Bairro:</label>
-      <input type="text" id="bairro" />
+    <div *ngIf="imagemPreview" class="image-preview-container">
+      <img [src]="imagemPreview" alt="Pré-visualização" class="image-preview" />
     </div>
 
-    <div class="form-group">
-      <label for="numero">Número:</label>
-      <input type="text" id="numero" />
-    </div>
+    <div class="form-grid">
+      <mat-form-field appearance="fill">
+        <mat-label>Título</mat-label>
+        <input matInput type="text" formControlName="titulo" maxlength="150" />
+        <mat-error *ngIf="eventoForm.get('titulo')?.hasError('required')">
+          O título é obrigatório.
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="logradouro">Logradouro:</label>
-      <input type="text" id="logradouro" />
-    </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Bairro</mat-label>
+        <input matInput type="text" formControlName="bairro" />
+        <mat-error *ngIf="eventoForm.get('bairro')?.hasError('required')">
+          O bairro é obrigatório.
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="cep">CEP:</label>
-      <input type="text" id="cep" />
-    </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Número</mat-label>
+        <input matInput type="text" formControlName="numero" />
+        <mat-error *ngIf="eventoForm.get('numero')?.hasError('required')">
+          O número é obrigatório.
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group full-width">
-      <label for="descricao">Descrição:</label>
-      <textarea id="descricao" maxlength="800"></textarea>
-    </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Logradouro</mat-label>
+        <input matInput type="text" formControlName="logradouro" />
+        <mat-error *ngIf="eventoForm.get('logradouro')?.hasError('required')">
+          O logradouro é obrigatório.
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group full-width">
-      <label for="email">Email:</label>
-      <input type="email" id="email" />
-    </div>
+      <mat-form-field appearance="fill">
+        <mat-label>CEP</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="cep"
+          pattern="^\d{5}-\d{3}$"
+        />
+        <mat-error *ngIf="eventoForm.get('cep')?.hasError('required')">
+          O CEP é obrigatório.
+        </mat-error>
+        <mat-error *ngIf="eventoForm.get('cep')?.hasError('pattern')">
+          O formato do CEP está inválido.
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="categoria">Categoria:</label>
-      <select id="categoria" class="form-control">
-        <option value="" disabled selected>Selecione uma categoria</option>
-        <option value="1">Categoria 1</option>
-        <option value="2">Categoria 2</option>
-        <option value="3">Categoria 3</option>
-      </select>
-    </div>
+      <div class="full-width">
+        <mat-form-field appearance="fill">
+          <mat-label>Descrição</mat-label>
+          <textarea
+            matInput
+            formControlName="descricao"
+            maxlength="800"
+          ></textarea>
+          <mat-error *ngIf="eventoForm.get('descricao')?.hasError('required')">
+            A descrição é obrigatória.
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-    <div class="form-group contact">
-      <label>Telefone</label>
-      <div class="contact-input">
-        <i class="fas fa-phone"></i>
-        <input type="tel" placeholder="(00) 0000-0000" />
+      <div class="full-width">
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          <mat-error *ngIf="eventoForm.get('email')?.hasError('required')">
+            O email é obrigatório.
+          </mat-error>
+          <mat-error *ngIf="eventoForm.get('email')?.hasError('email')">
+            O formato do email está inválido.
+          </mat-error>
+        </mat-form-field>
+      </div>
+      =
+      <mat-form-field appearance="fill">
+        <mat-label>Categoria</mat-label>
+        <mat-select formControlName="categoria">
+          <mat-option value="" disabled>Selecione uma categoria</mat-option>
+          <mat-option *ngFor="let cat of categorias" [value]="cat.id">
+            {{ cat.descricao }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="eventoForm.get('categoria')?.hasError('required')">
+          A categoria é obrigatória.
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-group contact">
+        <mat-form-field appearance="fill">
+          <mat-label>Telefone</mat-label>
+          <input
+            matInput
+            type="tel"
+            formControlName="telefone"
+            placeholder="(00) 0000-0000"
+          />
+          <mat-error *ngIf="eventoForm.get('telefone')?.hasError('required')">
+            O telefone é obrigatório.
+          </mat-error>
+          <mat-error *ngIf="eventoForm.get('telefone')?.hasError('pattern')">
+            O formato do telefone está inválido.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group contact">
+        <mat-form-field appearance="fill">
+          <mat-label>Whatsapp</mat-label>
+          <input
+            matInput
+            type="tel"
+            formControlName="whatsapp"
+            placeholder="(00) 00000-0000"
+          />
+          <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('required')">
+            O whatsapp é obrigatório.
+          </mat-error>
+          <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('pattern')">
+            O formato do whatsapp está inválido.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="date-time">
+        <mat-form-field appearance="fill">
+          <mat-label>Data</mat-label>
+          <input matInput type="date" formControlName="data" />
+          <mat-error *ngIf="eventoForm.get('data')?.hasError('required')">
+            A data é obrigatória.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="date-time">
+        <mat-form-field appearance="fill">
+          <mat-label>Horário</mat-label>
+          <input matInput type="time" formControlName="horario" />
+          <mat-error *ngIf="eventoForm.get('horario')?.hasError('required')">
+            O horário é obrigatório.
+          </mat-error>
+          <mat-error *ngIf="eventoForm.get('horario')?.hasError('pattern')">
+            O formato do horário está inválido.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="age-range">
+        <mat-form-field appearance="fill">
+          <mat-label>Faixa Etária</mat-label>
+          <input matInput type="number" formControlName="faixaEtaria" />
+          <mat-error
+            *ngIf="eventoForm.get('faixaEtaria')?.hasError('required')"
+          >
+            A faixa etária é obrigatória.
+          </mat-error>
+          <mat-error *ngIf="eventoForm.get('faixaEtaria')?.hasError('min')">
+            A faixa etária deve ser maior que 0.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="full-width submit-button">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="eventoForm.invalid"
+          (click)="onSubmit()"
+        >
+          Publicar evento
+        </button>
       </div>
     </div>
-
-    <div class="form-group contact">
-      <label>Whatsapp</label>
-      <div class="contact-input">
-        <i class="fab fa-whatsapp"></i>
-        <input type="tel" placeholder="(00) 00000-0000" />
-      </div>
-    </div>
-
-    <div class="form-group date-time">
-      <label for="data">Data:</label>
-      <input type="date" id="data" />
-    </div>
-
-    <div class="form-group date-time">
-      <label for="horario">Horário:</label>
-      <input type="time" id="horario" />
-    </div>
-
-    <div class="form-group age-range">
-      <label for="faixaEtaria">Faixa Etária:</label>
-      <input type="number" id="faixaEtaria" />
-    </div>
-
-    <div class="form-group full-width submit-button">
-      <button type="submit">Publicar evento</button>
-    </div>
-  </div>
+  </form>
 </div>

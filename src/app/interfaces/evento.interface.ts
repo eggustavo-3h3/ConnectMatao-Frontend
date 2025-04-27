@@ -1,9 +1,6 @@
-import { IEventoEstatisticas } from './evento-estatisticas.interface';
-import { IUsuario } from './usuario.interface';
-import { IEventoImagens } from './evento-imagens.interface';
 
 export interface IEvento {
-  id: string;
+  id?: string,
   titulo: string;
   descricao: string;
   cep: string;
@@ -13,14 +10,11 @@ export interface IEvento {
   telefone: string;
   whatsapp: string;
   email: string;
-  data: Date;
-  horario: string;
-  faixaEtaria: number;
+  data: string;
+  categoriaid: string;
   flagAprovado: boolean;
   usuarioParceiroid: string;
-  categoriaid: string;
-  usuarioNome: string;
-  usuarioImagem: string;
-  eventoImagem: IEventoImagens;
-  estatisticas: IEventoEstatisticas[];
+  horario: string;
+  faixaEtaria: number;
+  imagem: string; 
 }

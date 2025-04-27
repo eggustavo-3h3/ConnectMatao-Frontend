@@ -3,6 +3,7 @@ import { EventoService } from '../../../services/evento.service';
 import { IEvento } from '../../../interfaces/evento.interface';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { IEventoCard } from '../../../interfaces/evento-card.interface';
 
 @Component({
   selector: 'app-CardEventos',
@@ -11,17 +12,15 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
 })
 export class CardEventosComponent implements OnInit {
-  eventos: IEvento[] = [];
+  eventos: IEventoCard[] = [];
   currentIndex = 0;
-  visibleCards = 3; // quantidade de cards visíveis ao mesmo tempo
+  visibleCards = 3; 
   cardWidthPercentage = 100 / this.visibleCards;
 
   constructor(private eventoService: EventoService) {}
 
   ngOnInit(): void {
-    this.eventoService.listarEventos().subscribe((data) => {
-      this.eventos = data;
-    });
+    this.listarEventos();
   }
 
   listarEventos() {
