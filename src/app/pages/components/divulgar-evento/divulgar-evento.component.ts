@@ -79,14 +79,14 @@ export class DivulgarEventoComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/),
+          Validators.pattern(/^\(\d{2}\) \d{4}-\d{4}$/),
         ],
       ],
       whatsapp: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/),
+          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/),
         ],
       ],
       email: ['', [Validators.required, Validators.email]],
@@ -117,6 +117,25 @@ export class DivulgarEventoComponent implements OnInit {
 
     this.carregarCategorias();
     this.carregarUsuario();
+  }
+
+  formatPhone(event: any, field: string) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); 
+    
+    if (field === 'telefone') {
+      if (value.length > 10) {
+        value = value.substring(0, 10);
+      }
+      value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+    } else if (field === 'whatsapp') {
+      if (value.length > 11) {
+        value = value.substring(0, 11); 
+      }
+      value = value.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
+    }
+    input.value = value;
+    this.eventoForm.get(field)?.setValue(value, { emitEvent: false });
   }
 
   carregarUsuario(): void {

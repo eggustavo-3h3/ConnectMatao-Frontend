@@ -115,12 +115,14 @@
             matInput
             formControlName="telefone"
             placeholder="(00) 0000-0000"
+            (input)="formatPhone($event, 'telefone')"
+            maxlength="14"
           />
           <mat-error *ngIf="eventoForm.get('telefone')?.hasError('required')">
             O telefone é obrigatório.
           </mat-error>
           <mat-error *ngIf="eventoForm.get('telefone')?.hasError('pattern')">
-            O formato do telefone está inválido.
+            Formato inválido. Use (00) 0000-0000
           </mat-error>
         </mat-form-field>
       </div>
@@ -132,12 +134,14 @@
             matInput
             formControlName="whatsapp"
             placeholder="(00) 00000-0000"
+            (input)="formatPhone($event, 'whatsapp')"
+            maxlength="15"
           />
           <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('required')">
             O whatsapp é obrigatório.
           </mat-error>
           <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('pattern')">
-            O formato do whatsapp está inválido.
+            Formato inválido. Use (00) 00000-0000
           </mat-error>
         </mat-form-field>
       </div>
