@@ -12,10 +12,9 @@ export class UsuarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  // Buscar perfil por ID (qualquer usuário)
 
   getUserProfileById(userId: string): Observable<IUsuario> {
-    const url = `${this.apiUrl}/usuario/${userId}`; // Certifique-se de que o userId está sendo concatenado corretamente
+    const url = `${this.apiUrl}/usuario/${userId}`;
     return this.http.get<IUsuario>(url);
   }
 
@@ -32,11 +31,9 @@ export class UsuarioService {
     return this.http.get<IUsuario>(`${this.apiUrl}/usuario/${userId}`);
   }
 
-  // Atualizar perfil do usuário autenticado
   updateUserProfile(profileData: IUsuario): Observable<any> {
     const userId = this.authService.getUserId();
 
-    // Verifica se o usuário está logado e se o ID enviado corresponde ao logado
     if (!userId || profileData.id !== Number(userId)) {
       console.error(
         'Erro ao atualizar perfil: usuário não autenticado ou ID não corresponde.'

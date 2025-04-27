@@ -7,7 +7,12 @@
       <label for="imageInput" class="image-upload-label"
         >Selecionar Imagem</label
       >
-      <input type="file" id="imageInput" class="image-input" (change)="onFileChange($event)" />
+      <input
+        type="file"
+        id="imageInput"
+        class="image-input"
+        (change)="onFileChange($event)"
+      />
     </div>
 
     <div *ngIf="imagemPreview" class="image-preview-container">
@@ -108,7 +113,6 @@
           <mat-label>Telefone</mat-label>
           <input
             matInput
-            type="tel"
             formControlName="telefone"
             placeholder="(00) 0000-0000"
           />
@@ -126,7 +130,6 @@
           <mat-label>Whatsapp</mat-label>
           <input
             matInput
-            type="tel"
             formControlName="whatsapp"
             placeholder="(00) 00000-0000"
           />
@@ -141,18 +144,35 @@
 
       <div class="date-time">
         <mat-form-field appearance="fill">
-          <mat-label>Data</mat-label>
-          <input matInput type="date" formControlName="data" />
+          <mat-label>Data do evento</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="data"
+            [min]="minDate"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="eventoForm.get('data')?.hasError('required')">
             A data é obrigatória.
           </mat-error>
         </mat-form-field>
+        <div *ngIf="eventoForm.get('data')?.value">
+          Data selecionada: {{ eventoForm.get('data')?.value | date  : 'dd/MM/yyyy'}}
+        </div>
       </div>
 
       <div class="date-time">
         <mat-form-field appearance="fill">
           <mat-label>Horário</mat-label>
-          <input matInput type="time" formControlName="horario" />
+          <input
+            matInput
+            type="time"
+            formControlName="horario"
+            step="300"
+            placeholder="00:00"
+          />
+          <mat-icon matSuffix>access_time</mat-icon>
           <mat-error *ngIf="eventoForm.get('horario')?.hasError('required')">
             O horário é obrigatório.
           </mat-error>

@@ -11,9 +11,26 @@ import { EventoService } from '../../../services/evento.service';
 import { CategoriaService } from '../../../services/categoria.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
+registerLocaleData(localePt);
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY', 
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY', 
+    monthYearLabel: 'MMM YYYY', 
+    dateA11yLabel: 'LL', 
+    monthYearA11yLabel: 'MMMM YYYY', 
+  },
+};
 
 @Component({
   selector: 'app-divulgar-evento',
@@ -26,12 +43,19 @@ import { NavbarComponent } from '../nav-bar/nav-bar.component';
   ],
   templateUrl: './divulgar-evento.component.html',
   styleUrls: ['./divulgar-evento.component.css'],
+  providers: [
+    DatePipe,
+    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
+  ],
 })
 export class DivulgarEventoComponent implements OnInit {
   eventoForm: FormGroup;
   categorias: any[] = [];
   imagemPreview: string | null = null;
   usuario: any = null;
+  minDate: Date;
+  selectedDate: any = null;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -40,8 +64,10 @@ export class DivulgarEventoComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly usuarioService: UsuarioService,
     private readonly snackBar: MatSnackBar,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly datePipe: DatePipe
   ) {
+    this.minDate = new Date();
     this.eventoForm = this.fb.group({
       titulo: ['', [Validators.required, Validators.maxLength(100)]],
       descricao: ['', Validators.required],
@@ -146,7 +172,7 @@ export class DivulgarEventoComponent implements OnInit {
         this.imagemPreview = reader.result as string;
         this.eventoForm.patchValue({ imagem: file });
       };
-      reader.readAsDataURL(file); // base64 com prefixo
+      reader.readAsDataURL(file);
     }
   }
 
@@ -185,7 +211,7 @@ export class DivulgarEventoComponent implements OnInit {
         usuarioParceiroid: this.usuario.id,
         horario: this.eventoForm.value.horario,
         faixaEtaria: this.eventoForm.value.faixaEtaria,
-        imagem: reader.result as string, // Envia o Base64 completo
+        imagem: reader.result as string,
       };
 
       this.eventoService.criarEvento(eventoData).subscribe({
@@ -217,7 +243,7 @@ export class DivulgarEventoComponent implements OnInit {
       return;
     }
     if (file) {
-      reader.readAsDataURL(file); // Converte para base64 com header
+      reader.readAsDataURL(file);
     } else {
       this.snackBar.open('Selecione uma imagem para o evento', 'Fechar', {
         duration: 3000,
