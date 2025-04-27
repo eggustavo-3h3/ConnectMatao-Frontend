@@ -4,12 +4,12 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 80%; /* Ajustado para 80% da largura para maior controle */
-  margin: 50px auto; /* Centraliza com margem no topo e embaixo */
+  width: 80%;
+  margin: 50px auto;
   overflow: hidden;
-  background-color: #f4f4f4; /* Fundo cinza claro */
-  padding: 20px; /* Adiciona um padding interno */
-  border-radius: 10px; /* Adiciona bordas arredondadas */
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 /* Estilo do Carrossel */
@@ -25,11 +25,11 @@
   top: 50%;
   transform: translateY(-50%);
   border: none;
-  padding: 5px; /* Diminui o padding para reduzir o tamanho do botão */
+  padding: 5px;
   cursor: pointer;
   z-index: 10;
   background: none;
-  font-size: 1.2em; /* Ajuste o tamanho da fonte para reduzir o tamanho do ícone */
+  font-size: 1.2em;
   color: #333;
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
@@ -45,8 +45,8 @@
 
 /* Ajustando a imagem da seta, caso você use uma imagem */
 .carousel-btn img {
-  width: 16px; /* Reduz a largura da imagem da seta */
-  height: 16px; /* Reduz a altura da imagem da seta */
+  width: 16px;
+  height: 16px;
 }
 
 /* Hover para os botões */
@@ -62,8 +62,8 @@
 
 /* Estilo do card do evento */
 .evento-card {
-  flex: 0 0 calc(100% / 3); /* Exibe 3 cards, ajuste conforme necessário */
-  margin: 10px 0; /* Ajuste na margem para evitar que os cards sejam empurrados */
+  flex: 0 0 calc(100% / 3); /* Exibe 3 cards*/
+  margin: 10px 0;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -119,7 +119,7 @@
 
 .spinner-overlay {
   position: absolute;
-  top: 50%;
+  top: 75%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
@@ -154,7 +154,7 @@
   margin: 5px 0;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limita o número de linhas da descrição */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -166,7 +166,7 @@
   padding: 8px;
   background: #353434;
   color: white;
-  flex-shrink: 0; /* Impede o encolhimento dos detalhes */
+  flex-shrink: 0;
 }
 
 /* Itens dentro do detalhes do evento */
@@ -197,6 +197,6 @@
     flex: 0 0 100%; /* Exibe 1 card por vez */
   }
   .carousel-btn {
-    display: block; /* Torna os botões de navegação visíveis em dispositivos móveis */
+    display: block;
   }
 }

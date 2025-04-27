@@ -12,8 +12,6 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class EventoService {
   private apiUrl = 'https://connectmatao-api.tccnapratica.com.br';
-  /*categorias: ICategoria[] = [];
-  categoriaIdSelecionada!: number;*/
 
   constructor(
     private http: HttpClient,
@@ -25,9 +23,14 @@ export class EventoService {
     return this.authService.createAuthHeader();
   }
 
-  listarEventos(): Observable<IEventoCard[]> {
+  listarEventos(categoriaId: number | null): Observable<IEventoCard[]> {
+    // Se a categoria for válida, envia a categoria no request
+    const url = categoriaId
+      ? `${this.apiUrl}/evento/listar?categoriaId=${categoriaId}`
+      : `${this.apiUrl}/evento/listar`;
+
     return this.http
-      .get<IEventoCard[]>(this.apiUrl + '/evento/listar')
+      .get<IEventoCard[]>(url)
       .pipe(
         map((eventos) =>
           eventos.map(({ imagem, ...rest }) => rest as IEventoCard)
@@ -40,7 +43,6 @@ export class EventoService {
   }
 
   removerEvento(eventoId: number): Observable<any> {
-    // Adicione o método removerEvento
     return this.http.delete(`${this.apiUrl}/evento/remover/${eventoId}`, {
       headers: this.getAuthHeaders(),
     });

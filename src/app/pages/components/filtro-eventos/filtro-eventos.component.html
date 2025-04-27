@@ -1,0 +1,54 @@
+<div class="filter">
+  <h1 class="txt-filter">Filtros</h1>
+
+  <button
+    (click)="openModal()"
+    class="open-modal-btn"
+    aria-label="Abrir filtros"
+  >
+    <svg
+      width="32"
+      height="51"
+      viewBox="0 0 32 51"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Mantive o SVG como está, apenas removi tags desnecessárias do pattern -->
+      <image
+        width="32"
+        height="51"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAACcUlEQVR4nO3cS2oUURjF8daZbkAdGHUNpjUTJW5JFHwMeg8+MGB0AT1sb51zy9u4DR8rMBGMk0j3qKRCB4I0JN11H/Ul5wffJIPKrS+hijR/MhiIiIiIiIiIiIgJTdNc8t4/AvARwA+Sh4v5TvIDye3SZzSvrus7AL6QbE6ZKcnbpc9rkvf+HslfZ1jy8exXVbVZ+tymOOdutYtbYclHA2AvhLBR+vxmAOCqSz6xbFf6/CYAGK675BPL3ip2A5PJ5CrJtwD+dL0RlpkZycfT6fSac+46gCck5x2veQDgzXg8vhJt0QB2erCspsNv6bP/74nki0jX3omy5NFodJnk39LLYodZ9pJbvDRjXP+w3ZEWzeWLbr/Wq0Wfh0cHyedL7ulljGsDeDeIpX3gA3jdvgB6sLRmjZkvXoA3FvM0wsvwN8lXUV+GVlRVtdn1h+Kcu1/6PkwgiQ6PgU+lz29GCGGj/XN6jSX/9N7fLH1+i4+Q/RWWvFfX9d3S57b8MWk4w5I/62PSCJxzD0nuAvh2/ME/gK8A3pN8EON7iIiIiMgRdRcZ1Oou0vPqLtJz6i7ygLqLLEsemu4uzkHXMUvQXaQee10HEnYXqcdU1xHSdhepx07XEdJ2FzYWXerRgUjdReqx1nXME3QXqae/XUel7iIfqrvII6i7yKdSd5FPre4iL6fuQkREROSiavT/N9Kr1YGk59WBpOfUgeQBdSBZljy8UB1ID/9fx6wHHYi9roOGOxBTXQdtdyB2ug7a7kDsdB003IFY6zoagx1If7uOVakDyYjqQPII6kDyqdSB5FOrA8nLqQMRERERERERERmU9g9GIB77wRPtbAAAAABJRU5ErkJggg=="
+      />
+    </svg>
+  </button>
+
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Filtrar por categoria</h2>
+
+      <form (ngSubmit)="applyFilters()">
+        <label for="category">Categoria:</label>
+        <select id="category" name="category" [(ngModel)]="filters.categoryId">
+          <option value="">Todas</option>
+          <option *ngFor="let cat of categorias" [value]="cat.id">
+            {{ cat.descricao }}
+          </option>
+        </select>
+
+        <div class="button-group">
+          <button type="button" class="btn-clear" (click)="clearFilters()">
+            Limpar
+          </button>
+          <button type="submit" class="btn-apply">Aplicar</button>
+        </div>
+      </form>
+
+      <button
+        class="close-btn"
+        aria-label="Fechar filtros"
+        (click)="closeModal()"
+      >
+        X
+      </button>
+    </div>
+  </div>
+</div>
