@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { EventoService } from '../../../services/evento.service';
@@ -17,10 +22,10 @@ import { NavbarComponent } from '../nav-bar/nav-bar.component';
     CommonModule,
     ReactiveFormsModule,
     AngularMaterialModule,
-    NavbarComponent
+    NavbarComponent,
   ],
   templateUrl: './divulgar-evento.component.html',
-  styleUrls: ['./divulgar-evento.component.css']
+  styleUrls: ['./divulgar-evento.component.css'],
 })
 export class DivulgarEventoComponent implements OnInit {
   eventoForm: FormGroup;
@@ -44,20 +49,42 @@ export class DivulgarEventoComponent implements OnInit {
       logradouro: ['', Validators.required],
       numero: ['', Validators.required],
       bairro: ['', Validators.required],
-      telefone: ['', [Validators.required, Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/)]],
-      whatsapp: ['', [Validators.required, Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/)]],
+      telefone: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/),
+        ],
+      ],
+      whatsapp: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/),
+        ],
+      ],
       email: ['', [Validators.required, Validators.email]],
       data: ['', Validators.required],
-      horario: ['', [Validators.required, Validators.pattern(/^([0-1]\d|2[0-3]):([0-5]\d)$/)]],
+      horario: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^([0-1]\d|2[0-3]):([0-5]\d)$/),
+        ],
+      ],
       faixaEtaria: [0, [Validators.required, Validators.min(0)]],
       categoria: ['', Validators.required],
-      imagem: ['', Validators.required]
+      imagem: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     if (!this.authService.isPartner() && !this.authService.isAdmin()) {
-      this.snackBar.open('Apenas usuários parceiros ou administradores podem divulgar eventos.', 'Fechar', { duration: 5000 });
+      this.snackBar.open(
+        'Apenas usuários parceiros ou administradores podem divulgar eventos.',
+        'Fechar',
+        { duration: 5000 }
+      );
       this.router.navigate(['/']);
       return;
     }
@@ -70,7 +97,9 @@ export class DivulgarEventoComponent implements OnInit {
     const userId = this.authService.getUserId();
 
     if (!userId) {
-      this.snackBar.open('Sessão expirada, faça login novamente', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Sessão expirada, faça login novamente', 'Fechar', {
+        duration: 3000,
+      });
       this.router.navigate(['/login']);
       return;
     }
@@ -81,13 +110,17 @@ export class DivulgarEventoComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao carregar usuário:', err);
-        this.snackBar.open('Erro ao carregar informações do usuário', 'Fechar', { duration: 3000 });
+        this.snackBar.open(
+          'Erro ao carregar informações do usuário',
+          'Fechar',
+          { duration: 3000 }
+        );
 
         if (err.status === 404) {
           this.authService.logout();
           this.router.navigate(['/login']);
         }
-      }
+      },
     });
   }
 
@@ -98,8 +131,10 @@ export class DivulgarEventoComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar categorias:', error);
-        this.snackBar.open('Erro ao carregar categorias', 'Fechar', { duration: 3000 });
-      }
+        this.snackBar.open('Erro ao carregar categorias', 'Fechar', {
+          duration: 3000,
+        });
+      },
     });
   }
 
@@ -111,7 +146,7 @@ export class DivulgarEventoComponent implements OnInit {
         this.imagemPreview = reader.result as string;
         this.eventoForm.patchValue({ imagem: file });
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // base64 com prefixo
     }
   }
 
@@ -121,7 +156,11 @@ export class DivulgarEventoComponent implements OnInit {
     }
 
     if (!this.usuario?.id) {
-      this.snackBar.open('Usuário não encontrado, faça login novamente.', 'Fechar', { duration: 3000 });
+      this.snackBar.open(
+        'Usuário não encontrado, faça login novamente.',
+        'Fechar',
+        { duration: 3000 }
+      );
       this.router.navigate(['/login']);
       return;
     }
@@ -146,30 +185,43 @@ export class DivulgarEventoComponent implements OnInit {
         usuarioParceiroid: this.usuario.id,
         horario: this.eventoForm.value.horario,
         faixaEtaria: this.eventoForm.value.faixaEtaria,
-        imagem: (reader.result as string).split(',')[1]
+        imagem: reader.result as string, // Envia o Base64 completo
       };
 
-      // Não inclua o 'id' no eventoData
       this.eventoService.criarEvento(eventoData).subscribe({
         next: () => {
-          this.snackBar.open('Evento criado com sucesso', 'Fechar', { duration: 3000 });
+          this.snackBar.open('Evento criado com sucesso', 'Fechar', {
+            duration: 3000,
+          });
           this.router.navigate(['/']);
         },
         error: (erro) => {
           console.error('Erro ao criar evento:', erro);
-          this.snackBar.open('Erro ao criar evento', 'Fechar', { duration: 3000 });
-        }
+          this.snackBar.open('Erro ao criar evento', 'Fechar', {
+            duration: 3000,
+          });
+        },
       });
     };
 
     reader.onerror = () => {
-      this.snackBar.open('Erro ao processar imagem', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Erro ao processar imagem', 'Fechar', {
+        duration: 3000,
+      });
     };
-
+    if (file.size > 2 * 1024 * 1024) {
+      // 2MB
+      this.snackBar.open('Imagem muito grande (máx. 2MB)', 'Fechar', {
+        duration: 3000,
+      });
+      return;
+    }
     if (file) {
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Converte para base64 com header
     } else {
-      this.snackBar.open('Selecione uma imagem para o evento', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Selecione uma imagem para o evento', 'Fechar', {
+        duration: 3000,
+      });
     }
   }
 }

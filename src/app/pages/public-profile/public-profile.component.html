@@ -1,1 +1,181 @@
-<p>public-profile works!</p>
+<div class="perfil-container" *ngIf="user">
+  <!-- Cabeçalho do Perfil -->
+  <div class="header">
+    <div class="banner">
+      <img src="URL_DO_BANNER" alt="Banner de Perfil" class="banner-img" />
+      <div class="banner-overlay"></div>
+    </div>
+
+    <!-- Foto de Perfil -->
+    <div class="perfil">
+      <div class="profile-image-container">
+        <img
+          *ngIf="user.imagem"
+          [src]="user.imagem"
+          alt="Foto do Perfil"
+          class="perfil-img"
+        />
+        <img
+          *ngIf="user.imagem"
+          src="https://cdn-icons-png.flaticon.com/128/1946/1946429.png"
+          alt="Placeholder de Perfil"
+          class="perfil-img"
+        />
+        <button
+          *ngIf="isLoggedIn && loggedInUserId && user?.id === +loggedInUserId"
+          class="edit-profile-button edit-image-button"
+          (click)="openEditImageModal()"
+          title="Editar Foto"
+        >
+          <img src="../ferramenta-lapis.png" alt="Editar Foto" />
+        </button>
+      </div>
+
+      <!-- Nome de Usuário -->
+      <div class="username-container">
+        <h1 class="username">{{ user?.nome }}</h1>
+        <button
+          *ngIf="isLoggedIn && loggedInUserId && user?.id === +loggedInUserId"
+          class="edit-profile-button edit-name-button"
+          (click)="openEditNameModal()"
+          title="Editar Nome"
+        >
+          <img src="../ferramenta-lapis.png" alt="Editar Nome" />
+        </button>
+      </div>
+
+      <!-- Avaliação do Usuário -->
+      <div class="avaliacao-container">
+        <div *ngIf="isLoggedIn && loggedInUserId !== userId" class="avaliar">
+          Avalie este perfil:
+        </div>
+        <div *ngIf="!isLoggedIn" class="avaliar-login">
+          Faça login para avaliar este perfil.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informações do Perfil -->
+  <div class="profile-info-below-fold">
+    <p><strong>E-mail:</strong> {{ user?.login }}</p>
+  </div>
+
+  <!-- Modais de Edição -->
+  <div class="modal-overlay" *ngIf="isEditNameModalOpen && canEditProfile">
+    <div class="edit-profile-modal">
+      <h2>Editar Nome</h2>
+      <form (ngSubmit)="updateName()">
+        <div class="form-group">
+          <label for="nome">Novo Nome:</label>
+          <input
+            type="text"
+            id="nome"
+            [(ngModel)]="editNome"
+            name="nome"
+            required
+          />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="save-button" [disabled]="!editNome">
+            Salvar
+          </button>
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeEditNameModal()"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isEditImageModalOpen && canEditProfile">
+    <div class="edit-profile-modal">
+      <h2>Editar Imagem</h2>
+      <form (ngSubmit)="updateImage()">
+        <div class="form-group">
+          <label for="imageUpload">Nova Imagem:</label>
+          <input
+            type="file"
+            id="imageUpload"
+            (change)="handleImageUpload($event)"
+            accept="image/*"
+            required
+          />
+          <p class="image-info">Selecione uma imagem do seu computador.</p>
+          <div *ngIf="imagePreviewUrl" class="image-preview">
+            <img [src]="imagePreviewUrl" alt="Prévia da Imagem" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="!imagePreviewUrl"
+          >
+            Salvar
+          </button>
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeEditImageModal()"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Eventos do Usuário -->
+  <div class="evento-container">
+    <h2>Eventos de {{ user?.nome }}</h2>
+    <div *ngIf="userEvents.length > 0; else noEvents">
+      <div *ngFor="let event of userEvents" class="evento-card">
+        <img *ngIf="user.imagem" [src]="event.imagem" class="event-logo" />
+        <h3 class="evento-title">{{ event.titulo }}</h3>
+        <p>{{ event.descricao }}</p>
+        <p class="evento-detalhes">
+          {{ event.data | date : "dd/MM/yyyy" }} {{ event.horario }}
+        </p>
+        <p class="evento-detalhes">
+          {{ event.logradouro }}, {{ event.numero }} - {{ event.bairro }} -
+          {{ event.cep }}
+        </p>
+        <div class="evento-actions">
+          <button
+            *ngIf="isLoggedIn && user?.id?.toString() === loggedInUserId"
+            class="delete-button"
+            (click)="confirmDeleteEvent(event)"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+    <ng-template #noEvents>
+      <p>Este usuário ainda não divulgou nenhum evento.</p>
+    </ng-template>
+  </div>
+
+  <!-- Modal de Exclusão de Evento -->
+  <div class="modal-overlay" *ngIf="excluirModalAberto">
+    <div class="edit-profile-modal">
+      <h2>Confirmar Exclusão</h2>
+      <p>
+        Tem certeza que deseja excluir o evento "{{
+          eventoParaExcluir?.titulo
+        }}"?
+      </p>
+      <div class="form-actions">
+        <button class="save-button" (click)="deleteEvent()">Excluir</button>
+        <button class="cancel-button" (click)="cancelDeleteEvent()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

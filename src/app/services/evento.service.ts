@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { IEvento } from '../interfaces/evento.interface';
 import { IEventoCard } from '../interfaces/evento-card.interface';
+import { AuthService } from './auth.service';
+import { IUsuario } from '../interfaces/usuario.interface';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +17,109 @@ export class EventoService {
 
   constructor(
     private http: HttpClient,
-  ) { }
+    private authService: AuthService,
+    private sanitizer: DomSanitizer
+  ) {}
+
+  private getAuthHeaders() {
+    return this.authService.createAuthHeader();
+  }
 
   listarEventos(): Observable<IEventoCard[]> {
-    return this.http.get<IEventoCard[]>(this.apiUrl + '/evento/listar');
+    return this.http
+      .get<IEventoCard[]>(this.apiUrl + '/evento/listar')
+      .pipe(
+        map((eventos) =>
+          eventos.map(({ imagem, ...rest }) => rest as IEventoCard)
+        )
+      );
   }
 
   criarEvento(evento: IEvento): Observable<IEvento> {
-    return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento)
+    return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento);
+  }
+
+  removerEvento(eventoId: number): Observable<any> {
+    // Adicione o método removerEvento
+    return this.http.delete(`${this.apiUrl}/evento/remover/${eventoId}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  getEventosPorUsuario(usuarioId: string): Observable<IEvento[]> {
+    return this.http
+      .get<IEventoCard[]>(`${this.apiUrl}/evento/listar/usuario/${usuarioId}`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        switchMap((eventos) => {
+          if (!eventos || eventos.length === 0) {
+            return of([]);
+          }
+          return forkJoin(
+            eventos.map((evento) => this.buildEventoListDto(evento))
+          );
+        }),
+        catchError(
+          this.handleError<IEvento[]>(
+            `getEventosPorUsuario usuarioId=${usuarioId}`,
+            []
+          )
+        )
+      );
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed: ${error.message}`);
+      return of(result as T);
+    };
+  }
+
+  private fetchUserInfo(userId: string): Observable<IUsuario | null> {
+    return this.http
+      .get<IUsuario>(`${this.apiUrl}/usuario/${userId}`)
+      .pipe(
+        catchError(
+          this.handleError<IUsuario | null>(
+            `obter info do usuário ${userId}`,
+            null
+          )
+        )
+      );
+  }
+
+  private buildEventoListDto(evento: IEventoCard): Observable<IEvento> {
+    if (!evento) {
+      return of({} as IEventoCard);
+    }
+
+    const usuarioId = evento.usuarioParceiroid;
+
+    return this.fetchUserInfo(usuarioId).pipe(
+      map((userInfo) => {
+        const usuarioImageUrl = userInfo?.imagem
+          ? this.sanitizer.bypassSecurityTrustResourceUrl(
+              `data:image/png;base64,${userInfo.imagem}`
+            )
+          : this.sanitizer.bypassSecurityTrustResourceUrl(
+              'assets/perfil-placeholder.png'
+            );
+
+        let imagemUrl: SafeUrl;
+        const imagens = evento.eventoImagem;
+
+        const eventoDto: IEventoCard = {
+          ...evento,
+          usuarioNome: userInfo?.nome || '',
+          usuarioImagem: userInfo?.imagem || '',
+        };
+        return eventoDto;
+      }),
+      catchError((error) => {
+        console.error('Erro no buildEventoListDto:', error);
+        return of({} as IEventoCard);
+      })
+    );
   }
 }
