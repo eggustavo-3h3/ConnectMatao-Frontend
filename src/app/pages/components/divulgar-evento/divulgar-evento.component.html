@@ -3,6 +3,7 @@
   <h2 class="title">Divulgue seu evento</h2>
 
   <form [formGroup]="eventoForm">
+    <!-- Seção para upload da imagem -->
     <div class="image-upload">
       <label for="imageInput" class="image-upload-label"
         >Selecionar Imagem</label
@@ -15,11 +16,14 @@
       />
     </div>
 
+    <!-- Pré-visualização da imagem -->
     <div *ngIf="imagemPreview" class="image-preview-container">
       <img [src]="imagemPreview" alt="Pré-visualização" class="image-preview" />
     </div>
 
+    <!-- Campos do formulário -->
     <div class="form-grid">
+      <!-- Título -->
       <mat-form-field appearance="fill">
         <mat-label>Título</mat-label>
         <input matInput type="text" formControlName="titulo" maxlength="150" />
@@ -28,6 +32,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Bairro -->
       <mat-form-field appearance="fill">
         <mat-label>Bairro</mat-label>
         <input matInput type="text" formControlName="bairro" />
@@ -36,6 +41,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Número -->
       <mat-form-field appearance="fill">
         <mat-label>Número</mat-label>
         <input matInput type="text" formControlName="numero" />
@@ -44,6 +50,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Logradouro -->
       <mat-form-field appearance="fill">
         <mat-label>Logradouro</mat-label>
         <input matInput type="text" formControlName="logradouro" />
@@ -52,6 +59,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- CEP -->
       <mat-form-field appearance="fill">
         <mat-label>CEP</mat-label>
         <input
@@ -68,6 +76,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Descrição -->
       <div class="full-width">
         <mat-form-field appearance="fill">
           <mat-label>Descrição</mat-label>
@@ -82,6 +91,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Email -->
       <div class="full-width">
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>
@@ -94,7 +104,8 @@
           </mat-error>
         </mat-form-field>
       </div>
-      =
+
+      <!-- Categoria -->
       <mat-form-field appearance="fill">
         <mat-label>Categoria</mat-label>
         <mat-select formControlName="categoria">
@@ -108,6 +119,7 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Telefone -->
       <div class="form-group contact">
         <mat-form-field appearance="fill">
           <mat-label>Telefone</mat-label>
@@ -116,7 +128,7 @@
             formControlName="telefone"
             placeholder="(00) 0000-0000"
             (input)="formatPhone($event, 'telefone')"
-            maxlength="14"
+            maxlength="15"
           />
           <mat-error *ngIf="eventoForm.get('telefone')?.hasError('required')">
             O telefone é obrigatório.
@@ -127,6 +139,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Whatsapp -->
       <div class="form-group contact">
         <mat-form-field appearance="fill">
           <mat-label>Whatsapp</mat-label>
@@ -146,6 +159,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Data do evento -->
       <div class="date-time">
         <mat-form-field appearance="fill">
           <mat-label>Data do evento</mat-label>
@@ -155,17 +169,22 @@
             formControlName="data"
             [min]="minDate"
           />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="eventoForm.get('data')?.hasError('required')">
             A data é obrigatória.
           </mat-error>
         </mat-form-field>
         <div *ngIf="eventoForm.get('data')?.value">
-          Data selecionada: {{ eventoForm.get('data')?.value | date  : 'dd/MM/yyyy'}}
+          Data selecionada:
+          {{ eventoForm.get("data")?.value | date : "dd/MM/yyyy" }}
         </div>
       </div>
 
+      <!-- Horário -->
       <div class="date-time">
         <mat-form-field appearance="fill">
           <mat-label>Horário</mat-label>
@@ -186,6 +205,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Faixa Etária -->
       <div class="age-range">
         <mat-form-field appearance="fill">
           <mat-label>Faixa Etária</mat-label>
@@ -201,6 +221,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Botão de envio -->
       <div class="full-width submit-button">
         <button
           mat-raised-button

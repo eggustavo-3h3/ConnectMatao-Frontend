@@ -6,6 +6,8 @@ import { IEventoCard } from '../interfaces/evento-card.interface';
 import { AuthService } from './auth.service';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { IEventoEstatisticas } from '../interfaces/evento-estatisticas.interface';
+import { TipoEstatistica } from '../enums/tipo-estatistica.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -24,18 +26,16 @@ export class EventoService {
   }
 
   listarEventos(categoriaId: number | null): Observable<IEventoCard[]> {
-    // Se a categoria for válida, envia a categoria no request
     const url = categoriaId
       ? `${this.apiUrl}/evento/listar?categoriaId=${categoriaId}`
       : `${this.apiUrl}/evento/listar`;
 
-    return this.http
-      .get<IEventoCard[]>(url)
-      .pipe(
-        map((eventos) =>
-          eventos.map(({ imagem, ...rest }) => rest as IEventoCard)
-        )
-      );
+    return this.http.get<IEventoCard[]>(url).pipe(
+      map((eventos) =>
+        eventos.map(({ imagem, ...rest }) => rest as IEventoCard)
+      ),
+      catchError(this.handleError<IEventoCard[]>('listarEventos', []))
+    );
   }
 
   criarEvento(evento: IEvento): Observable<IEvento> {
@@ -123,5 +123,50 @@ export class EventoService {
         return of({} as IEventoCard);
       })
     );
+  }
+  interagirEvento(eventoId: string, tipo: TipoEstatistica): Observable<void> {
+    let url = '';
+    if (tipo === TipoEstatistica.like) {
+      url = `${this.apiUrl}/eventos/${eventoId}/likes`; // For like interaction
+    } else if (tipo === TipoEstatistica.deslike) {
+      url = `${this.apiUrl}/eventos/${eventoId}/deslikes`; // For dislike interaction
+    }
+
+    return this.http
+      .post<void>(
+        url,
+        {},
+        {
+          headers: this.getAuthHeaders(),
+          observe: 'response', // Ensures we only care about the status and headers, not the body
+        }
+      )
+      .pipe(
+        map((response) => {
+          if (response.status === 200) {
+            // Optionally handle the success status or log it
+            console.log(
+              `Evento ${eventoId} ${
+                tipo === TipoEstatistica.like ? 'curtido' : 'descurtido'
+              } com sucesso.`
+            );
+          } else {
+            console.error(
+              `Erro na interação do evento: status ${response.status}`
+            );
+          }
+          return; // Ensure the return is void (nothing)
+        }),
+        catchError((error) => {
+          console.error(
+            `Erro ao interagir no evento ${eventoId}: ${error.message}`
+          );
+          return of(undefined); // Return undefined to satisfy the Observable<void> type
+        })
+      );
+  }
+
+  getEventoPorId(eventId: string): Observable<IEvento> {
+    return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}`);
   }
 }

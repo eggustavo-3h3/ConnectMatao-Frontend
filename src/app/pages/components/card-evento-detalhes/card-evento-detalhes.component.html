@@ -1,1 +1,99 @@
-<p>card-evento-detalhes works!</p>
+<div *ngIf="event" class="event-container">
+  <!-- Event Banner -->
+  <div
+    class="event-banner"
+    [style.background-image]="'url(' + event?.imagem + ')'"
+  >
+    <div class="overlay"></div>
+
+    <!-- User Profile Image -->
+    <img
+      *ngIf="usuario?.usuarioImagem"
+      [src]="usuario?.usuarioImagem"
+      alt="Foto de perfil de {{ usuario?.usuarioNome }}"
+      class="event-logo"
+      (click)="openModal()"
+    />
+
+    <!-- Event Info -->
+    <div class="event-info">
+      <h3>{{ usuario?.usuarioNome }}</h3>
+      <p>{{ event?.data | date : "dd/MM/yyyy" }} - {{ event?.horario }}</p>
+    </div>
+  </div>
+
+  <!-- Event Card -->
+  <div class="event-card">
+    <h2>{{ event?.titulo }}</h2>
+
+    <p class="event-description">
+      <strong>Descrição:</strong>
+      {{ event?.descricao || "Sem descrição disponível." }}
+    </p>
+
+    <!-- Event Address -->
+    <div class="card-footer">
+      <p class="event-address">
+        <strong>Endereço:</strong>
+        <ng-container
+          *ngIf="
+            event.logradouro || event.numero || event.bairro || event.cep;
+            else enderecoNaoInformado
+          "
+        >
+          {{ event?.logradouro || "" }}, {{ event?.numero || "" }} -
+          {{ event?.bairro || "" }} - CEP: {{ event?.cep || "" }}
+        </ng-container>
+        <ng-template #enderecoNaoInformado>Não informado</ng-template>
+      </p>
+
+      <!-- Age Rating -->
+      <p class="age-rating">
+        <strong>Faixa Etária:</strong>
+        {{ event?.faixaEtaria === 0 ? "Todas" : event?.faixaEtaria }}
+      </p>
+
+      <!-- Like and Dislike Buttons -->
+      <!-- <div class="like-dislike-container">
+        <button class="like-button" (click)="likeEvento()" aria-label="Curtir">
+          <span [ngClass]="{ liked: event.usuarioInteragiu === 1 }">👍</span>
+          <span class="like-count">{{ event.likes }}</span>
+        </button> -->
+
+      <!-- <button
+          class="dislike-button"
+          (click)="dislikeEvento()"
+          aria-label="Não curtir"
+        >
+          <span [ngClass]="{ disliked: event.usuarioInteragiu === 2 }">👎</span>
+          <span class="dislike-count">{{ event.deslikes }}</span>
+        </button> -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Profile Picture -->
+<div
+  *ngIf="modalOpen"
+  class="modal"
+  aria-modal="true"
+  role="dialog"
+  (click)="closeModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <img
+      *ngIf="usuario?.usuarioImagem"
+      [src]="usuario?.usuarioImagem"
+      alt="Foto de perfil de {{ usuario?.usuarioNome }}"
+      class="event-logo-modal"
+    />
+    <button class="close-btn" aria-label="Fechar" (click)="closeModal()">
+      ×
+    </button>
+  </div>
+</div>
+
+<!-- Fallback Loading -->
+<div *ngIf="!event">
+  <p>Carregando detalhes do evento...</p>
+</div>

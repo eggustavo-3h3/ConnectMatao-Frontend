@@ -22,13 +22,13 @@ registerLocaleData(localePt);
 
 export const MY_DATE_FORMATS = {
   parse: {
-    dateInput: 'DD/MM/YYYY', 
+    dateInput: 'DD/MM/YYYY',
   },
   display: {
-    dateInput: 'DD/MM/YYYY', 
-    monthYearLabel: 'MMM YYYY', 
-    dateA11yLabel: 'LL', 
-    monthYearA11yLabel: 'MMMM YYYY', 
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
   },
 };
 
@@ -46,7 +46,7 @@ export const MY_DATE_FORMATS = {
   providers: [
     DatePipe,
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
   ],
 })
 export class DivulgarEventoComponent implements OnInit {
@@ -79,14 +79,14 @@ export class DivulgarEventoComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(\d{2}\) \d{4}-\d{4}$/),
+          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/), // (XX) XXXXX-XXXX
         ],
       ],
       whatsapp: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/),
+          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/), // (XX) XXXXX-XXXX
         ],
       ],
       email: ['', [Validators.required, Validators.email]],
@@ -121,19 +121,19 @@ export class DivulgarEventoComponent implements OnInit {
 
   formatPhone(event: any, field: string) {
     const input = event.target;
-    let value = input.value.replace(/\D/g, ''); 
-    
-    if (field === 'telefone') {
-      if (value.length > 10) {
-        value = value.substring(0, 10);
-      }
-      value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
-    } else if (field === 'whatsapp') {
+    let value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    // Aplica a formatação de telefone para ambos os campos
+    if (field === 'telefone' || field === 'whatsapp') {
+      // Limita a quantidade de números para 11 (máximo para ambos os campos)
       if (value.length > 11) {
-        value = value.substring(0, 11); 
+        value = value.substring(0, 11); // Permite apenas 11 dígitos
       }
+
+      // Formata como (XX) XXXXX-XXXX
       value = value.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
     }
+
     input.value = value;
     this.eventoForm.get(field)?.setValue(value, { emitEvent: false });
   }
@@ -254,13 +254,15 @@ export class DivulgarEventoComponent implements OnInit {
         duration: 3000,
       });
     };
+
     if (file.size > 2 * 1024 * 1024) {
-      // 2MB
+      // Limite de 2MB
       this.snackBar.open('Imagem muito grande (máx. 2MB)', 'Fechar', {
         duration: 3000,
       });
       return;
     }
+
     if (file) {
       reader.readAsDataURL(file);
     } else {

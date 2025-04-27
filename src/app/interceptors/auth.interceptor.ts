@@ -19,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       })
     : req;
 
-  return next(authReq).pipe(  
+  return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         snackBar.open('Sessão expirada. Faça login novamente.', 'OK', {
@@ -28,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         authService.logout();
         router.navigate(['/login']);
       }
-      return throwError(() => error); 
+      return throwError(() => error);
     })
   );
 };

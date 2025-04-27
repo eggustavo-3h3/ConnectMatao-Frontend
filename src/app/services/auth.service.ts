@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, of } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { IEvento } from '../interfaces/evento.interface';
 
@@ -13,6 +13,7 @@ export class AuthService {
   private roleKey = 'userRole';
 
   isLoggedIn$ = new BehaviorSubject<boolean>(this.isAuthenticated());
+  private _userId: string | null = null; // Variável para armazenar o userId temporariamente
 
   constructor(private http: HttpClient) {}
 
@@ -51,32 +52,53 @@ export class AuthService {
   }
 
   getUserId(): string | null {
+    if (this._userId) return this._userId; // Retorna o userId armazenado se já existir
+
     const token = this.getToken();
     if (!token) return null;
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log(payload);
-      return (
+      // Guarda o userId temporariamente para não fazer a leitura novamente
+      this._userId =
         payload[
           'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
-        ] || null
-      );
+        ] || null;
+      return this._userId;
     } catch (e) {
       console.error('Erro ao decodificar o token:', e);
       return null;
     }
   }
-
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
     this.isLoggedIn$.next(false);
+    this._userId = null; // Limpa o userId armazenado
     console.log('Saiu.');
+
+    // Limpar cookies, se for o caso
+    document.cookie =
+      'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiration = payload.exp;
+      if (expiration && Date.now() >= expiration * 1000) {
+        console.warn('Token expirado!');
+        this.logout(); // Ou reautentique o usuário
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('Erro ao verificar expiração do token:', e);
+      return false;
+    }
   }
 
   isPartner(): boolean {
@@ -88,21 +110,17 @@ export class AuthService {
   }
 
   createAuthHeader(): HttpHeaders {
-    const token = this.getToken();
+    let token = this.getToken();
+
+    // Verifique o tamanho do token antes de enviá-lo no cabeçalho
+    if (token && token.length > 1000) {
+      console.warn('Token JWT muito grande, invalidando');
+      token = ''; // Limpa o token se ele for muito grande
+    }
+
+    // Se o token for válido, cria o cabeçalho de autorização
     return token
       ? new HttpHeaders({ Authorization: `Bearer ${token}` })
       : new HttpHeaders();
   }
-
-  // getEventsByUser(userId: string): Observable<IEvento[]> {
-  //   const headers = this.createAuthHeader();
-  //   if (!this.isAuthenticated() || !headers.get('Authorization')) {
-  //     console.warn('Sem autorização para ver eventos do usuário.');
-  //     return of([]);
-  //   }
-  //   return this.http.get<IEvento[]>(
-  //     `${this.apiUrl}/evento/listar/usuario/${userId}`,
-  //     { headers }
-  //   );
-  // }
 }

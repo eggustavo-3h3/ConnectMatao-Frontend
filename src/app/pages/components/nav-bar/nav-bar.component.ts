@@ -46,7 +46,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   searchResults: IEvento[] = [];
   isSearchFocused = false;
   userImageUrl: string = '';
-  userName: string = ''; // <- Nome do usuário
+  userName: string = '';
   usuario: IUsuario | null = null;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
@@ -120,12 +120,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   goToProfile(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.router.navigate(['/profile/usuario', userId]);
+      // Direciona para o perfil do usuário logado
+      this.router.navigate([`/perfil/${userId}`]);
     } else {
       console.warn('ID de usuário não disponível.');
-      this.loadUserProfile();
+      this.isDropdownVisible = false; // Fechar o menu dropdown
     }
-    this.isDropdownVisible = false;
   }
 
   onSearchFocus(): void {

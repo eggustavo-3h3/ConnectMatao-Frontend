@@ -102,7 +102,7 @@ export class PublicProfileComponent implements OnInit {
       this.eventoService
         .removerEvento(Number(this.eventoParaExcluir.id))
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.loadUserEvents(this.userId!); // Recarregar eventos após exclusão
             this.closeDeleteModal();
           },
@@ -111,6 +111,8 @@ export class PublicProfileComponent implements OnInit {
             this.closeDeleteModal();
           },
         });
+    } else {
+      console.warn('Nenhum evento selecionado para exclusão');
     }
   }
 
@@ -156,14 +158,16 @@ export class PublicProfileComponent implements OnInit {
 
   updateImage(): void {
     if (this.user && this.loggedInUserId === this.user.id.toString()) {
+      this.user.imagem = this.editImagem || ''; // Atualiza localmente
       const updatedProfile: IUsuario = {
         ...this.user,
-        imagem: this.editImagem || '', // Atualiza a imagem com o valor editado ou com uma string vazia
+        imagem: this.editImagem || '',
       };
 
       this.usuarioService.updateUserProfile(updatedProfile).subscribe({
         next: (response) => {
-          this.loadUserProfile(this.userId!); // Recarregar o perfil após atualização
+          // Atualize o perfil localmente sem recarregar tudo
+          alert('Imagem atualizada com sucesso!');
         },
         error: (error) => {
           console.error('Erro ao atualizar a imagem:', error);
@@ -177,18 +181,21 @@ export class PublicProfileComponent implements OnInit {
 
   updateName(): void {
     if (this.user && this.loggedInUserId === this.user.id.toString()) {
+      if (!this.editNome.trim()) {
+        alert('O nome não pode estar vazio.');
+        return;
+      }
+
+      this.user.nome = this.editNome; // Atualizando localmente
+
       const updatedProfile: IUsuario = {
-        id: this.user.id,
+        ...this.user,
         nome: this.editNome,
-        login: this.user.login,
-        senha: 'senha-padrão', // Apenas como exemplo, não use isso em produção
-        imagem: this.user.imagem,
-        perfil: this.user.perfil,
       };
 
       this.usuarioService.updateUserProfile(updatedProfile).subscribe({
         next: (response) => {
-          this.loadUserProfile(this.userId!); // Recarregar o perfil após atualização
+          alert('Nome atualizado com sucesso!');
           this.closeEditNameModal();
         },
         error: (error) => {
