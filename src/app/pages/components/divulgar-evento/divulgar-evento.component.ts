@@ -16,21 +16,9 @@ import { AngularMaterialModule } from '../../../angular_material/angular-materia
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-
 registerLocaleData(localePt);
 
-export const MY_DATE_FORMATS = {
-  parse: {
-    dateInput: 'DD/MM/YYYY',
-  },
-  display: {
-    dateInput: 'DD/MM/YYYY',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
+
 
 @Component({
   selector: 'app-divulgar-evento',
@@ -43,11 +31,6 @@ export const MY_DATE_FORMATS = {
   ],
   templateUrl: './divulgar-evento.component.html',
   styleUrls: ['./divulgar-evento.component.css'],
-  providers: [
-    DatePipe,
-    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
-  ],
 })
 export class DivulgarEventoComponent implements OnInit {
   eventoForm: FormGroup;
@@ -65,7 +48,6 @@ export class DivulgarEventoComponent implements OnInit {
     private readonly usuarioService: UsuarioService,
     private readonly snackBar: MatSnackBar,
     private readonly router: Router,
-    private readonly datePipe: DatePipe
   ) {
     this.minDate = new Date();
     this.eventoForm = this.fb.group({
@@ -121,16 +103,13 @@ export class DivulgarEventoComponent implements OnInit {
 
   formatPhone(event: any, field: string) {
     const input = event.target;
-    let value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    let value = input.value.replace(/\D/g, ''); 
 
-    // Aplica a formatação de telefone para ambos os campos
     if (field === 'telefone' || field === 'whatsapp') {
-      // Limita a quantidade de números para 11 (máximo para ambos os campos)
       if (value.length > 11) {
-        value = value.substring(0, 11); // Permite apenas 11 dígitos
+        value = value.substring(0, 11); 
       }
 
-      // Formata como (XX) XXXXX-XXXX
       value = value.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
     }
 
@@ -173,6 +152,8 @@ export class DivulgarEventoComponent implements OnInit {
     this.categoriaService.listarCategorias().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
+        console.log(categorias);
+        
       },
       error: (error) => {
         console.error('Erro ao carregar categorias:', error);
