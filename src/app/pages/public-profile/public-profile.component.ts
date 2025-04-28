@@ -10,13 +10,14 @@ import { IEventoEstatisticas } from '../../interfaces/evento-estatisticas.interf
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IEventoCard } from '../../interfaces/evento-card.interface';
+import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 
 @Component({
   selector: 'app-public-profile',
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.css'],
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NavbarComponent],
 })
 export class PublicProfileComponent implements OnInit {
   userId: string | null = null;

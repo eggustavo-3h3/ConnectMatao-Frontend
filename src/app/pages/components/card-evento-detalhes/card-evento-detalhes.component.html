@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div *ngIf="event" class="event-container">
   <div
     class="event-banner"
@@ -5,16 +7,17 @@
   >
     <div class="overlay"></div>
 
+    <!-- Exibindo a imagem do usuário -->
     <img
-      *ngIf="usuario?.usuarioImagem"
-      [src]="usuario?.usuarioImagem"
-      alt="Foto de perfil de {{ usuario?.usuarioNome }}"
+      *ngIf="usuario?.imagem"
+      [src]="'data:image/png;base64,' + usuario?.imagem"
+      alt="Foto de perfil de {{ usuario?.nome }}"
       class="event-logo"
       (click)="openModal()"
     />
 
     <div class="event-info">
-      <h3>{{ usuario?.usuarioNome }}</h3>
+      <h3>{{ usuario?.nome }}</h3>
       <p>{{ event?.data | date : "dd/MM/yyyy" }} - {{ event?.horario }}</p>
     </div>
   </div>
@@ -48,24 +51,30 @@
       </p>
 
       <!-- Like and Dislike Buttons -->
+      <!-- Se quiser reabilitar os botões de like e dislike, basta descomentar a seção abaixo -->
       <!-- <div class="like-dislike-container">
         <button class="like-button" (click)="likeEvento()" aria-label="Curtir">
           <span [ngClass]="{ liked: event.usuarioInteragiu === 1 }">👍</span>
           <span class="like-count">{{ event.likes }}</span>
-        </button> -->
+        </button>
 
-      <!-- <button
+        <button
           class="dislike-button"
           (click)="dislikeEvento()"
           aria-label="Não curtir"
         >
           <span [ngClass]="{ disliked: event.usuarioInteragiu === 2 }">👎</span>
           <span class="dislike-count">{{ event.deslikes }}</span>
-        </button> -->
+        </button>
+      </div> -->
     </div>
   </div>
 </div>
 
+<!-- Spinner de Carregamento -->
+<mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
+
+<!-- Modal de Imagem do Usuário -->
 <div
   *ngIf="modalOpen"
   class="modal"
@@ -75,18 +84,13 @@
 >
   <div class="modal-content" (click)="$event.stopPropagation()">
     <img
-      *ngIf="usuario?.usuarioImagem"
-      [src]="usuario?.usuarioImagem"
-      alt="Foto de perfil de {{ usuario?.usuarioNome }}"
+      *ngIf="usuario?.imagem"
+      [src]="'data:image/png;base64,' + usuario?.imagem"
+      alt="Foto de perfil de {{ usuario?.nome }}"
       class="event-logo-modal"
     />
     <button class="close-btn" aria-label="Fechar" (click)="closeModal()">
       ×
     </button>
   </div>
-</div>
-
-<!-- Fallback Loading -->
-<div *ngIf="!event">
-  <p>Carregando detalhes do evento...</p>
 </div>
