@@ -124,12 +124,13 @@ export class EventoService {
       })
     );
   }
+
   interagirEvento(eventoId: string, tipo: TipoEstatistica): Observable<void> {
     let url = '';
     if (tipo === TipoEstatistica.like) {
-      url = `${this.apiUrl}/eventos/${eventoId}/likes`; // For like interaction
+      url = `${this.apiUrl}/eventos/${eventoId}/likes`;
     } else if (tipo === TipoEstatistica.deslike) {
-      url = `${this.apiUrl}/eventos/${eventoId}/deslikes`; // For dislike interaction
+      url = `${this.apiUrl}/eventos/${eventoId}/deslikes`;
     }
 
     return this.http
@@ -138,7 +139,7 @@ export class EventoService {
         {},
         {
           headers: this.getAuthHeaders(),
-          observe: 'response', 
+          observe: 'response',
         }
       )
       .pipe(
@@ -154,13 +155,13 @@ export class EventoService {
               `Erro na interação do evento: status ${response.status}`
             );
           }
-          return; // Ensure the return is void (nothing)
+          return;
         }),
         catchError((error) => {
           console.error(
             `Erro ao interagir no evento ${eventoId}: ${error.message}`
           );
-          return of(undefined); // Return undefined to satisfy the Observable<void> type
+          return of(undefined);
         })
       );
   }

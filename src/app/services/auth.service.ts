@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { IEvento } from '../interfaces/evento.interface';
+import { Perfil } from '../enums/perfil.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class AuthService {
   private roleKey = 'userRole';
 
   isLoggedIn$ = new BehaviorSubject<boolean>(this.isAuthenticated());
-  private _userId: string | null = null; // Variável para armazenar o userId temporariamente
+  private _userId: string | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -27,14 +28,25 @@ export class AuthService {
     );
   }
 
-  register(nome: string, email: string, senha: string): Observable<any> {
-    const userDetails = {
-      Nome: nome,
-      Login: email,
-      Senha: senha,
-      Perfil: 'Comum',
+  register(
+    nome: string,
+    email: string,
+    senha: string,
+    confirmacaoSenha: string,
+    imagem: string = '',
+    perfil: Perfil = Perfil.Usuario
+  ): Observable<any> {
+    const payload = {
+      nome,
+      login: email,
+      senha,
+      confirmacaoSenha,
+      imagem,
+      perfil, // =1
     };
-    return this.http.post(`${this.apiUrl}/usuario/cadastrar`, userDetails);
+
+    console.log('Payload de cadastro:', payload);
+    return this.http.post(`${this.apiUrl}/usuario/cadastrar`, payload);
   }
 
   saveAuthInfo(token: string, role: string): void {
@@ -70,6 +82,7 @@ export class AuthService {
       return null;
     }
   }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
@@ -77,7 +90,6 @@ export class AuthService {
     this._userId = null; // Limpa o userId armazenado
     console.log('Saiu.');
 
-    // Limpar cookies, se for o caso
     document.cookie =
       'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
@@ -91,7 +103,7 @@ export class AuthService {
       const expiration = payload.exp;
       if (expiration && Date.now() >= expiration * 1000) {
         console.warn('Token expirado!');
-        this.logout(); // Ou reautentique o usuário
+        this.logout();
         return false;
       }
       return true;

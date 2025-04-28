@@ -1,1 +1,126 @@
-<p>cadastre-se works!</p>
+<app-navbar></app-navbar>
+
+<div class="container">
+  <div class="card">
+    <div class="left-panel">
+      <h2 class="msg-left-card">Seja bem-vindo!</h2>
+    </div>
+    <div class="right-panel">
+      <h2 class="title-card">CRIE SUA CONTA</h2>
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <!-- Nome -->
+        <div class="input-group">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Nome</mat-label>
+            <input matInput formControlName="nome" placeholder="Nome" />
+            <mat-error *ngIf="registerForm.get('nome')?.hasError('required')">
+              O nome é obrigatório.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="Email"
+              type="email"
+            />
+            <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+              O email é obrigatório.
+            </mat-error>
+            <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+              O email não é válido.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Senha -->
+        <div class="input-group">
+          <mat-form-field
+            appearance="fill"
+            class="full-width"
+            floatLabel="auto"
+          >
+            <mat-label>Senha</mat-label>
+            <input
+              matInput
+              [type]="mostrarSenha ? 'text' : 'password'"
+              formControlName="senha"
+              placeholder="Senha"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleSenha()"
+              aria-label="Exibir/Esconder Senha"
+              disableRipple
+            >
+              <mat-icon>{{
+                mostrarSenha ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error *ngIf="registerForm.get('senha')?.hasError('required')">
+              A senha é obrigatória.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Confirmar Senha -->
+        <div class="input-group">
+          <mat-form-field
+            appearance="fill"
+            class="full-width"
+            floatLabel="auto"
+          >
+            <mat-label>Confirmar Senha</mat-label>
+            <input
+              matInput
+              [type]="mostrarConfirmarSenha ? 'text' : 'password'"
+              formControlName="confirmacaoSenha"
+              placeholder="Confirmar Senha"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleConfirmarSenha()"
+              aria-label="Exibir/Esconder Confirmação de Senha"
+              disableRipple
+            >
+              <mat-icon>{{
+                mostrarConfirmarSenha ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="registerForm.get('confirmacaoSenha')?.hasError('required')"
+            >
+              A confirmação de senha é obrigatória.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Erro Geral -->
+        <div *ngIf="registrationError" class="error-message">
+          {{ registrationError }}
+        </div>
+
+        <!-- Botão de cadastro -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="registerForm.invalid"
+        >
+          CADASTRAR
+        </button>
+
+        <p>Já possui uma conta? <a routerLink="login">Faça login</a></p>
+      </form>
+    </div>
+  </div>
+</div>

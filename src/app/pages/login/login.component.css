@@ -1,11 +1,12 @@
-/* Container principal */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   padding: 20px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .logo-site {
@@ -22,13 +23,14 @@
 .card {
   display: flex;
   flex-direction: row;
-  width: 800px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px;
   background: white;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   position: relative;
+  box-sizing: border-box;
 }
 
 /* Lado esquerdo (formulário) */
@@ -49,6 +51,7 @@
   align-items: center;
   justify-content: center;
   padding: 50px;
+  box-sizing: border-box;
 }
 
 /* Título */
@@ -93,17 +96,12 @@ h2 {
 button {
   width: 70%;
   padding: 10px;
-  background: #20acf2;
-  color: white;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 22px;
   font-size: 22px;
   cursor: pointer;
-  margin-top: 10px;
-}
-
-button:hover {
-  background: #20acf2;
+  margin-top: 0px;
 }
 
 /* Link */
@@ -183,5 +181,6 @@ a:hover {
     background: #2196f3;
     display: flex;
     justify-content: center;
+    padding: 20px;
   }
 }

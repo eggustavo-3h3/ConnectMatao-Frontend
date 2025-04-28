@@ -1,0 +1,115 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  margin-top: 50px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.card {
+  display: flex;
+  width: 800px;
+  max-width: 100%;
+  height: 600px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.left-panel {
+  flex: 6;
+  background: #2196f3;
+  color: white;
+  text-align: center;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.right-panel {
+  flex: 4;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.msg-left-card {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.title-card {
+  color: #2196f3;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.input-group input {
+  font-size: 16px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: center;
+}
+
+button {
+  width: 80%;
+  padding: 12px;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 22px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 0px;
+}
+
+p {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+a {
+  color: #2196f3;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Angular Material ajustes */
+.mat-form-field {
+  width: 100%;
+}
+
+.mat-icon-button {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.mat-icon-button:hover {
+  background-color: transparent !important;
+}
