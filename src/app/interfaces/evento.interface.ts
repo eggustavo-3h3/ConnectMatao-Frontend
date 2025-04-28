@@ -1,6 +1,5 @@
-
 export interface IEvento {
-  id?: string,
+  id?: string;
   titulo: string;
   descricao: string;
   cep: string;
@@ -16,5 +15,5 @@ export interface IEvento {
   usuarioParceiroid: string;
   horario: string;
   faixaEtaria: number;
-  imagem: string; 
+  imagem: string;
 }

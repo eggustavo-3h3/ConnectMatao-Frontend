@@ -11,14 +11,12 @@ import { EventoService } from '../../../services/evento.service';
 import { CategoriaService } from '../../../services/categoria.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 registerLocaleData(localePt);
-
-
 
 @Component({
   selector: 'app-divulgar-evento',
@@ -39,6 +37,7 @@ export class DivulgarEventoComponent implements OnInit {
   usuario: any = null;
   minDate: Date;
   selectedDate: any = null;
+  isProcessing = false; // Controle de envio do evento
 
   constructor(
     private readonly fb: FormBuilder,
@@ -47,7 +46,7 @@ export class DivulgarEventoComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly usuarioService: UsuarioService,
     private readonly snackBar: MatSnackBar,
-    private readonly router: Router,
+    private readonly router: Router
   ) {
     this.minDate = new Date();
     this.eventoForm = this.fb.group({
@@ -103,11 +102,11 @@ export class DivulgarEventoComponent implements OnInit {
 
   formatPhone(event: any, field: string) {
     const input = event.target;
-    let value = input.value.replace(/\D/g, ''); 
+    let value = input.value.replace(/\D/g, '');
 
     if (field === 'telefone' || field === 'whatsapp') {
       if (value.length > 11) {
-        value = value.substring(0, 11); 
+        value = value.substring(0, 11);
       }
 
       value = value.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
@@ -153,7 +152,6 @@ export class DivulgarEventoComponent implements OnInit {
       next: (categorias) => {
         this.categorias = categorias;
         console.log(categorias);
-        
       },
       error: (error) => {
         console.error('Erro ao carregar categorias:', error);
@@ -177,9 +175,11 @@ export class DivulgarEventoComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.eventoForm.invalid) {
+    if (this.eventoForm.invalid || this.isProcessing) {
       return;
     }
+
+    this.isProcessing = true; // Impede múltiplos envios
 
     if (!this.usuario?.id) {
       this.snackBar.open(
@@ -188,6 +188,7 @@ export class DivulgarEventoComponent implements OnInit {
         { duration: 3000 }
       );
       this.router.navigate(['/login']);
+      this.isProcessing = false; // Libera o botão após erro
       return;
     }
 
@@ -220,12 +221,14 @@ export class DivulgarEventoComponent implements OnInit {
             duration: 3000,
           });
           this.router.navigate(['/']);
+          this.isProcessing = false; // Libera o botão após sucesso
         },
         error: (erro) => {
           console.error('Erro ao criar evento:', erro);
           this.snackBar.open('Erro ao criar evento', 'Fechar', {
             duration: 3000,
           });
+          this.isProcessing = false; // Libera o botão após erro
         },
       });
     };
@@ -234,6 +237,7 @@ export class DivulgarEventoComponent implements OnInit {
       this.snackBar.open('Erro ao processar imagem', 'Fechar', {
         duration: 3000,
       });
+      this.isProcessing = false; // Libera o botão após erro no processamento da imagem
     };
 
     if (file.size > 2 * 1024 * 1024) {
@@ -241,6 +245,7 @@ export class DivulgarEventoComponent implements OnInit {
       this.snackBar.open('Imagem muito grande (máx. 2MB)', 'Fechar', {
         duration: 3000,
       });
+      this.isProcessing = false; // Libera o botão após erro no tamanho da imagem
       return;
     }
 
@@ -250,6 +255,7 @@ export class DivulgarEventoComponent implements OnInit {
       this.snackBar.open('Selecione uma imagem para o evento', 'Fechar', {
         duration: 3000,
       });
+      this.isProcessing = false; // Libera o botão após erro de imagem
     }
   }
 }

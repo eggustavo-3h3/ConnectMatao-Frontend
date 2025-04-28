@@ -1,0 +1,42 @@
+<div class="feed-container">
+  <div *ngFor="let evento of eventos" class="evento-card">
+    <div class="evento-header">
+      <img
+        [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
+        [alt]="evento.usuarioNome"
+        class="profile-image"
+      />
+      <h1
+        class="userName"
+        [routerLink]="['/perfil/usuario', evento.usuarioParceiroid]"
+      >
+        {{ evento.usuarioNome }}
+      </h1>
+    </div>
+
+    <img
+      [src]="evento.eventoImagem"
+      [alt]="evento.titulo"
+      class="evento-img"
+      [routerLink]="['/detalhe-evento/', evento.id]"
+    />
+
+    <div class="info">
+      <h3>{{ evento.titulo }}</h3>
+      <p>{{ evento.descricao }}</p>
+    </div>
+
+    <div class="detalhes">
+      <div class="detalhe-item">
+        <img src="../calendario.png" alt="Data" class="detalhe-icon" />
+        <span>{{ evento.data | date : "dd/MM/yyyy" }}</span>
+      </div>
+      <div class="detalhe-item">
+        <img src="../relogio.png" alt="Horário" class="detalhe-icon" />
+        <span>{{ evento.horario }}</span>
+      </div>
+    </div>
+  </div>
+
+  <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
+</div>
