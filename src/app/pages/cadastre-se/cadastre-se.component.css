@@ -74,6 +74,12 @@
   text-align: center;
 }
 
+.logo-site {
+  width: 192px;
+  height: 199px;
+  border-radius: 50px;
+}
+
 button {
   width: 80%;
   padding: 12px;
