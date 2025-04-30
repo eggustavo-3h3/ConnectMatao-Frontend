@@ -36,6 +36,7 @@ export class DivulgarEventoComponent implements OnInit {
   imagemPreview: string | null = null;
   usuario: any = null;
   minDate: Date;
+  selectedFiles: File[] = [];
   selectedDate: any = null;
   isProcessing = false; // Controle de envio do evento
 
@@ -162,100 +163,64 @@ export class DivulgarEventoComponent implements OnInit {
     });
   }
 
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
+  onFileChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+
+    if (target.files && target.files.length > 0) {
+      this.selectedFiles = Array.from(target.files);
+
+      // Se quiser mostrar a prévia da primeira imagem:
       const reader = new FileReader();
       reader.onload = () => {
         this.imagemPreview = reader.result as string;
-        this.eventoForm.patchValue({ imagem: file });
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.selectedFiles[0]);
     }
   }
 
   onSubmit(): void {
-    if (this.eventoForm.invalid || this.isProcessing) {
-      return;
+    if (this.eventoForm.invalid || this.isProcessing) return;
+
+    this.isProcessing = true;
+    const formData = new FormData();
+
+    const formValues = this.eventoForm.value;
+
+    formData.append('titulo', formValues.titulo);
+    formData.append('descricao', formValues.descricao);
+    formData.append('cep', formValues.cep);
+    formData.append('logradouro', formValues.logradouro);
+    formData.append('numero', formValues.numero);
+    formData.append('bairro', formValues.bairro);
+    formData.append('telefone', formValues.telefone);
+    formData.append('whatsapp', formValues.whatsapp);
+    formData.append('email', formValues.email);
+    formData.append('data', formValues.data.toISOString());
+    formData.append('categoriaid', formValues.categoria);
+    formData.append('flagAprovado', 'false');
+    formData.append('usuarioParceiroid', this.usuario.id);
+    formData.append('horario', formValues.horario);
+    formData.append('faixaEtaria', formValues.faixaEtaria.toString());
+
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      formData.append('imagens', this.selectedFiles[i]);
     }
 
-    this.isProcessing = true; // Impede múltiplos envios
-
-    if (!this.usuario?.id) {
-      this.snackBar.open(
-        'Usuário não encontrado, faça login novamente.',
-        'Fechar',
-        { duration: 3000 }
-      );
-      this.router.navigate(['/login']);
-      this.isProcessing = false; // Libera o botão após erro
-      return;
-    }
-
-    const file = this.eventoForm.value.imagem;
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const eventoData = {
-        titulo: this.eventoForm.value.titulo,
-        descricao: this.eventoForm.value.descricao,
-        cep: this.eventoForm.value.cep,
-        logradouro: this.eventoForm.value.logradouro,
-        numero: this.eventoForm.value.numero,
-        bairro: this.eventoForm.value.bairro,
-        telefone: this.eventoForm.value.telefone,
-        whatsapp: this.eventoForm.value.whatsapp,
-        email: this.eventoForm.value.email,
-        data: new Date(this.eventoForm.value.data).toISOString(),
-        categoriaid: this.eventoForm.value.categoria,
-        flagAprovado: false,
-        usuarioParceiroid: this.usuario.id,
-        horario: this.eventoForm.value.horario,
-        faixaEtaria: this.eventoForm.value.faixaEtaria,
-        imagem: reader.result as string,
-      };
-
-      this.eventoService.criarEvento(eventoData).subscribe({
-        next: () => {
-          this.snackBar.open('Evento criado com sucesso', 'Fechar', {
-            duration: 3000,
-          });
-          this.router.navigate(['/']);
-          this.isProcessing = false; // Libera o botão após sucesso
-        },
-        error: (erro) => {
-          console.error('Erro ao criar evento:', erro);
-          this.snackBar.open('Erro ao criar evento', 'Fechar', {
-            duration: 3000,
-          });
-          this.isProcessing = false; // Libera o botão após erro
-        },
-      });
-    };
-
-    reader.onerror = () => {
-      this.snackBar.open('Erro ao processar imagem', 'Fechar', {
-        duration: 3000,
-      });
-      this.isProcessing = false; // Libera o botão após erro no processamento da imagem
-    };
-
-    if (file.size > 2 * 1024 * 1024) {
-      // Limite de 2MB
-      this.snackBar.open('Imagem muito grande (máx. 2MB)', 'Fechar', {
-        duration: 3000,
-      });
-      this.isProcessing = false; // Libera o botão após erro no tamanho da imagem
-      return;
-    }
-
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      this.snackBar.open('Selecione uma imagem para o evento', 'Fechar', {
-        duration: 3000,
-      });
-      this.isProcessing = false; // Libera o botão após erro de imagem
-    }
+    this.eventoService.criarEvento(formData).subscribe({
+      next: () => {
+        this.snackBar.open('Evento criado com sucesso', 'Fechar', {
+          duration: 3000,
+        });
+        this.router.navigate(['/']);
+        this.isProcessing = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao criar evento:', erro);
+        this.snackBar.open('Erro ao criar evento', 'Fechar', {
+          duration: 3000,
+        });
+        this.isProcessing = false;
+      },
+    });
   }
 }

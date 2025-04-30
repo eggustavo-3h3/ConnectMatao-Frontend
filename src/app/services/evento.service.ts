@@ -38,7 +38,7 @@ export class EventoService {
     );
   }
 
-  criarEvento(evento: IEvento): Observable<IEvento> {
+  criarEvento(evento: FormData): Observable<IEvento> {
     return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento);
   }
 
