@@ -2,7 +2,7 @@
 <div class="container">
   <h2 class="title">Divulgue seu evento</h2>
 
-  <form [formGroup]="eventoForm">
+  <form [formGroup]="eventoForm" (ngSubmit)="onSubmit()">
     <!-- Seção para upload da imagem -->
     <div class="image-upload">
       <label for="imageInput" class="image-upload-label"
@@ -179,10 +179,6 @@
             A data é obrigatória.
           </mat-error>
         </mat-form-field>
-        <div *ngIf="eventoForm.get('data')?.value">
-          Data selecionada:
-          {{ eventoForm.get("data")?.value | date : "dd/MM/yyyy" }}
-        </div>
       </div>
 
       <!-- Horário -->
@@ -225,10 +221,10 @@
       <!-- Botão de envio -->
       <div class="full-width submit-button">
         <button
+        type="submit"
           mat-raised-button
           color="primary"
           [disabled]="eventoForm.invalid"
-          (click)="onSubmit()"
         >
           Publicar evento
         </button>
