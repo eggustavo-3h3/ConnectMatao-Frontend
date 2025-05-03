@@ -173,6 +173,7 @@ export class DivulgarEventoComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.imagemPreview = reader.result as string;
+        this.eventoForm.get('imagem')?.setValue('ok'); // ou qualquer valor não vazio
       };
       reader.readAsDataURL(this.selectedFiles[0]);
     }
@@ -182,31 +183,12 @@ export class DivulgarEventoComponent implements OnInit {
     if (this.eventoForm.invalid || this.isProcessing) return;
 
     this.isProcessing = true;
-    const formData = new FormData();
 
     const formValues = this.eventoForm.value;
 
-    formData.append('titulo', formValues.titulo);
-    formData.append('descricao', formValues.descricao);
-    formData.append('cep', formValues.cep);
-    formData.append('logradouro', formValues.logradouro);
-    formData.append('numero', formValues.numero);
-    formData.append('bairro', formValues.bairro);
-    formData.append('telefone', formValues.telefone);
-    formData.append('whatsapp', formValues.whatsapp);
-    formData.append('email', formValues.email);
-    formData.append('data', formValues.data.toISOString());
-    formData.append('categoriaid', formValues.categoria);
-    formData.append('flagAprovado', 'false');
-    formData.append('usuarioParceiroid', this.usuario.id);
-    formData.append('horario', formValues.horario);
-    formData.append('faixaEtaria', formValues.faixaEtaria.toString());
+    
 
-    for (let i = 0; i < this.selectedFiles.length; i++) {
-      formData.append('imagens', this.selectedFiles[i]);
-    }
-
-    this.eventoService.criarEvento(formData).subscribe({
+    this.eventoService.criarEvento(formValues).subscribe({
       next: () => {
         this.snackBar.open('Evento criado com sucesso', 'Fechar', {
           duration: 3000,

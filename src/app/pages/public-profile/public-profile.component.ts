@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
@@ -7,17 +7,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { IUsuario } from '../../interfaces/usuario.interface';
 import { IEvento } from '../../interfaces/evento.interface';
 import { IEventoEstatisticas } from '../../interfaces/evento-estatisticas.interface';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IEventoCard } from '../../interfaces/evento-card.interface';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
+import { AngularMaterialModule } from '../../angular_material/angular-material/angular-material.module';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-public-profile',
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.css'],
   standalone: true,
-  imports: [FormsModule, CommonModule, NavbarComponent],
+  imports: [ReactiveFormsModule, AngularMaterialModule, CommonModule, NavbarComponent],
 })
 export class PublicProfileComponent implements OnInit {
   userId: string | null = null;
@@ -27,22 +30,29 @@ export class PublicProfileComponent implements OnInit {
   loggedInUserId: string | null = null;
   isEditNameModalOpen: boolean = false;
   isEditImageModalOpen: boolean = false;
-  editNome: string = '';
-  editImagem: string = '';
+  editForm: FormGroup;
   imagePreviewUrl: string | null = null;
   excluirModalAberto: boolean = false;
-  eventoParaExcluir: IEvento | null = null;
+  eventoParaExcluir!: IEvento;
   avaliacoes: IEventoEstatisticas[] = [];
   mediaAvaliacoes: number = 0;
   avaliacaoUsuario: number = 0;
   canEditProfile: boolean = false;
+  snackBar = inject(MatSnackBar);
 
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
     private eventoService: EventoService,
-    private usuarioService: UsuarioService
-  ) {}
+    private usuarioService: UsuarioService,
+    private fb: FormBuilder,
+  ) {
+    // Inicializar o formulário
+    this.editForm = this.fb.group({
+      nome: ['', Validators.required],
+      imagem: ['']
+    });
+  }
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();
@@ -56,7 +66,7 @@ export class PublicProfileComponent implements OnInit {
       this.userId = params['id'];
       if (this.userId) {
         this.loadUserProfile(this.userId);
-        this.loadUserEvents(this.userId); // Carregar eventos ao carregar o perfil
+        this.loadUserEvents(this.userId);
       }
     });
   }
@@ -67,9 +77,17 @@ export class PublicProfileComponent implements OnInit {
         this.user = userProfile;
         if (this.user) {
           this.canEditProfile = this.loggedInUserId === this.user.id.toString();
+          // Preencher o formulário com os dados atuais do usuário
+          this.editForm.patchValue({
+            nome: this.user.nome,
+            imagem: this.user.imagem || ''
+          });
         }
       },
       error: (error) => {
+        this.snackBar.open('Erro ao carregar perfil do usuário', 'Fechar', {
+          duration: 3000,
+        });
         console.error('Erro ao carregar perfil do usuário:', error);
         this.user = null;
       },
@@ -82,6 +100,9 @@ export class PublicProfileComponent implements OnInit {
         this.userEvents = events;
       },
       error: (error: HttpErrorResponse) => {
+        this.snackBar.open('Erro ao carregar eventos do usuário', 'Fechar', {
+          duration: 3000,
+        });
         console.error('Erro ao carregar eventos do usuário:', error);
         this.userEvents = [];
       },
@@ -90,31 +111,38 @@ export class PublicProfileComponent implements OnInit {
 
   confirmDeleteEvent(event: IEvento): void {
     this.eventoParaExcluir = event;
+    console.log('Evento selecionado para exclusão:', this.eventoParaExcluir);
     this.excluirModalAberto = true;
   }
 
   cancelDeleteEvent(): void {
     this.excluirModalAberto = false;
-    this.eventoParaExcluir = null;
+    this.eventoParaExcluir = {} as IEvento;
   }
 
   deleteEvent(): void {
-    if (this.eventoParaExcluir) {
-      this.eventoService
-        .removerEvento(Number(this.eventoParaExcluir.id))
-        .subscribe({
-          next: () => {
-            this.loadUserEvents(this.userId!); // Recarregar eventos após exclusão
-            this.closeDeleteModal();
-          },
-          error: (error) => {
-            console.error('Erro ao excluir evento:', error);
-            this.closeDeleteModal();
-          },
-        });
-    } else {
+    if (!this.eventoParaExcluir) {
       console.warn('Nenhum evento selecionado para exclusão');
+      return;
     }
+
+    const eventoId = this.eventoParaExcluir.id!;
+
+    console.log('Excluindo evento com ID:', eventoId);
+
+
+    this.eventoService.removerEvento(eventoId).subscribe({
+      next: () => {
+        this.loadUserEvents(this.userId!);
+        this.closeDeleteModal();
+        this.snackBar.open('Evento excluído com sucesso!', 'Fechar', { duration: 3000 });
+      },
+      error: (error) => {
+        console.error('Erro ao excluir evento:', error);
+        this.closeDeleteModal();
+        this.snackBar.open('Erro ao excluir o evento. Tente novamente.', 'Fechar', { duration: 3000 });
+      }
+    });
   }
 
   openEditNameModal(): void {
@@ -132,7 +160,7 @@ export class PublicProfileComponent implements OnInit {
 
   closeEditImageModal(): void {
     this.isEditImageModalOpen = false;
-    this.editImagem = this.user?.imagem || '';
+    this.editForm.patchValue({ imagem: this.user?.imagem || '' });
     this.imagePreviewUrl = null;
   }
 
@@ -146,12 +174,12 @@ export class PublicProfileComponent implements OnInit {
   convertToBase64(file: File): void {
     const reader = new FileReader();
     reader.onload = (e: any) => {
-      this.editImagem = e.target.result.split(',')[1];
+      this.editForm.patchValue({ imagem: e.target.result.split(',')[1] });
       this.imagePreviewUrl = e.target.result;
     };
     reader.onerror = (error) => {
       console.error('Erro ao ler a imagem:', error);
-      this.editImagem = '';
+      this.editForm.patchValue({ imagem: '' });
       this.imagePreviewUrl = null;
     };
     reader.readAsDataURL(file);
@@ -159,16 +187,16 @@ export class PublicProfileComponent implements OnInit {
 
   updateImage(): void {
     if (this.user && this.loggedInUserId === this.user.id.toString()) {
-      this.user.imagem = this.editImagem || ''; // Atualiza localmente
       const updatedProfile: IUsuario = {
         ...this.user,
-        imagem: this.editImagem || '',
+        imagem: this.editForm.value.imagem || ''
       };
 
       this.usuarioService.updateUserProfile(updatedProfile).subscribe({
         next: (response) => {
-          // Atualize o perfil localmente sem recarregar tudo
           alert('Imagem atualizada com sucesso!');
+          this.closeEditImageModal();
+          this.loadUserProfile(this.userId!);
         },
         error: (error) => {
           console.error('Erro ao atualizar a imagem:', error);
@@ -182,16 +210,14 @@ export class PublicProfileComponent implements OnInit {
 
   updateName(): void {
     if (this.user && this.loggedInUserId === this.user.id.toString()) {
-      if (!this.editNome.trim()) {
+      if (!this.editForm.value.nome.trim()) {
         alert('O nome não pode estar vazio.');
         return;
       }
 
-      this.user.nome = this.editNome; // Atualizando localmente
-
       const updatedProfile: IUsuario = {
         ...this.user,
-        nome: this.editNome,
+        nome: this.editForm.value.nome
       };
 
       this.usuarioService.updateUserProfile(updatedProfile).subscribe({
@@ -202,13 +228,16 @@ export class PublicProfileComponent implements OnInit {
         error: (error) => {
           console.error('Erro ao atualizar o nome:', error);
           alert('Erro ao atualizar o nome de perfil. Tente novamente.');
+          this.closeEditNameModal();
         },
       });
+    } else {
+      console.error('IDs não correspondem. A operação não pode ser realizada.');
     }
   }
 
   closeDeleteModal(): void {
     this.excluirModalAberto = false;
-    this.eventoParaExcluir = null;
+    this.eventoParaExcluir = {} as IEvento;
   }
 }

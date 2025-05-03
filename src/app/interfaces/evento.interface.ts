@@ -1,5 +1,5 @@
 export interface IEvento {
-  id?: string;
+  id?: number;
   titulo: string;
   descricao: string;
   cep: string;

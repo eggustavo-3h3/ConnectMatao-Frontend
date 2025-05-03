@@ -13,6 +13,7 @@
         id="imageInput"
         class="image-input"
         (change)="onFileChange($event)"
+        formControlName="imagem"
         multiple
       />
     </div>
@@ -221,7 +222,7 @@
       <!-- Botão de envio -->
       <div class="full-width submit-button">
         <button
-        type="submit"
+          type="submit"
           mat-raised-button
           color="primary"
           [disabled]="eventoForm.invalid"

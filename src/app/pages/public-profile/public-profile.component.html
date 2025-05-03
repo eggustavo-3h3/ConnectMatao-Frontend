@@ -1,142 +1,77 @@
 <app-navbar></app-navbar>
 
-<div class="profile-cover"></div>
-
-<div class="profile-container">
-  <div class="profile-box">
-    <div class="profile-info-box">
-      <img src="./../../../../../../SVGConnectMatao.svg" alt="John Doe" class="profile-avatar">
-      <div class="profile-text">
-        <h1 class="profile-name">John Doe</h1>
-        <p class="profile-handle">johndoe</p>
-      </div>
-    </div>
-    <div class="profile-stats">
-      <div class="stat-item">
-        <span class="stat-value">4.8</span>
-        <span class="stat-label">Rating</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">24</span>
-        <span class="stat-label">Events</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="events-section">
-    <h2 class="section-title">Meus Eventos</h2>
-    <div class="event-cards">
-      <div class="event-card">
-        <img src="./../../../../../../SVGConnectMatao.svg" alt="Event">
-        <span class="status-tag">Por vir</span>
-        <div class="event-card-content">
-          <h3 class="event-title">Conferencia Tecnica 2025</h3>
-          <p class="event-meta">Abr 30, 2025 • São Paulo</p>
-          <p class="event-price">$299</p>
-        </div>
-      </div>
-      
-      <div class="event-card">
-        <img src="./../../../../../../SVGConnectMatao.svg" alt="Event">
-        <span class="status-tag">Por vir</span>
-        <div class="event-card-content">
-          <h3 class="event-title">Workshop de Marketing Digital</h3>
-          <p class="event-meta">Maio 20, 2025 • Online</p>
-          <p class="event-price">$149</p>
-        </div>
-      </div>
-      
-      <div class="event-card">
-        <img src="./../../../../../../SVGConnectMatao.svg" alt="Event">
-        <span class="status-tag">Passado</span>
-        <div class="event-card-content">
-          <h3 class="event-title">Rede de negócios</h3>
-          <p class="event-meta">Mar 10, 2025 • Matão</p>
-          <p class="event-price">$99</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- <app-navbar></app-navbar>
-
 <div *ngIf="user" class="profile-container">
   <div class="profile-header">
     <div class="profile-image">
-      <img [src]="user.imagem" alt="{{ user.nome }}" />
-      <button *ngIf="canEditProfile" (click)="openEditImageModal()">
-        Alterar Imagem
-      </button>
+      <img [src]="user.imagem ? 'data:image/jpeg;base64,' + user.imagem : 'assets/default-avatar.png'" alt="{{ user.nome }}" />
+      <button *ngIf="canEditProfile" (click)="openEditImageModal()">Alterar Imagem</button>
     </div>
 
     <div class="profile-info">
       <h2>{{ user.nome }}</h2>
       <p>Login: {{ user.login }}</p>
-      <button *ngIf="canEditProfile" (click)="openEditNameModal()">
-        Alterar Nome
-      </button>
+      <button *ngIf="canEditProfile" (click)="openEditNameModal()">Alterar Nome</button>
     </div>
   </div>
 
+  <!-- Modal editar nome -->
   <div *ngIf="isEditNameModalOpen" class="edit-modal">
     <h3>Alterar Nome</h3>
-    <input [(ngModel)]="editNome" placeholder="Novo nome" />
-    <button (click)="updateName()">Salvar</button>
-    <button (click)="closeEditNameModal()">Cancelar</button>
+    <form [formGroup]="editForm" (ngSubmit)="updateName()">
+      <input formControlName="nome" placeholder="Novo nome" />
+      <button type="submit" [disabled]="editForm.invalid">Salvar</button>
+      <button (click)="closeEditNameModal()">Cancelar</button>
+    </form>
   </div>
 
+  <!-- Modal editar imagem -->
   <div *ngIf="isEditImageModalOpen" class="edit-modal">
     <h3>Alterar Imagem</h3>
     <input type="file" (change)="handleImageUpload($event)" />
-
     <div *ngIf="imagePreviewUrl">
-      <img
-        *ngIf="imagePreviewUrl"
-        [src]="imagePreviewUrl"
-        alt="Imagem de pré-visualização"
-      />
+      <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
     </div>
     <button (click)="updateImage()">Salvar</button>
     <button (click)="closeEditImageModal()">Cancelar</button>
   </div>
 
+  <!-- Lista de eventos -->
   <div *ngIf="userEvents.length > 0">
     <h3>Eventos</h3>
     <div class="event-list">
       <div *ngFor="let evento of userEvents" class="event-card">
         <h4>{{ evento.titulo }}</h4>
         <p>{{ evento.descricao }}</p>
-        <button *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">
-          Excluir
-        </button>
+        <p><strong>Data:</strong> {{ evento.data | date: 'mediumDate' }}</p>
+        <p><strong>Local:</strong> {{ evento.logradouro }}, {{ evento.numero }} - {{ evento.bairro }}</p>
+        <p><strong>Contato:</strong> {{ evento.telefone }}</p>
+        <button *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">Excluir</button>
       </div>
     </div>
   </div>
 
-  
+  <!-- Modal de confirmação de exclusão -->
   <div *ngIf="excluirModalAberto" class="delete-modal">
     <h4>Você tem certeza que deseja excluir este evento?</h4>
+    <p><strong>{{ eventoParaExcluir.titulo }}</strong></p>
     <button (click)="deleteEvent()">Sim, Excluir</button>
     <button (click)="cancelDeleteEvent()">Cancelar</button>
   </div>
 
+  <!-- Avaliações -->
   <div *ngIf="avaliacoes.length > 0">
     <h3>Avaliações</h3>
     <div class="avaliacoes">
       <div *ngFor="let avaliacao of avaliacoes">
-        <p>
-          Evento: {{ avaliacao.evento?.titulo }} - Avaliação:
-           {{ avaliacao.media }} 
-        </p>
+        <p>Evento: {{ avaliacao.evento?.titulo }} - Nota: {{ avaliacao.tipoEstatistica }}</p>
       </div>
     </div>
-    <h4>Média de Avaliações: {{ mediaAvaliacoes | number : "1.0-1" }}</h4>
+    <h4>Média geral: {{ mediaAvaliacoes | number: '1.1-1' }}</h4>
   </div>
 
+  <!-- Avaliação do usuário -->
   <div *ngIf="avaliacaoUsuario > 0">
     <h3>Sua Avaliação</h3>
-    <p>Você avaliou: {{ avaliacaoUsuario }}</p>
+    <p>Você avaliou com nota: {{ avaliacaoUsuario }}</p>
   </div>
-</div> -->
+</div>

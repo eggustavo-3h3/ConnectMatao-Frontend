@@ -38,7 +38,7 @@ export class EventoService {
     );
   }
 
-  criarEvento(evento: FormData): Observable<IEvento> {
+  criarEvento(evento: any): Observable<IEvento> {
     return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento);
   }
 
@@ -76,6 +76,19 @@ export class EventoService {
       console.error(`${operation} failed: ${error.message}`);
       return of(result as T);
     };
+  }
+
+  getEventosEstatisticas(eventoId: string): Observable<IEventoEstatisticas> {
+    return this.http
+      .get<IEventoEstatisticas>(`${this.apiUrl}/evento/${eventoId}/estatisticas`)
+      .pipe(
+        catchError(
+          this.handleError<IEventoEstatisticas>(
+            `getEventosEstatisticas eventoId=${eventoId}`,
+            {} as IEventoEstatisticas
+          )
+        )
+      );
   }
 
   private fetchUserInfo(userId: string): Observable<IUsuario | null> {
