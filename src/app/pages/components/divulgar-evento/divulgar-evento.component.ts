@@ -169,11 +169,11 @@ export class DivulgarEventoComponent implements OnInit {
     if (target.files && target.files.length > 0) {
       this.selectedFiles = Array.from(target.files);
 
-      // Se quiser mostrar a prévia da primeira imagem:
       const reader = new FileReader();
       reader.onload = () => {
         this.imagemPreview = reader.result as string;
-        this.eventoForm.get('imagem')?.setValue('ok'); // ou qualquer valor não vazio
+        // Aqui setamos a imagem base64 no formulário
+        this.eventoForm.get('imagem')?.setValue(reader.result);
       };
       reader.readAsDataURL(this.selectedFiles[0]);
     }
@@ -183,12 +183,16 @@ export class DivulgarEventoComponent implements OnInit {
     if (this.eventoForm.invalid || this.isProcessing) return;
 
     this.isProcessing = true;
-
     const formValues = this.eventoForm.value;
 
-    
+    const eventoPayload = {
+      ...formValues,
+      categoriaid: formValues.categoria,
+      flagAprovado: false,
+      usuarioParceiroid: this.usuario?.id,
+    };
 
-    this.eventoService.criarEvento(formValues).subscribe({
+    this.eventoService.criarEvento(eventoPayload).subscribe({
       next: () => {
         this.snackBar.open('Evento criado com sucesso', 'Fechar', {
           duration: 3000,

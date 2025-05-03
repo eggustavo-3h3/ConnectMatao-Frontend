@@ -1,33 +1,35 @@
 <app-navbar></app-navbar>
 
 <div *ngIf="event" class="event-container">
-  <div
-    class="event-banner"
-    [style.background-image]="'url(' + event?.imagem + ')'"
-  >
-    <div class="overlay"></div>
-
-    <!-- Exibindo a imagem do usuário -->
+  <!-- Banner com imagem -->
+  <div class="event-banner">
     <img
-      *ngIf="usuario?.imagem"
-      [src]="'data:image/png;base64,' + usuario?.imagem"
-      alt="Foto de perfil de {{ usuario?.nome }}"
-      class="event-logo"
-      (click)="openModal()"
+      *ngIf="event.imagem"
+      [src]="'data:image/png;base64,' + event.imagem"
+      alt="Banner do evento"
+      class="event-image"
     />
+    <!-- Botões de Like e Dislike sobre a imagem -->
+    <div class="like-dislike-container">
+      <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
+        👍 {{ likesCount }}
+      </button>
 
-    <div class="event-info">
-      <h3>{{ usuario?.nome }}</h3>
-      <p>{{ event?.data | date : "dd/MM/yyyy" }} - {{ event?.horario }}</p>
+      <button
+        (click)="toggleDislike()"
+        [class.disliked]="usuarioInteragiu === 2"
+      >
+        👎 {{ dislikesCount }}
+      </button>
     </div>
   </div>
 
+  <!-- Card com detalhes -->
   <div class="event-card">
-    <h2>{{ event?.titulo }}</h2>
-
+    <h2>{{ event.titulo }}</h2>
     <p class="event-description">
       <strong>Descrição:</strong>
-      {{ event?.descricao || "Sem descrição disponível." }}
+      {{ event.descricao || "Sem descrição disponível." }}
     </p>
 
     <div class="card-footer">
@@ -36,52 +38,43 @@
         <ng-container
           *ngIf="
             event.logradouro || event.numero || event.bairro || event.cep;
-            else enderecoNaoInformado
+            else noAddress
           "
         >
-          {{ event?.logradouro || "" }}, {{ event?.numero || "" }} -
-          {{ event?.bairro || "" }} - CEP: {{ event?.cep || "" }}
+          {{ event.logradouro }}, {{ event.numero }} – {{ event.bairro }} – CEP:
+          {{ event.cep }}
         </ng-container>
-        <ng-template #enderecoNaoInformado>Não informado</ng-template>
+        <ng-template #noAddress>Não informado</ng-template>
       </p>
-
       <p class="age-rating">
         <strong>Faixa Etária:</strong>
-        {{ event?.faixaEtaria === 0 ? "Todas" : event?.faixaEtaria }}
+        {{ event.faixaEtaria === 0 ? "Todas" : event.faixaEtaria }}
       </p>
-
-      <!-- Like and Dislike Buttons -->
-      <!-- Se quiser reabilitar os botões de like e dislike, basta descomentar a seção abaixo -->
-      <!-- <div class="like-dislike-container">
-        <button class="like-button" (click)="likeEvento()" aria-label="Curtir">
-          <span [ngClass]="{ liked: event.usuarioInteragiu === 1 }">👍</span>
-          <span class="like-count">{{ event.likes }}</span>
-        </button>
-
-        <button
-          class="dislike-button"
-          (click)="dislikeEvento()"
-          aria-label="Não curtir"
-        >
-          <span [ngClass]="{ disliked: event.usuarioInteragiu === 2 }">👎</span>
-          <span class="dislike-count">{{ event.deslikes }}</span>
-        </button>
-      </div> -->
+      <p class="event-date">
+        <strong>Data e Horário:</strong>
+        {{ event.data | date : "dd/MM/yyyy" }} – {{ event.horario }}
+      </p>
     </div>
+  </div>
+
+  <!-- Informações do usuário no final -->
+  <div class="user-info-footer">
+    <img
+      *ngIf="usuario?.imagem"
+      [src]="'data:image/png;base64,' + usuario?.imagem"
+      alt="Foto de perfil de {{ usuario?.nome }}"
+      class="user-profile-img"
+      (click)="openModal()"
+    />
+    <h3>{{ usuario?.nome }}</h3>
   </div>
 </div>
 
-<!-- Spinner de Carregamento -->
+<!-- Spinner de carregamento -->
 <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
 
-<!-- Modal de Imagem do Usuário -->
-<div
-  *ngIf="modalOpen"
-  class="modal"
-  aria-modal="true"
-  role="dialog"
-  (click)="closeModal()"
->
+<!-- Modal de imagem do usuário -->
+<div *ngIf="modalOpen" class="modal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <img
       *ngIf="usuario?.imagem"
@@ -89,8 +82,6 @@
       alt="Foto de perfil de {{ usuario?.nome }}"
       class="event-logo-modal"
     />
-    <button class="close-btn" aria-label="Fechar" (click)="closeModal()">
-      ×
-    </button>
+    <button class="close-btn" (click)="closeModal()">×</button>
   </div>
 </div>

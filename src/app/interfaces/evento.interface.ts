@@ -16,4 +16,5 @@ export interface IEvento {
   horario: string;
   faixaEtaria: number;
   imagem: string;
+  usuarioInteragiu?: boolean;
 }

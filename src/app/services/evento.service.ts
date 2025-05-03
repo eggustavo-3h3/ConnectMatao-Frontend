@@ -39,9 +39,10 @@ export class EventoService {
   }
 
   criarEvento(evento: any): Observable<IEvento> {
-    return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento);
+    return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento, {
+      headers: this.getAuthHeaders(),
+    });
   }
-
   removerEvento(eventoId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/evento/remover/${eventoId}`, {
       headers: this.getAuthHeaders(),
@@ -78,17 +79,13 @@ export class EventoService {
     };
   }
 
-  getEventosEstatisticas(eventoId: string): Observable<IEventoEstatisticas> {
-    return this.http
-      .get<IEventoEstatisticas>(`${this.apiUrl}/evento/${eventoId}/estatisticas`)
-      .pipe(
-        catchError(
-          this.handleError<IEventoEstatisticas>(
-            `getEventosEstatisticas eventoId=${eventoId}`,
-            {} as IEventoEstatisticas
-          )
-        )
-      );
+  getEventosEstatisticas(
+    eventoId: string
+  ): Observable<{ likes: number; deslikes: number }> {
+    return this.http.get<{ likes: number; deslikes: number }>(
+      `${this.apiUrl}/eventos/${eventoId}/estatisticas`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   private fetchUserInfo(userId: string): Observable<IUsuario | null> {
@@ -177,6 +174,19 @@ export class EventoService {
           return of(undefined);
         })
       );
+  }
+
+  removerLike(eventoId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/eventos/${eventoId}/likes`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  removerDislike(eventoId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/eventos/${eventoId}/deslikes`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   getEventoPorId(eventId: string): Observable<IEvento> {

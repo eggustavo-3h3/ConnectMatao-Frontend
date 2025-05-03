@@ -8,6 +8,8 @@ import { IUsuario } from '../../../interfaces/usuario.interface';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
+import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-card-evento-detalhes',
@@ -20,8 +22,10 @@ export class CardEventoDetalhesComponent implements OnInit {
   event: IEvento | null = null;
   usuario: IUsuario | null = null;
   modalOpen = false;
-  isLoading = true; // Adicionado o estado de carregamento
-  categoriaId: number | null = null;
+  isLoading = true;
+  likesCount = 0;
+  dislikesCount = 0;
+  usuarioInteragiu = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,63 +37,37 @@ export class CardEventoDetalhesComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.eventId = params.get('eventId');
-      console.log('eventId recuperado: ', this.eventId);
-
       if (this.eventId) {
         this.carregarDetalhesEvento(this.eventId);
       } else {
-        console.log('eventId não encontrado ');
+        console.error('eventId não encontrado');
       }
     });
-
-    if (this.categoriaId) {
-      this.carregarEventos();
-    }
-  }
-
-  carregarEventos(): void {
-    if (this.categoriaId) {
-      this.eventoService.listarEventos(this.categoriaId).subscribe({
-        next: (eventos) => {
-          console.log('Eventos carregados com sucesso:', eventos);
-        },
-        error: (error) => {
-          console.error('Erro ao carregar eventos:', error);
-        },
-      });
-    } else {
-      console.log('Categoria não definida');
-    }
   }
 
   carregarDetalhesEvento(eventId: string): void {
-    this.isLoading = true; // Marca como carregando
+    this.isLoading = true;
     this.eventoService.getEventoPorId(eventId).subscribe({
-      next: (evento) => {
-        this.event = evento;
-        console.log('Detalhes do evento carregados:', this.event);
-
-        // Agora, buscar os detalhes do usuário
-        this.carregarUsuario(evento.usuarioParceiroid);
+      next: (evt) => {
+        this.event = evt;
+        // Extrair contadores e status do usuário
+        this.likesCount = (evt as any).likes ?? 0;
+        this.dislikesCount = (evt as any).deslikes ?? 0;
+        this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
+        this.carregarUsuario(evt.usuarioParceiroid);
+        this.isLoading = false;
       },
-      error: (error) => {
-        console.error('Erro ao carregar detalhes do evento:', error);
-        this.isLoading = false; // Marca como carregamento finalizado em caso de erro
+      error: (err) => {
+        console.error('Erro ao carregar detalhes do evento:', err);
+        this.isLoading = false;
       },
     });
   }
 
   carregarUsuario(usuarioParceiroid: string): void {
     this.usuarioService.getUserProfileById(usuarioParceiroid).subscribe({
-      next: (usuario) => {
-        this.usuario = usuario;
-        console.log('Detalhes do usuário carregados:', this.usuario);
-        this.isLoading = false; // Marca o carregamento como concluído
-      },
-      error: (error) => {
-        console.error('Erro ao carregar detalhes do usuário:', error);
-        this.isLoading = false; // Marca como carregamento finalizado em caso de erro
-      },
+      next: (user) => (this.usuario = user),
+      error: (err) => console.error('Erro ao carregar usuário:', err),
     });
   }
 
@@ -101,25 +79,65 @@ export class CardEventoDetalhesComponent implements OnInit {
     this.modalOpen = false;
   }
 
-  likeEvento(): void {
-    if (this.eventId) {
+  toggleLike(): void {
+    if (!this.eventId) return;
+
+    if (this.usuarioInteragiu === 1) {
+      // Já curtiu → remove like
       this.eventoService
-        .interagirEvento(this.eventId, 1) // TipoEstatistica.like
-        .subscribe({
-          next: () => this.carregarDetalhesEvento(this.eventId!),
-          error: (error) => console.error('Erro ao curtir evento:', error),
-        });
+        .removerLike(this.eventId)
+        .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
+    } else {
+      // Se estava descurtido, remove deslike antes de curtir
+      const seq$ =
+        this.usuarioInteragiu === 2
+          ? this.eventoService
+              .removerDislike(this.eventId)
+              .pipe(
+                switchMap(() =>
+                  this.eventoService.interagirEvento(
+                    this.eventId!,
+                    TipoEstatistica.like
+                  )
+                )
+              )
+          : this.eventoService.interagirEvento(
+              this.eventId,
+              TipoEstatistica.like
+            );
+
+      seq$.subscribe(() => this.carregarDetalhesEvento(this.eventId!));
     }
   }
 
-  dislikeEvento(): void {
-    if (this.eventId) {
+  toggleDislike(): void {
+    if (!this.eventId) return;
+
+    if (this.usuarioInteragiu === 2) {
+      // Já descurtiu → remove deslike
       this.eventoService
-        .interagirEvento(this.eventId, 2) // TipoEstatistica.deslike
-        .subscribe({
-          next: () => this.carregarDetalhesEvento(this.eventId!),
-          error: (error) => console.error('Erro ao não curtir evento:', error),
-        });
+        .removerDislike(this.eventId)
+        .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
+    } else {
+      // Se estava curtido, remove like antes de descurtir
+      const seq$ =
+        this.usuarioInteragiu === 1
+          ? this.eventoService
+              .removerLike(this.eventId)
+              .pipe(
+                switchMap(() =>
+                  this.eventoService.interagirEvento(
+                    this.eventId!,
+                    TipoEstatistica.deslike
+                  )
+                )
+              )
+          : this.eventoService.interagirEvento(
+              this.eventId,
+              TipoEstatistica.deslike
+            );
+
+      seq$.subscribe(() => this.carregarDetalhesEvento(this.eventId!));
     }
   }
 }
