@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { IEvento } from '../interfaces/evento.interface';
 import { IEventoCard } from '../interfaces/evento-card.interface';
@@ -38,11 +38,12 @@ export class EventoService {
     );
   }
 
-  criarEvento(evento: any): Observable<IEvento> {
-    return this.http.post<IEvento>(this.apiUrl + '/evento/adicionar', evento, {
-      headers: this.getAuthHeaders(),
+  criarEvento(evento: IEvento): Observable<IEvento> {
+    return this.http.post<IEvento>(`${this.apiUrl}/evento/adicionar`, evento, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     });
   }
+
   removerEvento(eventoId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/evento/remover/${eventoId}`, {
       headers: this.getAuthHeaders(),
@@ -191,5 +192,11 @@ export class EventoService {
 
   getEventoPorId(eventId: string): Observable<IEvento> {
     return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}/detalhe`);
+  }
+  searchEvents(term: string): Observable<IEvento[]> {
+    const url = `${this.apiUrl}/evento/listar?search=${term}`;
+    return this.http.get<IEvento[]>(url).pipe(
+      catchError(() => of([])) // Retorna uma lista vazia em caso de erro
+    );
   }
 }

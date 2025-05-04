@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EventoService } from '../../../services/evento.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { IEvento } from '../../../interfaces/evento.interface';
 import { IUsuario } from '../../../interfaces/usuario.interface';
 import { CommonModule } from '@angular/common';
@@ -10,12 +10,14 @@ import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
 import { switchMap } from 'rxjs/operators';
+import { RouterModule } from '@angular/router'; // ✅ IMPORTAÇÃO NECESSÁRIA
 
 @Component({
   selector: 'app-card-evento-detalhes',
+  standalone: true,
   templateUrl: './card-evento-detalhes.component.html',
   styleUrls: ['./card-evento-detalhes.component.css'],
-  imports: [CommonModule, NavbarComponent, AngularMaterialModule],
+  imports: [CommonModule, RouterModule, NavbarComponent, AngularMaterialModule], // ✅ RouterModule incluído
 })
 export class CardEventoDetalhesComponent implements OnInit {
   eventId!: string | null;
@@ -26,6 +28,7 @@ export class CardEventoDetalhesComponent implements OnInit {
   likesCount = 0;
   dislikesCount = 0;
   usuarioInteragiu = 0;
+  usuarioImagemUrl: SafeUrl | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,7 +38,6 @@ export class CardEventoDetalhesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
     this.route.paramMap.subscribe((params) => {
       this.eventId = params.get('eventId');
       if (this.eventId) {
@@ -50,13 +52,7 @@ export class CardEventoDetalhesComponent implements OnInit {
     this.isLoading = true;
     this.eventoService.getEventoPorId(eventId).subscribe({
       next: (evt) => {
-        console.log('Resposta do evento:', evt);
         this.event = evt;
-        // Extrair contadores e status do usuário
-
-        console.log('event', this.event);
-
-
         this.likesCount = (evt as any).likes ?? 0;
         this.dislikesCount = (evt as any).deslikes ?? 0;
         this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
@@ -72,7 +68,22 @@ export class CardEventoDetalhesComponent implements OnInit {
 
   carregarUsuario(usuarioParceiroid: string): void {
     this.usuarioService.getUserProfileById(usuarioParceiroid).subscribe({
-      next: (user) => (this.usuario = user),
+      next: (user) => {
+        this.usuario = user;
+        this.usuarioService.getImagemUsuarioPorId(usuarioParceiroid).subscribe({
+          next: (imagemBase64) => {
+            this.usuarioImagemUrl = imagemBase64
+              ? this.sanitizer.bypassSecurityTrustResourceUrl(
+                  `data:image/png;base64,${imagemBase64}`
+                )
+              : this.sanitizer.bypassSecurityTrustResourceUrl(
+                  'assets/perfil-placeholder.png'
+                );
+          },
+          error: (err) =>
+            console.error('Erro ao buscar imagem do usuário:', err),
+        });
+      },
       error: (err) => console.error('Erro ao carregar usuário:', err),
     });
   }
@@ -89,12 +100,10 @@ export class CardEventoDetalhesComponent implements OnInit {
     if (!this.eventId) return;
 
     if (this.usuarioInteragiu === 1) {
-      // Já curtiu → remove like
       this.eventoService
         .removerLike(this.eventId)
         .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
     } else {
-      // Se estava descurtido, remove deslike antes de curtir
       const seq$ =
         this.usuarioInteragiu === 2
           ? this.eventoService
@@ -120,12 +129,10 @@ export class CardEventoDetalhesComponent implements OnInit {
     if (!this.eventId) return;
 
     if (this.usuarioInteragiu === 2) {
-      // Já descurtiu → remove deslike
       this.eventoService
         .removerDislike(this.eventId)
         .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
     } else {
-      // Se estava curtido, remove like antes de descurtir
       const seq$ =
         this.usuarioInteragiu === 1
           ? this.eventoService

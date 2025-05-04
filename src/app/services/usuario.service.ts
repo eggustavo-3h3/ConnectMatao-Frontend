@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { AuthService } from './auth.service';
 
@@ -12,52 +12,98 @@ export class UsuarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  // Recuperar perfil do usuário pelo ID
   getUserProfileById(userId: string): Observable<IUsuario> {
     const url = `${this.apiUrl}/usuario/${userId}`;
-    return this.http.get<IUsuario>(url);
+    return this.http.get<IUsuario>(url).pipe(
+      catchError((error) => {
+        console.error('Erro ao obter perfil:', error);
+        return throwError(() => new Error('Erro ao obter perfil do usuário.'));
+      })
+    );
   }
 
+  // Criar cabeçalho com o token de autenticação
   private getAuthHeaders(): HttpHeaders {
     return this.authService.createAuthHeader();
   }
 
-  private handleError<T>(operation = 'operation', error: any): Observable<any> {
-    console.error(`${operation} falhou: ${error.message}`);
-    return throwError(() => new Error(`${operation} falhou: ${error.message}`));
+  // Método para tratar erros e logar as falhas
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed: ${error.message}`);
+      return of(result as T);
+    };
   }
 
+  // Obter usuário pelo ID
   getUser(userId: string | number): Observable<IUsuario> {
-    return this.http.get<IUsuario>(`${this.apiUrl}/usuario/${userId}`);
+    const url = `${this.apiUrl}/usuario/${userId}`;
+    return this.http.get<IUsuario>(url).pipe(
+      catchError((error) => {
+        console.error('Erro ao obter usuário:', error);
+        return throwError(() => new Error('Erro ao obter usuário.'));
+      })
+    );
   }
 
+  // Atualizar perfil do usuário
   updateUserProfile(profileData: IUsuario): Observable<any> {
     const userId = this.authService.getUserId();
 
-    if (!userId || profileData.id !== Number(userId)) {
+    // Verificar se o usuário está autenticado
+    if (!userId) {
+      console.error('Erro: usuário não autenticado');
+      return throwError(() => new Error('Usuário não autenticado.'));
+    }
+
+    // Normalizar os IDs antes de comparar
+    const normalizedUserId = userId.trim().toLowerCase();
+    const normalizedProfileId = String(profileData.id).trim().toLowerCase();
+
+    // Verificar se o ID do perfil corresponde ao ID do usuário autenticado
+    if (normalizedProfileId !== normalizedUserId) {
       console.error(
-        'Erro ao atualizar perfil: usuário não autenticado ou ID não corresponde.'
+        `Erro: ID do perfil (${normalizedProfileId}) não corresponde ao ID do usuário autenticado (${normalizedUserId})`
       );
       return throwError(
         () => new Error('Usuário não autenticado ou sem permissão.')
       );
     }
 
+    console.log('ID do usuário autenticado:', normalizedUserId);
+    console.log('ID do perfil:', normalizedProfileId);
+
     return this.http
       .put(`${this.apiUrl}/usuario/atualizar`, profileData, {
         headers: this.getAuthHeaders(),
       })
       .pipe(
-        catchError((error) =>
-          this.handleError('Erro ao atualizar perfil do usuário', error)
-        )
+        catchError((error) => {
+          console.error('Erro ao atualizar perfil do usuário:', error);
+          return throwError(() => new Error('Erro ao atualizar perfil.'));
+        })
       );
   }
 
+  // Obter o perfil do usuário autenticado
   getPerfilUsuario(): Observable<IUsuario> {
     const userId = this.authService.getUserId();
     if (!userId) {
       return throwError(() => new Error('Usuário não autenticado.'));
     }
     return this.getUser(userId);
+  }
+
+  // Obter imagem do usuário pelo ID
+  getImagemUsuarioPorId(usuarioId: string): Observable<string> {
+    const url = `${this.apiUrl}/usuario/${usuarioId}/imagem`;
+    return this.http.get<{ imagem: string }>(url).pipe(
+      map((response) => response.imagem),
+      catchError((error) => {
+        console.error('Erro ao obter imagem do usuário:', error);
+        return throwError(() => new Error('Erro ao obter imagem.'));
+      })
+    );
   }
 }

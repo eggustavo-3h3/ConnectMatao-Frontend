@@ -3,14 +3,35 @@
 <div *ngIf="user" class="profile-container">
   <div class="profile-header">
     <div class="profile-image">
-      <img [src]="user.imagem ? 'data:image/jpeg;base64,' + user.imagem : 'assets/default-avatar.png'" alt="{{ user.nome }}" />
-      <button *ngIf="canEditProfile" (click)="openEditImageModal()">Alterar Imagem</button>
+      <img
+        [src]="
+          user?.imagem
+            ? 'data:image/jpeg;base64,' + user.imagem
+            : 'assets/default-avatar.png'
+        "
+        alt="{{ user?.nome }}"
+      />
+      <img
+        *ngIf="canEditProfile"
+        (click)="openEditImageModal()"
+        class="edit-image-icon"
+        src="../ferramenta-lapis.png"
+        alt="Editar imagem"
+        title="Alterar imagem"
+      />
     </div>
 
     <div class="profile-info">
-      <h2>{{ user.nome }}</h2>
-      <p>Login: {{ user.login }}</p>
-      <button *ngIf="canEditProfile" (click)="openEditNameModal()">Alterar Nome</button>
+      <h2>{{ user?.nome }}</h2>
+      <img
+        *ngIf="canEditProfile"
+        (click)="openEditNameModal()"
+        class="edit-name-icon"
+        src="../ferramenta-lapis.png"
+        alt="Editar nome"
+        title="Alterar nome"
+      />
+      <p>E-mail: {{ user?.login }}</p>
     </div>
   </div>
 
@@ -20,19 +41,28 @@
     <form [formGroup]="editForm" (ngSubmit)="updateName()">
       <input formControlName="nome" placeholder="Novo nome" />
       <button type="submit" [disabled]="editForm.invalid">Salvar</button>
-      <button (click)="closeEditNameModal()">Cancelar</button>
+      <button type="button" (click)="closeEditNameModal()">Cancelar</button>
     </form>
   </div>
 
   <!-- Modal editar imagem -->
   <div *ngIf="isEditImageModalOpen" class="edit-modal">
     <h3>Alterar Imagem</h3>
-    <input type="file" (change)="handleImageUpload($event)" />
-    <div *ngIf="imagePreviewUrl">
-      <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
-    </div>
-    <button (click)="updateImage()">Salvar</button>
-    <button (click)="closeEditImageModal()">Cancelar</button>
+
+    <form [formGroup]="editForm" (ngSubmit)="updateImage()">
+      <input
+        type="file"
+        (change)="handleImageUpload($event)"
+        accept="image/*"
+      />
+
+      <div class="image-preview-container" *ngIf="imagePreviewUrl">
+        <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
+      </div>
+
+      <button type="submit" [disabled]="!editForm.value.imagem">Salvar</button>
+      <button type="button" (click)="closeEditImageModal()">Cancelar</button>
+    </form>
   </div>
 
   <!-- Lista de eventos -->
@@ -42,10 +72,15 @@
       <div *ngFor="let evento of userEvents" class="event-card">
         <h4>{{ evento.titulo }}</h4>
         <p>{{ evento.descricao }}</p>
-        <p><strong>Data:</strong> {{ evento.data | date: 'mediumDate' }}</p>
-        <p><strong>Local:</strong> {{ evento.logradouro }}, {{ evento.numero }} - {{ evento.bairro }}</p>
+        <p><strong>Data:</strong> {{ evento.data | date : "mediumDate" }}</p>
+        <p>
+          <strong>Local:</strong> {{ evento.logradouro }}, {{ evento.numero }} -
+          {{ evento.bairro }}
+        </p>
         <p><strong>Contato:</strong> {{ evento.telefone }}</p>
-        <button *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">Excluir</button>
+        <button *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">
+          Excluir
+        </button>
       </div>
     </div>
   </div>
@@ -53,7 +88,9 @@
   <!-- Modal de confirmação de exclusão -->
   <div *ngIf="excluirModalAberto" class="delete-modal">
     <h4>Você tem certeza que deseja excluir este evento?</h4>
-    <p><strong>{{ eventoParaExcluir.titulo }}</strong></p>
+    <p>
+      <strong>{{ eventoParaExcluir.titulo }}</strong>
+    </p>
     <button (click)="deleteEvent()">Sim, Excluir</button>
     <button (click)="cancelDeleteEvent()">Cancelar</button>
   </div>
@@ -63,10 +100,13 @@
     <h3>Avaliações</h3>
     <div class="avaliacoes">
       <div *ngFor="let avaliacao of avaliacoes">
-        <p>Evento: {{ avaliacao.evento?.titulo }} - Nota: {{ avaliacao.tipoEstatistica }}</p>
+        <p>
+          Evento: {{ avaliacao.evento?.titulo }} - Nota:
+          {{ avaliacao.tipoEstatistica }}
+        </p>
       </div>
     </div>
-    <h4>Média geral: {{ mediaAvaliacoes | number: '1.1-1' }}</h4>
+    <h4>Média geral: {{ mediaAvaliacoes | number : "1.1-1" }}</h4>
   </div>
 
   <!-- Avaliação do usuário -->

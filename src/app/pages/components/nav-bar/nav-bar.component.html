@@ -48,7 +48,9 @@
       aria-label="Pesquisar eventos"
       (focus)="onSearchFocus()"
       (blur)="onSearchBlur()"
+      (input)="search(searchInput.value)"
     />
+
     <img
       src="https://cdn-icons-png.flaticon.com/128/2319/2319177.png"
       alt="Ícone de lupa"
@@ -60,8 +62,11 @@
       class="search-results"
     >
       <ul>
-        <!-- (click)="goToEventDetails(event.id)" -->
-        <li *ngFor="let event of searchResults" class="search-result-item">
+        <li
+          *ngFor="let event of searchResults"
+          class="search-result-item"
+          (click)="goToEventDetails(event.id)"
+        >
           {{ event.titulo }}
         </li>
       </ul>

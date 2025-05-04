@@ -1,8 +1,6 @@
 <h2 class="eventos-destaques-title">Eventos em Destaque</h2>
 
 <div class="carousel-container" *ngIf="!isLoading">
-  <!-- Texto "Eventos em Destaque" fora e acima do carousel -->
-
   <button
     class="carousel-btn left"
     (click)="prevSlide()"
@@ -25,17 +23,22 @@
             [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
             [alt]="evento.usuarioNome"
             class="profile-image"
+            [routerLink]="['/perfil', evento.usuarioParceiroid]"
           />
           <h1
             class="userName"
-            [routerLink]="['/perfil/usuario', evento.usuarioParceiroid]"
+            [routerLink]="['/perfil', evento.usuarioParceiroid]"
           >
             {{ evento.usuarioNome }}
           </h1>
         </div>
 
         <img
-          [src]="evento.eventoImagem"
+          [src]="
+            evento.eventoImagem?.length
+              ? 'data:image/jpeg;base64,' + evento.eventoImagem[0]
+              : 'assets/event-placeholder.png'
+          "
           [alt]="evento.titulo"
           class="evento-img"
           [routerLink]="['/detalhe-evento/', evento.id]"

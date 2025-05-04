@@ -18,8 +18,13 @@
     </div>
 
     <!-- Pré-visualização da imagem -->
-    <div *ngIf="imagemPreview" class="image-preview-container">
-      <img [src]="imagemPreview" alt="Pré-visualização" class="image-preview" />
+    <div *ngIf="imagemPreview?.length" class="image-preview-container">
+      <img
+        *ngFor="let img of imagemPreview"
+        [src]="img"
+        alt="Pré-visualização"
+        class="image-preview"
+      />
     </div>
 
     <!-- Campos do formulário -->

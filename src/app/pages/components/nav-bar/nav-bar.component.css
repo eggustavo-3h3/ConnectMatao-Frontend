@@ -29,7 +29,7 @@ nav {
 }
 
 .navbar-img {
-  margin-right: 65px; /* Espaço entre o logo e os links */
+  margin-right: 65px;
 }
 
 .navbar-img img {
@@ -42,8 +42,8 @@ nav {
   display: flex;
   gap: 35px;
   margin-left: 10px;
-  flex-grow: 1; /* Permite que a lista de links ocupe o máximo de espaço */
-  justify-content: flex-start; /* Garante que os links fiquem alinhados à esquerda */
+  flex-grow: 1;
+  justify-content: flex-start;
 }
 
 .nav-item {
@@ -108,8 +108,9 @@ nav {
 }
 
 .user-circle img {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
   border-radius: 50%;
   cursor: pointer;
 }

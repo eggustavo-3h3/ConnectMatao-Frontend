@@ -16,6 +16,7 @@ import { AngularMaterialModule } from '../../../angular_material/angular-materia
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { IEvento } from '../../../interfaces/evento.interface';
 registerLocaleData(localePt);
 
 @Component({
@@ -33,7 +34,7 @@ registerLocaleData(localePt);
 export class DivulgarEventoComponent implements OnInit {
   eventoForm: FormGroup;
   categorias: any[] = [];
-  imagemPreview: string | null = null;
+  imagemPreview: string[] = [];
   usuario: any = null;
   minDate: Date;
   selectedFiles: File[] = [];
@@ -167,60 +168,86 @@ export class DivulgarEventoComponent implements OnInit {
     if (target.files && target.files.length > 0) {
       this.selectedFiles = Array.from(target.files);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagemPreview = reader.result as string;
-        console.log('Imagem Preview:', this.imagemPreview);
-      };
-      reader.readAsDataURL(this.selectedFiles[0]);
+      // Display previews for all selected images
+      const imagePreviews: string[] = [];
+      this.selectedFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          imagePreviews.push(reader.result as string);
+          this.imagemPreview = imagePreviews;
+          console.log('Imagem Previews:', this.imagemPreview);
+        };
+        reader.readAsDataURL(file); // Read each file
+      });
     }
   }
 
   onSubmit(): void {
     if (this.eventoForm.invalid || this.isProcessing) return;
+    if (this.selectedFiles.length > 5) {
+      this.snackBar.open('Você só pode enviar até 5 imagens.', 'Fechar', {
+        duration: 3000,
+      });
+      return;
+    }
 
     this.isProcessing = true;
-    const formValues = this.eventoForm.value;
+    const fv = this.eventoForm.value;
 
-    // Verificar se a imagem está sendo carregada corretamente
-    const imagensArray = this.imagemPreview
-      ? [{ imagem: this.imagemPreview.split(',')[1] }]  // Remover o prefixo 'data:image/png;base64,' da base64
-      : [];
+    // conversão de File → base64
+    const toBase64 = (file: File) =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-    console.log('Payload do Evento:', {
-      ...formValues,
-      categoriaid: formValues.categoria,
-      flagAprovado: false,
-      usuarioParceiroid: this.usuario?.id,
-      imagens: imagensArray,  // Verifique se este array não está vazio
-    });
+    Promise.all(this.selectedFiles.map((f) => toBase64(f)))
+      .then((base64List) => {
+        // monta o payload de acordo com IEvento
+        const payload: IEvento = {
+          titulo: fv.titulo,
+          descricao: fv.descricao,
+          cep: fv.cep,
+          logradouro: fv.logradouro,
+          numero: fv.numero,
+          bairro: fv.bairro,
+          telefone: fv.telefone,
+          whatsapp: fv.whatsapp,
+          email: fv.email,
+          data: new Date(fv.data).toISOString(),
+          horario: fv.horario,
+          faixaEtaria: fv.faixaEtaria,
+          categoriaid: fv.categoria, // GUID em string
+          flagAprovado: false,
+          usuarioParceiroid: this.usuario.id, // GUID em string
+          imagens: base64List, // array de strings
 
-    const eventoPayload = {
-      ...formValues,
-      categoriaid: formValues.categoria,
-      flagAprovado: false,
-      usuarioParceiroid: this.usuario?.id,
-      imagens: imagensArray,  // Agora a estrutura está correta
-    };
+          usuarioInteragiu: false,
+        };
 
-    // Envio para o serviço
-    this.eventoService.criarEvento(eventoPayload).subscribe({
-      next: (retorno) => {
-        this.snackBar.open('Evento criado com sucesso', 'Fechar', {
+        this.eventoService.criarEvento(payload).subscribe({
+          next: () => {
+            this.snackBar.open('Evento criado com sucesso', 'Fechar', {
+              duration: 3000,
+            });
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            console.error('Erro ao criar evento:', err);
+            this.snackBar.open('Erro ao criar evento', 'Fechar', {
+              duration: 3000,
+            });
+          },
+        });
+      })
+      .catch((err) => {
+        console.error('Falha na conversão de imagens:', err);
+        this.snackBar.open('Erro ao processar imagens', 'Fechar', {
           duration: 3000,
         });
-        console.log('Evento criado com sucesso:', retorno);
-        this.router.navigate(['/']);
         this.isProcessing = false;
-      },
-      error: (erro) => {
-        console.error('Erro ao criar evento:', erro);
-        this.snackBar.open('Erro ao criar evento', 'Fechar', {
-          duration: 3000,
-        });
-        this.isProcessing = false;
-      },
-    });
+      });
   }
 }
-
