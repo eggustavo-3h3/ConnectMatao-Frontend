@@ -4,8 +4,8 @@
   <!-- Banner com imagem -->
   <div class="event-banner">
     <img
-      *ngIf="event.imagem"
-      [src]="'data:image/png;base64,' + event.imagem"
+      *ngIf="event?.imagens?.length"
+      [src]="event.imagens[0].imagem"
       alt="Banner do evento"
       class="event-image"
     />

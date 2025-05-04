@@ -32,7 +32,7 @@ export class EventoService {
 
     return this.http.get<IEventoCard[]>(url).pipe(
       map((eventos) =>
-        eventos.map(({ imagem, ...rest }) => rest as IEventoCard)
+        eventos.map(({ imagens, ...rest }) => rest as IEventoCard)
       ),
       catchError(this.handleError<IEventoCard[]>('listarEventos', []))
     );

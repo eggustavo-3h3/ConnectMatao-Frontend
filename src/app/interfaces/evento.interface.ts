@@ -15,6 +15,6 @@ export interface IEvento {
   usuarioParceiroid: string;
   horario: string;
   faixaEtaria: number;
-  imagem: string;
+  imagens: {imagem: string}[];
   usuarioInteragiu?: boolean;
 }

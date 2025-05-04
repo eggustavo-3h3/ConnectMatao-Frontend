@@ -37,7 +37,6 @@ export class DivulgarEventoComponent implements OnInit {
   usuario: any = null;
   minDate: Date;
   selectedFiles: File[] = [];
-  selectedDate: any = null;
   isProcessing = false; // Controle de envio do evento
 
   constructor(
@@ -82,7 +81,6 @@ export class DivulgarEventoComponent implements OnInit {
       ],
       faixaEtaria: [0, [Validators.required, Validators.min(0)]],
       categoria: ['', Validators.required],
-      imagem: ['', Validators.required],
     });
   }
 
@@ -172,8 +170,7 @@ export class DivulgarEventoComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.imagemPreview = reader.result as string;
-        // Aqui setamos a imagem base64 no formulário
-        this.eventoForm.get('imagem')?.setValue(reader.result);
+        console.log('Imagem Preview:', this.imagemPreview);
       };
       reader.readAsDataURL(this.selectedFiles[0]);
     }
@@ -185,18 +182,34 @@ export class DivulgarEventoComponent implements OnInit {
     this.isProcessing = true;
     const formValues = this.eventoForm.value;
 
+    // Verificar se a imagem está sendo carregada corretamente
+    const imagensArray = this.imagemPreview
+      ? [{ imagem: this.imagemPreview.split(',')[1] }]  // Remover o prefixo 'data:image/png;base64,' da base64
+      : [];
+
+    console.log('Payload do Evento:', {
+      ...formValues,
+      categoriaid: formValues.categoria,
+      flagAprovado: false,
+      usuarioParceiroid: this.usuario?.id,
+      imagens: imagensArray,  // Verifique se este array não está vazio
+    });
+
     const eventoPayload = {
       ...formValues,
       categoriaid: formValues.categoria,
       flagAprovado: false,
       usuarioParceiroid: this.usuario?.id,
+      imagens: imagensArray,  // Agora a estrutura está correta
     };
 
+    // Envio para o serviço
     this.eventoService.criarEvento(eventoPayload).subscribe({
-      next: () => {
+      next: (retorno) => {
         this.snackBar.open('Evento criado com sucesso', 'Fechar', {
           duration: 3000,
         });
+        console.log('Evento criado com sucesso:', retorno);
         this.router.navigate(['/']);
         this.isProcessing = false;
       },
@@ -210,3 +223,4 @@ export class DivulgarEventoComponent implements OnInit {
     });
   }
 }
+

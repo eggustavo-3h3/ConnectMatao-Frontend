@@ -18,7 +18,7 @@ import { switchMap } from 'rxjs/operators';
   imports: [CommonModule, NavbarComponent, AngularMaterialModule],
 })
 export class CardEventoDetalhesComponent implements OnInit {
-  eventId: string | null = null;
+  eventId!: string | null;
   event: IEvento | null = null;
   usuario: IUsuario | null = null;
   modalOpen = false;
@@ -35,6 +35,7 @@ export class CardEventoDetalhesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    
     this.route.paramMap.subscribe((params) => {
       this.eventId = params.get('eventId');
       if (this.eventId) {
@@ -49,8 +50,13 @@ export class CardEventoDetalhesComponent implements OnInit {
     this.isLoading = true;
     this.eventoService.getEventoPorId(eventId).subscribe({
       next: (evt) => {
+        console.log('Resposta do evento:', evt);
         this.event = evt;
         // Extrair contadores e status do usuário
+
+        console.log('event', this.event);
+
+
         this.likesCount = (evt as any).likes ?? 0;
         this.dislikesCount = (evt as any).deslikes ?? 0;
         this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
