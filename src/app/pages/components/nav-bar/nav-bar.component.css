@@ -54,9 +54,29 @@ nav {
   color: #20a2f2;
   text-decoration: none;
   font-size: 24px;
-  display: flex;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 4px; /* para dar espaço para a barra */
 }
 
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0%;
+  background-color: #20a2f2;
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #157eb3;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
 .logo {
   width: 50px;
   height: auto;

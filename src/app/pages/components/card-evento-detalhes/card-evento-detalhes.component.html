@@ -3,21 +3,22 @@
 <div *ngIf="event" class="event-container">
   <!-- Banner com imagem -->
   <div class="event-banner">
-    <img *ngIf="event.imagens"
-       [src]="'data:image/jpeg;base64,' + event.imagens[0]"
-       alt="Imagem do evento"
+    <img
+      *ngIf="event.imagens"
+      [src]="'data:image/jpeg;base64,' + event.imagens[0]"
+      alt="Imagem do evento"
     />
     <!-- Botões de Like e Dislike sobre a imagem -->
     <div class="like-dislike-container">
       <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
-        👍 {{ likesCount }}
+        <img src="../like vazio.png" alt="" /> {{ likesCount }}
       </button>
 
       <button
         (click)="toggleDislike()"
         [class.disliked]="usuarioInteragiu === 2"
       >
-        👎 {{ dislikesCount }}
+        <img src="../deslike vazio.png" />{{ dislikesCount }}
       </button>
     </div>
   </div>

@@ -23,7 +23,7 @@
 
   <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <h2>Filtrar por categoria</h2>
+      <h2>Filtrar eventos por:</h2>
 
       <form (ngSubmit)="applyFilters()">
         <label for="category">Categoria:</label>
