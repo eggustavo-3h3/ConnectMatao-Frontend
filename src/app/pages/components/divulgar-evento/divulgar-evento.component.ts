@@ -151,7 +151,6 @@ export class DivulgarEventoComponent implements OnInit {
     this.categoriaService.listarCategorias().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
-        console.log(categorias);
       },
       error: (error) => {
         console.error('Erro ao carregar categorias:', error);
@@ -222,10 +221,10 @@ export class DivulgarEventoComponent implements OnInit {
           categoriaid: fv.categoria, // GUID em string
           flagAprovado: false,
           usuarioParceiroid: this.usuario.id, // GUID em string
-          imagens: base64List, // array de strings
-
-          usuarioInteragiu: false,
+          imagens: base64List, // array de base64
         };
+
+        console.log('Payload do evento:', payload);
 
         this.eventoService.criarEvento(payload).subscribe({
           next: () => {
@@ -239,6 +238,7 @@ export class DivulgarEventoComponent implements OnInit {
             this.snackBar.open('Erro ao criar evento', 'Fechar', {
               duration: 3000,
             });
+            console.log('Payload do evento:', payload);
           },
         });
       })

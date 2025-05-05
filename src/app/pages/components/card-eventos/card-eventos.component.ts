@@ -23,6 +23,7 @@ export class CardEventosComponent implements OnInit {
 
   ngOnInit(): void {
     this.listarEventos();
+    
   }
 
   // Agora recebe o filtro de categoria como parâmetro
@@ -39,6 +40,8 @@ export class CardEventosComponent implements OnInit {
       next: (evento) => {
         this.eventos = evento;
         this.isLoading = false;
+        console.log(evento);
+        
       },
       error: (erro) => {
         console.log(erro.message);

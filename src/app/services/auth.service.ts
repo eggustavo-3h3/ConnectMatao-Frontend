@@ -16,7 +16,7 @@ export class AuthService {
   isLoggedIn$ = new BehaviorSubject<boolean>(this.isAuthenticated());
   private _userId: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   logar(
     login: string,
@@ -35,7 +35,7 @@ export class AuthService {
     confirmacaoSenha: string,
     imagem: string = '',
     perfil: Perfil = Perfil.Usuario
-  ): Observable<any> {
+  ): Observable<IUsuario> {
     const payload = {
       nome,
       login: email,
@@ -46,7 +46,7 @@ export class AuthService {
     };
 
     console.log('Payload de cadastro:', payload);
-    return this.http.post(`${this.apiUrl}/usuario/cadastrar`, payload);
+    return this.http.post<IUsuario>(`${this.apiUrl}/usuario/cadastrar`, payload);
   }
 
   saveAuthInfo(token: string, role: string): void {
@@ -74,7 +74,7 @@ export class AuthService {
       // Guarda o userId temporariamente para não fazer a leitura novamente
       this._userId =
         payload[
-          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
         ] || null;
       return this._userId;
     } catch (e) {

@@ -3,11 +3,9 @@
 <div *ngIf="event" class="event-container">
   <!-- Banner com imagem -->
   <div class="event-banner">
-    <img
-      *ngIf="event?.imagens?.length"
-      [src]="event.imagens[0]"
-      alt="Banner do evento"
-      class="event-image"
+    <img *ngIf="event.imagens"
+       [src]="'data:image/jpeg;base64,' + event.imagens[0]"
+       alt="Imagem do evento"
     />
     <!-- Botões de Like e Dislike sobre a imagem -->
     <div class="like-dislike-container">

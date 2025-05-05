@@ -58,6 +58,9 @@ export class CardEventoDetalhesComponent implements OnInit {
         this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
         this.carregarUsuario(evt.usuarioParceiroid);
         this.isLoading = false;
+
+        console.log('Evento carregado:', evt);
+        
       },
       error: (err) => {
         console.error('Erro ao carregar detalhes do evento:', err);

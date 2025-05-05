@@ -18,7 +18,6 @@ import { IEventoCard } from '../../interfaces/evento-card.interface';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../angular_material/angular-material/angular-material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-public-profile',
