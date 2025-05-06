@@ -15,7 +15,7 @@
     </div>
 
     <img
-      [src]="evento.eventoImagem"
+      [src]="'data:image/jpeg;base64,' + evento.eventoImagem[0]"
       [alt]="evento.titulo"
       class="evento-img"
       [routerLink]="['/detalhe-evento/', evento.id]"
