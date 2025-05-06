@@ -48,6 +48,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userImageUrl: string = '';
   userName: string = '';
   usuario: IUsuario | null = null;
+  menuOpen = false;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -122,6 +123,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
         },
       });
   }
+
+  // menu de hamburguer
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  // ----------
 
   toggleDropdown(): void {
     this.isDropdownVisible = !this.isDropdownVisible;

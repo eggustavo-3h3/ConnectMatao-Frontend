@@ -5,6 +5,7 @@
         [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
         [alt]="evento.usuarioNome"
         class="profile-image"
+        [routerLink]="['/perfil/usuario', evento.usuarioParceiroid]"
       />
       <h1
         class="userName"
@@ -37,5 +38,4 @@
       </div>
     </div>
   </div>
-
 </div>

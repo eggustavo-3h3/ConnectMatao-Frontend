@@ -51,26 +51,38 @@ nav {
 }
 
 .nav-link {
-  color: white;
-  background-color: #245dc9;
+  color: #20a2f2;
   text-decoration: none;
-  font-size: 18px;
-  padding: 10px 18px;
+  font-size: 28px;
+  padding: 10px 0px;
   border-radius: 5px;
   border: none;
   transition: 0.3s ease, transform 0.2s ease;
   transition: 700ms;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 4px; /* para dar espaço para a barra */
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0%;
+  background-color: #20a2f2;
+  transition: width 0.3s ease-in-out;
 }
 
 .nav-link:hover {
-  background-color: #158bd4;
-  transform: scale(2.05);
+  color: #157eb3;
 }
 
 .nav-link:hover::after {
   width: 100%;
-  transform: scale(2.05);
 }
+
 .logo {
   width: 50px;
   height: auto;
@@ -106,7 +118,7 @@ nav {
 
 .btn-cadastro {
   color: white;
-  background-color: #245dc9;
+  background-color: #20a2f2;
   text-decoration: none;
   font-size: 18px;
   padding: 10px 18px;
@@ -144,7 +156,7 @@ nav {
   border-radius: 50%;
   cursor: pointer;
 }
-
+/* Dropdown menu */
 .dropdown-menu {
   display: none;
   position: absolute;
@@ -165,12 +177,25 @@ nav {
 }
 
 .dropdown-menu li {
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
+  transition: 600ms ease;
 }
 
 .dropdown-menu li:hover {
-  background-color: #f0f0f0;
+  background-color: #20a2f2; /* Cor azul clara ao passar o mouse */
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  width: 100%;
+  transition: 400ms ease;
+}
+
+.dropdown-menu li a:hover {
+  color: #ffffff;
 }
 
 /* Barra de pesquisa */
@@ -235,6 +260,20 @@ input.form-control {
   background-color: #f0f0f0;
 }
 
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #20a2f2;
+  margin-left: -50px;
+}
+
+.menu-toggle img {
+  width: 40px;
+  height: 40px;
+}
+
 /* Responsividade */
 @media (max-width: 1024px) {
   .search input {
@@ -259,7 +298,7 @@ input.form-control {
   }
 
   .nav-link {
-    font-size: 16px;
+    font-size: 19px;
   }
 
   .btn-login,
@@ -271,6 +310,37 @@ input.form-control {
   }
 
   .nav-user {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 495px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    background-color: white;
+    width: 100%;
+    padding: 15px;
+    z-index: 1000;
+  }
+
+  .navbar-links.active {
+    display: flex;
+  }
+
+  .navbar-links .nav-item {
+    margin: 10px 0;
+  }
+
+  .itens {
     flex-direction: column;
     align-items: flex-start;
   }

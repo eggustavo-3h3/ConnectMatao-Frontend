@@ -29,6 +29,8 @@ export class CardEventoDetalhesComponent implements OnInit {
   dislikesCount = 0;
   usuarioInteragiu = 0;
   usuarioImagemUrl: SafeUrl | null = null;
+  imagemAtual = 0;
+  imagemEventoModalAberta = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -60,7 +62,6 @@ export class CardEventoDetalhesComponent implements OnInit {
         this.isLoading = false;
 
         console.log('Evento carregado:', evt);
-        
       },
       error: (err) => {
         console.error('Erro ao carregar detalhes do evento:', err);
@@ -91,12 +92,45 @@ export class CardEventoDetalhesComponent implements OnInit {
     });
   }
 
+  // modal de imagem do evento
+  abrirModalImagemEvento(): void {
+    this.imagemEventoModalAberta = true;
+  }
+
+  fecharModalImagemEvento(): void {
+    this.imagemEventoModalAberta = false;
+  }
+
+  // modal de imagem do usuario
   openModal(): void {
     this.modalOpen = true;
   }
 
   closeModal(): void {
     this.modalOpen = false;
+  }
+
+  // carousel de imagens do evento
+
+  nextImage(): void {
+    if (!this.event?.imagens) return;
+    this.imagemAtual = (this.imagemAtual + 1) % this.event.imagens.length;
+  }
+
+  prevImage(): void {
+    if (!this.event?.imagens) return;
+    this.imagemAtual =
+      (this.imagemAtual - 1 + this.event.imagens.length) %
+      this.event.imagens.length;
+  }
+
+  irParaImagem(index: number): void {
+    this.imagemAtual = index;
+  }
+  // -----------------------
+
+  get possuiMultiplasImagens(): boolean {
+    return !!this.event?.imagens && this.event.imagens.length > 1;
   }
 
   toggleLike(): void {

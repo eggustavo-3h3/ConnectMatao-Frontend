@@ -1,13 +1,21 @@
 <nav class="navbar">
-  <a routerLink="/" class="navbar-img">
-    <img
-      src="./../../../../../../SVGConnectMatao.svg"
-      alt="Logo"
-      class="logo"
-    />
-  </a>
+  <div class="navbar">
+    <a routerLink="/" class="navbar-img">
+      <img
+        src="./../../../../../../SVGConnectMatao.svg"
+        alt="Logo"
+        class="logo"
+      />
+    </a>
 
-  <ul class="navbar-links">
+    <!-- Botão Hamburguer ao lado da logo -->
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <img src="../Menu_hamburguer.png" alt="" />
+    </button>
+  </div>
+
+  <!-- Links do menu -->
+  <ul class="navbar-links" [class.active]="menuOpen">
     <li class="nav-item"><a routerLink="/" class="nav-link">Início</a></li>
     <li class="nav-item">
       <a routerLink="/divulgarEvento" class="nav-link">Divulgar Evento</a>
@@ -15,19 +23,15 @@
   </ul>
 
   <div class="itens">
-    <!-- Não logado -->
     <ng-container *ngIf="!isLoggedIn">
       <a routerLink="/login" class="btn-login">Login</a>
       <a routerLink="/cadastre-se" class="btn-cadastro">Cadastre-se</a>
     </ng-container>
 
-    <!-- Logado -->
-    <!-- Menu suspenso -->
     <div class="nav-user" *ngIf="isLoggedIn">
       <div class="user-circle" (click)="toggleDropdown()">
         <img [src]="userImageUrl" alt="Foto do Usuário" *ngIf="userImageUrl" />
       </div>
-
       <ul class="dropdown-menu" [class.show]="isDropdownVisible">
         <li class="username">{{ userName }}</li>
         <li><a (click)="goToProfile()">Perfil</a></li>
