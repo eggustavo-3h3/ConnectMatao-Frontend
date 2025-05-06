@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav class="navbar" [class.hidden]="!isNavbarVisible">
   <div class="navbar">
     <a routerLink="/" class="navbar-img">
       <img
@@ -42,7 +42,7 @@
 </nav>
 
 <!-- Segunda barra de navegação: busca -->
-<div class="navBar-2">
+<div class="navBar-2" [class.hidden]="!isNavbarVisible">
   <div class="search">
     <input
       #searchInput

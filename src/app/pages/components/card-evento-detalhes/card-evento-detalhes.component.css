@@ -2,9 +2,9 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 16px;
-  zoom: 70%;
   margin-top: 50px;
   box-shadow: 0px 0px 10px 10px rgb(0, 0, 0, 0.2);
+  margin-top: 250px;
 }
 
 .event-banner {
@@ -53,15 +53,28 @@
   margin-top: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   background-color: rgb(240, 247, 247);
+  height: auto; /* Ajusta a altura automaticamente */
+  max-height: 600px; /* Limita a altura máxima do card */
+  overflow: hidden; /* Impede que o conteúdo ultrapasse os limites do card */
+  position: relative; /* Permite a definição do limite dentro do card */
 }
 
 .event-title {
   margin-top: 0;
   font-size: 24px;
+  margin-bottom: 12px; /* Espaço entre título e descrição */
+  white-space: normal; /* Permite que o título quebre linha */
+  word-wrap: break-word; /* Quebra palavras longas para evitar ultrapassar o limite */
+  overflow: hidden; /* Garante que o texto não ultrapasse os limites */
 }
 
 .event-description {
   margin: 12px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: normal; /* Permite a quebra de linha no texto */
+  word-wrap: break-word; /* Quebra palavras longas */
+  overflow: hidden; /* Garante que o conteúdo não ultrapasse */
 }
 
 .event-info-grid {

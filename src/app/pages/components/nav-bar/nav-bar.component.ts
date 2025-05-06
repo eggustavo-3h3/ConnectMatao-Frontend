@@ -49,6 +49,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userName: string = '';
   usuario: IUsuario | null = null;
   menuOpen = false;
+  isNavbarVisible = true; // Controla a visibilidade da navbar
+  lastScrollTop = 0; // Armazena a última posição do scroll
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -73,6 +75,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.userImageUrl = '';
           this.userName = '';
         }
+        window.addEventListener('scroll', this.onScroll.bind(this));
       }
     );
 
@@ -102,6 +105,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSubscription?.unsubscribe();
+    window.removeEventListener('scroll', this.onScroll.bind(this));
   }
 
   private loadUserProfile(): void {
@@ -122,6 +126,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.userName = '';
         },
       });
+  }
+
+  // esconde navbar ao rolar para baixo
+  onScroll(): void {
+    const currentScrollTop =
+      window.pageYOffset || document.documentElement.scrollTop;
+
+    // Se a direção do scroll for para baixo e a posição do scroll for maior que 200px
+    if (currentScrollTop > this.lastScrollTop && currentScrollTop > 200) {
+      this.isNavbarVisible = false; // Esconde ambas as navbars
+    } else {
+      this.isNavbarVisible = true; // Mostra ambas as navbars
+    }
+
+    // Atualiza a última posição do scroll
+    this.lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
   }
 
   // menu de hamburguer
@@ -164,7 +184,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   goToEventDetails(eventId: number | string | undefined): void {
     if (eventId) {
-      // Garantir que o eventId seja convertido para string
       this.router.navigate(['/detalhe-evento', eventId.toString()]);
       this.searchResults = []; // Limpa os resultados da pesquisa após clicar em um evento
       this.searchInput.nativeElement.value = ''; // Limpa o campo de pesquisa
