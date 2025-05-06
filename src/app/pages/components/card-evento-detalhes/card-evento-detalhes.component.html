@@ -4,64 +4,57 @@
   <!-- Banner com imagem -->
   <div class="event-banner">
     <img
-      *ngIf="event.imagens"
+      *ngIf="event.imagens?.length"
       [src]="'data:image/jpeg;base64,' + event.imagens[0]"
       alt="Imagem do evento"
+      class="banner-image"
     />
-    <!-- Botões de Like e Dislike sobre a imagem -->
+
+    <!-- Botões Like/Dislike sobrepostos -->
     <div class="like-dislike-container">
       <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
-        <img src="../like vazio.png" alt="" /> {{ likesCount }}
+        <mat-icon>{{ usuarioInteragiu === 1 ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
+        {{ likesCount }}
       </button>
-
-      <button
-        (click)="toggleDislike()"
-        [class.disliked]="usuarioInteragiu === 2"
-      >
-        <img src="../deslike vazio.png" />{{ dislikesCount }}
+    
+      <button (click)="toggleDislike()" [class.disliked]="usuarioInteragiu === 2">
+        <mat-icon>{{ usuarioInteragiu === 2 ? 'thumb_down' : 'thumb_down_off_alt' }}</mat-icon>
+        {{ dislikesCount }}
       </button>
     </div>
-  </div>
+    
 
-  <!-- Card com detalhes -->
+  <!-- Card com detalhes do evento -->
   <div class="event-card">
-    <h2>{{ event.titulo }}</h2>
+    <h2 class="event-title">{{ event.titulo }}</h2>
+
     <p class="event-description">
       <strong>Descrição:</strong>
-      {{ event.descricao || "Sem descrição disponível." }}
+      {{ event.descricao || 'Sem descrição disponível.' }}
     </p>
 
-    <div class="card-footer">
-      <p class="event-address">
+    <div class="event-info-grid">
+      <p><strong>Data:</strong> {{ event.data | date: 'dd/MM/yyyy' }}</p>
+      <p><strong>Horário:</strong> {{ event.horario }}</p>
+      <p><strong>Faixa Etária:</strong> {{ event.faixaEtaria === 0 ? 'Todas' : event.faixaEtaria + '+' }}</p>
+      <p>
         <strong>Endereço:</strong>
         <ng-container
-          *ngIf="
-            event.logradouro || event.numero || event.bairro || event.cep;
-            else noAddress
-          "
+          *ngIf="event.logradouro || event.numero || event.bairro || event.cep; else noAddress"
         >
-          {{ event.logradouro }}, {{ event.numero }} – {{ event.bairro }} – CEP:
-          {{ event.cep }}
+          {{ event.logradouro }}, {{ event.numero }} – {{ event.bairro }} – CEP: {{ event.cep }}
         </ng-container>
         <ng-template #noAddress>Não informado</ng-template>
       </p>
-      <p class="age-rating">
-        <strong>Faixa Etária:</strong>
-        {{ event.faixaEtaria === 0 ? "Todas" : event.faixaEtaria }}
-      </p>
-      <p class="event-date">
-        <strong>Data e Horário:</strong>
-        {{ event.data | date : "dd/MM/yyyy" }} – {{ event.horario }}
-      </p>
     </div>
   </div>
 
-  <!-- Informações do usuário no final -->
+  <!-- Informações do organizador -->
   <div class="user-info-footer">
     <img
-      *ngIf="usuario?.imagem"
-      [src]="'data:image/png;base64,' + usuario?.imagem"
-      alt="Foto de perfil de {{ usuario?.nome }}"
+      *ngIf="usuarioImagemUrl"
+      [src]="usuarioImagemUrl"
+      alt="Foto de {{ usuario?.nome }}"
       class="user-profile-img"
       (click)="openModal()"
     />
@@ -72,13 +65,13 @@
 <!-- Spinner de carregamento -->
 <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
 
-<!-- Modal de imagem do usuário -->
+<!-- Modal da imagem de perfil -->
 <div *ngIf="modalOpen" class="modal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <img
-      *ngIf="usuario?.imagem"
-      [src]="'data:image/png;base64,' + usuario?.imagem"
-      alt="Foto de perfil de {{ usuario?.nome }}"
+      *ngIf="usuarioImagemUrl"
+      [src]="usuarioImagemUrl"
+      alt="Imagem do usuário"
       class="event-logo-modal"
     />
     <button class="close-btn" (click)="closeModal()">×</button>
