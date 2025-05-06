@@ -78,9 +78,10 @@
           {{ evento.bairro }}
         </p>
         <p><strong>Contato:</strong> {{ evento.telefone }}</p>
-        <button *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">
+        <button mat-raised-button class="button-excluir" *ngIf="canEditProfile" (click)="confirmDeleteEvent(evento)">
           Excluir
         </button>
+        <button mat-raised-button  [routerLink]="['/detalhe-evento/', evento.id]">Detalhes</button>
       </div>
     </div>
   </div>
@@ -91,8 +92,8 @@
     <p>
       <strong>{{ eventoParaExcluir.titulo }}</strong>
     </p>
-    <button (click)="deleteEvent()">Sim, Excluir</button>
-    <button (click)="cancelDeleteEvent()">Cancelar</button>
+    <button class="button-excluir" (click)="deleteEvent()" >Sim, Excluir</button>
+    <button mat-raised-button (click)="cancelDeleteEvent()">Cancelar</button>
   </div>
 
   <!-- Avaliações -->

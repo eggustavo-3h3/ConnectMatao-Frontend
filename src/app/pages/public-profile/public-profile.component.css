@@ -86,7 +86,6 @@
 }
 
 button {
-  background-color: #007bff;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -94,10 +93,6 @@ button {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 10px;
-}
-
-button:hover {
-  background-color: #0056b3;
 }
 
 .edit-modal,
@@ -115,31 +110,17 @@ button:hover {
   text-align: center;
 }
 
+.delete-modal button {
+  width: 100%;
+  margin-top: 10px;
+}
+
 .edit-modal input {
   width: 100%;
   padding: 8px;
   margin: 10px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
-}
-
-.delete-modal button,
-.edit-modal button {
-  width: 100%;
-  background-color: #dc3545;
-  margin-top: 10px;
-}
-
-.delete-modal button {
-  background-color: #28a745;
-}
-
-.delete-modal button:hover {
-  background-color: #218838;
-}
-
-.delete-modal button {
-  background-color: #f44336;
 }
 
 .event-list {
@@ -167,13 +148,20 @@ button:hover {
 }
 
 .event-card button {
-  background-color: #f44336;
   width: 100%;
   margin-top: 10px;
 }
 
-.event-card button:hover {
-  background-color: #e53935;
+.button-excluir {
+  background-color: #f44336 !important;
+  color: white !important;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.event-card button:hover:nth-child(2) {
+  color: white;
+  background-color: #0056b3;
 }
 
 .avaliacoes {

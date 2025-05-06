@@ -1,5 +1,5 @@
 import { Component, Inject, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -29,6 +29,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     AngularMaterialModule,
     CommonModule,
     NavbarComponent,
+    RouterLink
   ],
 })
 export class PublicProfileComponent implements OnInit {
@@ -52,6 +53,7 @@ export class PublicProfileComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private authService: AuthService,
     private eventoService: EventoService,
     private usuarioService: UsuarioService,
@@ -144,6 +146,7 @@ export class PublicProfileComponent implements OnInit {
         this.snackBar.open('Evento excluído com sucesso!', 'Fechar', {
           duration: 3000,
         });
+        this.loadUserEvents(eventoId.toString());
       },
       error: (error) => {
         console.error('Erro ao excluir evento:', error);
