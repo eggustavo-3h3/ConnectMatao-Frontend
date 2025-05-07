@@ -29,7 +29,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     AngularMaterialModule,
     CommonModule,
     NavbarComponent,
-    RouterLink
+    RouterLink,
   ],
 })
 export class PublicProfileComponent implements OnInit {

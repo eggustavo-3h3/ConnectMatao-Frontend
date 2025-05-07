@@ -75,11 +75,18 @@ body {
   width: 100%;
 }
 
+/* Centralizando o botão de submit */
 button[type="submit"] {
-  width: 100%;
+  margin: 20px auto; /* Centraliza o botão horizontalmente */
+  width: 300px;
+  height: 40px;
+  color: #ffffff;
   padding: 12px;
-  margin-top: 10px;
+  background-color: #2196f3;
   font-size: 16px;
+  border: none;
+  cursor: pointer;
+  display: block; /* Garante que o botão seja tratado como bloco */
 }
 
 .error-message {

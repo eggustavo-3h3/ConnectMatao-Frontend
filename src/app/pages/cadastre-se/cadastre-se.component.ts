@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
+import { LoginComponent } from '../login/login.component';
 
 @Component({
   selector: 'app-cadastre-se',
@@ -17,6 +18,7 @@ import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
     AngularMaterialModule,
     RouterModule,
     NavbarComponent,
+    LoginComponent,
   ],
   templateUrl: './cadastre-se.component.html',
   styleUrls: ['./cadastre-se.component.css'],

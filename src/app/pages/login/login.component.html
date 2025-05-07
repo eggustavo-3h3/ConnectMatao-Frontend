@@ -1,5 +1,3 @@
-<app-navbar></app-navbar>
-
 <div class="container">
   <div class="card">
     <div class="left-panel">
@@ -28,14 +26,13 @@
         <mat-form-field class="full-width">
           <mat-label>Senha</mat-label>
           <input
-            type="text"
             matInput
             [type]="mostrarSenha ? 'text' : 'password'"
             formControlName="senha"
           />
           <button mat-icon-button matSuffix (click)="toggleSenha()">
             <mat-icon>{{
-              mostrarSenha ? "visibility" : "visibility_off"
+              mostrarSenha ? "visibility_off" : "visibility"
             }}</mat-icon>
           </button>
           <mat-error *ngIf="loginForm.controls['senha'].hasError('required')">
@@ -47,7 +44,8 @@
           mat-flat-button
           color="primary"
           (click)="onLogin()"
-          class="full-width"
+          type="submit"
+          class="full-width btn-submit"
         >
           Entrar
         </button>

@@ -46,6 +46,17 @@
   background-color: #ebebeb;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+  margin-left: 20px;
+  font-weight: 400;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .event-card {
   background: #fff;
   padding: 20px;
@@ -53,28 +64,28 @@
   margin-top: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   background-color: rgb(240, 247, 247);
-  height: auto; /* Ajusta a altura automaticamente */
-  max-height: 600px; /* Limita a altura máxima do card */
-  overflow: hidden; /* Impede que o conteúdo ultrapasse os limites do card */
-  position: relative; /* Permite a definição do limite dentro do card */
+  height: auto;
+  max-height: 600px;
+  overflow: hidden;
+  position: relative;
 }
 
 .event-title {
   margin-top: 0;
   font-size: 24px;
-  margin-bottom: 12px; /* Espaço entre título e descrição */
-  white-space: normal; /* Permite que o título quebre linha */
-  word-wrap: break-word; /* Quebra palavras longas para evitar ultrapassar o limite */
-  overflow: hidden; /* Garante que o texto não ultrapasse os limites */
+  margin-bottom: 12px;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 .event-description {
   margin: 12px 0;
   font-size: 16px;
   line-height: 1.5;
-  white-space: normal; /* Permite a quebra de linha no texto */
-  word-wrap: break-word; /* Quebra palavras longas */
-  overflow: hidden; /* Garante que o conteúdo não ultrapasse */
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 .event-info-grid {
@@ -100,11 +111,10 @@
 
 .spinner-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  top: 30%;
+  left: 47%;
+  width: 50%;
+  height: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
