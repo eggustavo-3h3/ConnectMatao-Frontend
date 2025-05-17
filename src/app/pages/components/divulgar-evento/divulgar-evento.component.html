@@ -32,7 +32,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Título</mat-label>
         <input matInput type="text" formControlName="titulo" maxlength="150" />
-        <mat-error *ngIf="eventoForm.get('titulo')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['titulo'].hasError('required')">
           O título é obrigatório.
         </mat-error>
       </mat-form-field>
@@ -41,7 +41,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Bairro</mat-label>
         <input matInput type="text" formControlName="bairro" />
-        <mat-error *ngIf="eventoForm.get('bairro')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['bairro'].hasError('required')">
           O bairro é obrigatório.
         </mat-error>
       </mat-form-field>
@@ -50,7 +50,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Número</mat-label>
         <input matInput type="text" formControlName="numero" />
-        <mat-error *ngIf="eventoForm.get('numero')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['numero'].hasError('required')">
           O número é obrigatório.
         </mat-error>
       </mat-form-field>
@@ -59,7 +59,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Logradouro</mat-label>
         <input matInput type="text" formControlName="logradouro" />
-        <mat-error *ngIf="eventoForm.get('logradouro')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['logradouro'].hasError('required')">
           O logradouro é obrigatório.
         </mat-error>
       </mat-form-field>
@@ -73,10 +73,10 @@
           formControlName="cep"
           pattern="^\d{5}-\d{3}$"
         />
-        <mat-error *ngIf="eventoForm.get('cep')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['cep'].hasError('required')">
           O CEP é obrigatório.
         </mat-error>
-        <mat-error *ngIf="eventoForm.get('cep')?.hasError('pattern')">
+        <mat-error *ngIf="eventoForm.controls['logradouro'].hasError('pattern')">
           O formato do CEP está inválido.
         </mat-error>
       </mat-form-field>
@@ -90,7 +90,7 @@
             formControlName="descricao"
             maxlength="800"
           ></textarea>
-          <mat-error *ngIf="eventoForm.get('descricao')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['descricao'].hasError('required')">
             A descrição é obrigatória.
           </mat-error>
         </mat-form-field>
@@ -101,10 +101,10 @@
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" />
-          <mat-error *ngIf="eventoForm.get('email')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['email'].hasError('required')">
             O email é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.get('email')?.hasError('email')">
+          <mat-error *ngIf="eventoForm.controls['email'].hasError('email')">
             O formato do email está inválido.
           </mat-error>
         </mat-form-field>
@@ -119,7 +119,7 @@
             {{ cat.descricao }}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="eventoForm.get('categoria')?.hasError('required')">
+        <mat-error *ngIf="eventoForm.controls['categoria'].hasError('required')">
           A categoria é obrigatória.
         </mat-error>
       </mat-form-field>
@@ -135,10 +135,10 @@
             (input)="formatPhone($event, 'telefone')"
             maxlength="15"
           />
-          <mat-error *ngIf="eventoForm.get('telefone')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['telefone'].hasError('required')">
             O telefone é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.get('telefone')?.hasError('pattern')">
+          <mat-error *ngIf="eventoForm.controls['telefone'].hasError('pattern')">
             Formato inválido. Use (00) 0000-0000
           </mat-error>
         </mat-form-field>
@@ -155,10 +155,10 @@
             (input)="formatPhone($event, 'whatsapp')"
             maxlength="15"
           />
-          <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['whatsapp'].hasError('required')">
             O whatsapp é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.get('whatsapp')?.hasError('pattern')">
+          <mat-error *ngIf="eventoForm.controls['whatsapp'].hasError('pattern')">
             Formato inválido. Use (00) 00000-0000
           </mat-error>
         </mat-form-field>
@@ -179,7 +179,7 @@
             [for]="picker"
           ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="eventoForm.get('data')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['data'].hasError('required')">
             A data é obrigatória.
           </mat-error>
         </mat-form-field>
@@ -197,10 +197,10 @@
             placeholder="00:00"
           />
           <mat-icon matSuffix>access_time</mat-icon>
-          <mat-error *ngIf="eventoForm.get('horario')?.hasError('required')">
+          <mat-error *ngIf="eventoForm.controls['horario'].hasError('required')">
             O horário é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.get('horario')?.hasError('pattern')">
+          <mat-error *ngIf="eventoForm.controls['horario'].hasError('pattern')">
             O formato do horário está inválido.
           </mat-error>
         </mat-form-field>
@@ -212,11 +212,11 @@
           <mat-label>Faixa Etária</mat-label>
           <input matInput type="number" formControlName="faixaEtaria" />
           <mat-error
-            *ngIf="eventoForm.get('faixaEtaria')?.hasError('required')"
+            *ngIf="eventoForm.controls['faixaEtaria'].hasError('required')"
           >
             A faixa etária é obrigatória.
           </mat-error>
-          <mat-error *ngIf="eventoForm.get('faixaEtaria')?.hasError('min')">
+          <mat-error *ngIf="eventoForm.controls['faixaEtaria'].hasError('min')">
             A faixa etária deve ser maior que 0.
           </mat-error>
         </mat-form-field>
