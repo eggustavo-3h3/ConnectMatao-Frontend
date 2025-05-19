@@ -5,7 +5,7 @@
     <!-- Seção para upload da imagem -->
     <div class="image-upload">
       <label for="imageInput" class="image-upload-label"
-        >Selecionar Imagem</label
+        >Selecionar imagens</label
       >
       <input
         type="file"
@@ -16,14 +16,31 @@
       />
     </div>
 
-    <!-- Pré-visualização da imagem -->
-    <div *ngIf="imagemPreview?.length" class="image-preview-container">
-      <img
-        *ngFor="let img of imagemPreview"
-        [src]="img"
-        alt="Pré-visualização"
-        class="image-preview"
-      />
+    <!-- Carousel de imagens -->
+    <div *ngIf="imagemPreview.length" class="carousel-container">
+      <button
+        mat-icon-button
+        (click)="previousImage()"
+        [disabled]="currentImageIndex === 0"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <div class="carousel-image-wrapper">
+        <img
+          [src]="imagemPreview[currentImageIndex]"
+          class="carousel-image"
+          alt="Imagem do evento"
+        />
+      </div>
+
+      <button
+        mat-icon-button
+        (click)="nextImage()"
+        [disabled]="currentImageIndex === imagemPreview.length - 1"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
 
     <!-- Campos do formulário -->
@@ -59,7 +76,9 @@
       <mat-form-field appearance="fill">
         <mat-label>Logradouro</mat-label>
         <input matInput type="text" formControlName="logradouro" />
-        <mat-error *ngIf="eventoForm.controls['logradouro'].hasError('required')">
+        <mat-error
+          *ngIf="eventoForm.controls['logradouro'].hasError('required')"
+        >
           O logradouro é obrigatório.
         </mat-error>
       </mat-form-field>
@@ -76,7 +95,9 @@
         <mat-error *ngIf="eventoForm.controls['cep'].hasError('required')">
           O CEP é obrigatório.
         </mat-error>
-        <mat-error *ngIf="eventoForm.controls['logradouro'].hasError('pattern')">
+        <mat-error
+          *ngIf="eventoForm.controls['logradouro'].hasError('pattern')"
+        >
           O formato do CEP está inválido.
         </mat-error>
       </mat-form-field>
@@ -90,7 +111,9 @@
             formControlName="descricao"
             maxlength="800"
           ></textarea>
-          <mat-error *ngIf="eventoForm.controls['descricao'].hasError('required')">
+          <mat-error
+            *ngIf="eventoForm.controls['descricao'].hasError('required')"
+          >
             A descrição é obrigatória.
           </mat-error>
         </mat-form-field>
@@ -119,7 +142,9 @@
             {{ cat.descricao }}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="eventoForm.controls['categoria'].hasError('required')">
+        <mat-error
+          *ngIf="eventoForm.controls['categoria'].hasError('required')"
+        >
           A categoria é obrigatória.
         </mat-error>
       </mat-form-field>
@@ -135,10 +160,14 @@
             (input)="formatPhone($event, 'telefone')"
             maxlength="15"
           />
-          <mat-error *ngIf="eventoForm.controls['telefone'].hasError('required')">
+          <mat-error
+            *ngIf="eventoForm.controls['telefone'].hasError('required')"
+          >
             O telefone é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['telefone'].hasError('pattern')">
+          <mat-error
+            *ngIf="eventoForm.controls['telefone'].hasError('pattern')"
+          >
             Formato inválido. Use (00) 0000-0000
           </mat-error>
         </mat-form-field>
@@ -155,10 +184,14 @@
             (input)="formatPhone($event, 'whatsapp')"
             maxlength="15"
           />
-          <mat-error *ngIf="eventoForm.controls['whatsapp'].hasError('required')">
+          <mat-error
+            *ngIf="eventoForm.controls['whatsapp'].hasError('required')"
+          >
             O whatsapp é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['whatsapp'].hasError('pattern')">
+          <mat-error
+            *ngIf="eventoForm.controls['whatsapp'].hasError('pattern')"
+          >
             Formato inválido. Use (00) 00000-0000
           </mat-error>
         </mat-form-field>
@@ -197,7 +230,9 @@
             placeholder="00:00"
           />
           <mat-icon matSuffix>access_time</mat-icon>
-          <mat-error *ngIf="eventoForm.controls['horario'].hasError('required')">
+          <mat-error
+            *ngIf="eventoForm.controls['horario'].hasError('required')"
+          >
             O horário é obrigatório.
           </mat-error>
           <mat-error *ngIf="eventoForm.controls['horario'].hasError('pattern')">

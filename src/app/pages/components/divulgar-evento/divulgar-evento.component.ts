@@ -39,6 +39,7 @@ export class DivulgarEventoComponent implements OnInit {
   minDate: Date;
   selectedFiles: File[] = [];
   isProcessing = false; // Controle de envio do evento
+  currentImageIndex = 0;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -249,5 +250,17 @@ export class DivulgarEventoComponent implements OnInit {
         });
         this.isProcessing = false;
       });
+  }
+
+  nextImage(): void {
+    if (this.currentImageIndex < this.imagemPreview.length - 1) {
+      this.currentImageIndex++;
+    }
+  }
+
+  previousImage(): void {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+    }
   }
 }

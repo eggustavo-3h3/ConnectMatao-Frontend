@@ -25,7 +25,12 @@ export class UsuarioService {
 
   // Criar cabeçalho com o token de autenticação
   private getAuthHeaders(): HttpHeaders {
-    return this.authService.createAuthHeader();
+    const token = this.authService.getToken();
+    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
   }
 
   // Método para tratar erros e logar as falhas
@@ -84,6 +89,19 @@ export class UsuarioService {
           return throwError(() => new Error('Erro ao atualizar perfil.'));
         })
       );
+  }
+
+  alterarSenha(senhaAtual: string, novaSenha: string): Observable<any> {
+    const url = `${this.apiUrl}/usuario/alterar-senha`;
+    const body = { senhaAtual, novaSenha };
+    const headers = this.getAuthHeaders();
+
+    return this.http.put(url, body, { headers }).pipe(
+      catchError((error) => {
+        console.error('Erro ao alterar senha:', error);
+        return throwError(() => new Error('Erro ao alterar senha.'));
+      })
+    );
   }
 
   // Obter o perfil do usuário autenticado

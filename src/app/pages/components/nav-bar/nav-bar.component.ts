@@ -106,16 +106,30 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private loadUserProfile(): void {
+    if (!this.authService.isAuthenticated()) {
+      console.warn('Usuário não autenticado.');
+      this.userImageUrl = 'assets/default-user.png';
+      this.userName = '';
+      return;
+    }
+
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      console.warn('ID de usuário não disponível.');
+      this.userImageUrl = 'assets/default-user.png';
+      this.userName = '';
+      return;
+    }
+
     this.usuarioService
       .getPerfilUsuario()
       .pipe(take(1))
       .subscribe({
-        next: (usuario: IUsuario) => {
-          this.usuario = usuario;
-          this.userImageUrl = usuario.imagem
-            ? `data:image/jpeg;base64,${usuario.imagem}`
+        next: (user) => {
+          this.userImageUrl = user.imagem
+            ? `data:image/jpeg;base64,${user.imagem}`
             : 'assets/default-user.png';
-          this.userName = usuario.nome;
+          this.userName = user.nome;
         },
         error: (err) => {
           console.error('Erro ao carregar perfil:', err);

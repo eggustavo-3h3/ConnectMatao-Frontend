@@ -193,6 +193,7 @@ export class EventoService {
   getEventoPorId(eventId: string): Observable<IEvento> {
     return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}/detalhe`);
   }
+
   searchEvents(term: string): Observable<IEvento[]> {
     const url = `${this.apiUrl}/evento/listar?search=${term}`;
     return this.http.get<IEvento[]>(url).pipe(

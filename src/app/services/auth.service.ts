@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
-import { IEvento } from '../interfaces/evento.interface';
 import { Perfil } from '../enums/perfil.enum';
 
 @Injectable({
@@ -16,18 +15,20 @@ export class AuthService {
   isLoggedIn$ = new BehaviorSubject<boolean>(this.isAuthenticated());
   private _userId: string | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
+  // Faz login e retorna token, role e userId
   logar(
     login: string,
     senha: string
   ): Observable<{ token: string; role: string; userId: string }> {
     return this.http.post<{ token: string; role: string; userId: string }>(
-      this.apiUrl + '/autenticar',
+      `${this.apiUrl}/autenticar`,
       { login, senha }
     );
   }
 
+  // Cadastro de usuário
   register(
     nome: string,
     email: string,
@@ -42,17 +43,22 @@ export class AuthService {
       senha,
       confirmacaoSenha,
       imagem,
-      perfil, // =1
+      perfil,
     };
 
     console.log('Payload de cadastro:', payload);
-    return this.http.post<IUsuario>(`${this.apiUrl}/usuario/cadastrar`, payload);
+    return this.http.post<IUsuario>(
+      `${this.apiUrl}/usuario/cadastrar`,
+      payload
+    );
   }
 
+  // Salva token e role no localStorage e atualiza BehaviorSubject
   saveAuthInfo(token: string, role: string): void {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.roleKey, role);
     this.isLoggedIn$.next(true);
+    this._userId = null; // Limpa o userId cacheado para forçar decodificação nova se necessário
   }
 
   getToken(): string | null {
@@ -63,19 +69,20 @@ export class AuthService {
     return localStorage.getItem(this.roleKey);
   }
 
+  // Decodifica o userId do token JWT e cacheia o resultado
   getUserId(): string | null {
-    if (this._userId) return this._userId; // Retorna o userId armazenado se já existir
+    if (this._userId) return this._userId;
 
     const token = this.getToken();
     if (!token) return null;
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      // Guarda o userId temporariamente para não fazer a leitura novamente
-      this._userId =
-        payload[
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
-        ] || null;
+      console.log('Payload do token:', payload); // log para debug
+
+      // Ajuste aqui para pegar a claim correta
+      this._userId = payload['Id'] || null;
+
       return this._userId;
     } catch (e) {
       console.error('Erro ao decodificar o token:', e);
@@ -87,13 +94,15 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
     this.isLoggedIn$.next(false);
-    this._userId = null; // Limpa o userId armazenado
-    console.log('Saiu.');
+    this._userId = null;
+    console.log('Usuário deslogado.');
 
+    // Limpar cookie authToken caso exista
     document.cookie =
       'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
+  // Verifica se o token existe e não expirou
   isAuthenticated(): boolean {
     const token = this.getToken();
     if (!token) return false;
@@ -121,18 +130,14 @@ export class AuthService {
     return this.isAuthenticated() && this.getRole() === 'Administrador';
   }
 
+  // Cria HttpHeaders com o token JWT para autorização, se presente
   createAuthHeader(): HttpHeaders {
-    let token = this.getToken();
-
-    // Verifique o tamanho do token antes de enviá-lo no cabeçalho
-    if (token && token.length > 1000) {
-      console.warn('Token JWT muito grande, invalidando');
-      token = ''; // Limpa o token se ele for muito grande
+    const token = this.getToken();
+    if (token) {
+      return new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
     }
-
-    // Se o token for válido, cria o cabeçalho de autorização
-    return token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : new HttpHeaders();
+    return new HttpHeaders(); // Não adiciona Authorization
   }
 }

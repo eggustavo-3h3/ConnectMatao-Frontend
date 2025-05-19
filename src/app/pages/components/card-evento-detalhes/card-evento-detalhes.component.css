@@ -129,7 +129,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1100;
+  z-index: 21100;
 }
 
 .modal-content {
@@ -140,7 +140,7 @@ a:hover {
 
 .event-logo-modal {
   max-width: 800px;
-  max-height: 800px;
+  max-height: 500px;
   border-radius: 10px;
 }
 

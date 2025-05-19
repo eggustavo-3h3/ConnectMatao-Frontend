@@ -1,0 +1,46 @@
+<div class="alterar-senha-container">
+  <h2>Alterar Senha</h2>
+  <form [formGroup]="alterarSenhaForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="senhaAtual">Senha Atual</label>
+      <input
+        type="password"
+        id="senhaAtual"
+        formControlName="senhaAtual"
+        class="form-control"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="novaSenha">Nova Senha</label>
+      <input
+        type="password"
+        id="novaSenha"
+        formControlName="novaSenha"
+        class="form-control"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
+      <input
+        type="password"
+        id="confirmarNovaSenha"
+        formControlName="confirmarNovaSenha"
+        class="form-control"
+      />
+      <!-- CORREÇÃO AQUI -->
+      <div *ngIf="alterarSenhaForm.errors?.['senhasNaoConferem']" class="error">
+        As senhas não coincidem.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="alterarSenhaForm.invalid"
+    >
+      Alterar Senha
+    </button>
+  </form>
+</div>
