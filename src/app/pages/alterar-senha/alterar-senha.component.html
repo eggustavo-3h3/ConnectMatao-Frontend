@@ -1,6 +1,7 @@
 <div class="alterar-senha-container">
   <h2>Alterar Senha</h2>
   <form [formGroup]="alterarSenhaForm" (ngSubmit)="onSubmit()">
+    <!-- Senha Atual -->
     <div class="form-group">
       <label for="senhaAtual">Senha Atual</label>
       <input
@@ -9,8 +10,24 @@
         formControlName="senhaAtual"
         class="form-control"
       />
+      <div
+        class="error"
+        *ngIf="
+          alterarSenhaForm.get('senhaAtual')?.hasError('required') &&
+          alterarSenhaForm.get('senhaAtual')?.touched
+        "
+      >
+        A senha atual é obrigatória.
+      </div>
+      <div
+        class="error"
+        *ngIf="alterarSenhaForm.get('senhaAtual')?.hasError('apiError')"
+      >
+        {{ alterarSenhaForm.get("senhaAtual")?.getError("apiError") }}
+      </div>
     </div>
 
+    <!-- Nova Senha -->
     <div class="form-group">
       <label for="novaSenha">Nova Senha</label>
       <input
@@ -19,8 +36,42 @@
         formControlName="novaSenha"
         class="form-control"
       />
+      <div
+        class="error"
+        *ngIf="
+          alterarSenhaForm.get('novaSenha')?.hasError('required') &&
+          alterarSenhaForm.get('novaSenha')?.touched
+        "
+      >
+        A nova senha é obrigatória.
+      </div>
+      <div
+        class="error"
+        *ngIf="
+          alterarSenhaForm.get('novaSenha')?.hasError('minlength') &&
+          alterarSenhaForm.get('novaSenha')?.touched
+        "
+      >
+        A nova senha deve ter no mínimo 8 caracteres.
+      </div>
+      <div
+        class="error"
+        *ngIf="alterarSenhaForm.get('novaSenha')?.hasError('apiError')"
+      >
+        {{ alterarSenhaForm.get("novaSenha")?.getError("apiError") }}
+      </div>
+      <div
+        class="error"
+        *ngIf="
+          alterarSenhaForm.hasError('senhaAtualIgualNova') &&
+          alterarSenhaForm.get('novaSenha')?.touched
+        "
+      >
+        A nova senha não pode ser igual à senha atual.
+      </div>
     </div>
 
+    <!-- Confirmar Nova Senha -->
     <div class="form-group">
       <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
       <input
@@ -29,12 +80,24 @@
         formControlName="confirmarNovaSenha"
         class="form-control"
       />
-      <!-- CORREÇÃO AQUI -->
-      <div *ngIf="alterarSenhaForm.errors?.['senhasNaoConferem']" class="error">
+      <div
+        class="error"
+        *ngIf="
+          alterarSenhaForm.get('confirmarNovaSenha')?.hasError('required') &&
+          alterarSenhaForm.get('confirmarNovaSenha')?.touched
+        "
+      >
+        A confirmação da nova senha é obrigatória.
+      </div>
+      <div
+        class="error"
+        *ngIf="alterarSenhaForm.errors?.['senhasNaoConferem'] && alterarSenhaForm.get('confirmarNovaSenha')?.touched"
+      >
         As senhas não coincidem.
       </div>
     </div>
 
+    <!-- Botão -->
     <button
       type="submit"
       class="btn btn-primary"
@@ -43,4 +106,20 @@
       Alterar Senha
     </button>
   </form>
+
+  <!-- Modal Inline -->
+  <ng-template #confirmDialog>
+    <h2 mat-dialog-title>Confirmar alteração</h2>
+    <mat-dialog-content>
+      Tem certeza que deseja alterar sua senha?
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button class="btn-cancel" (click)="cancelarAlteracao()">
+        Cancelar
+      </button>
+      <button mat-button class="btn-confirm" (click)="confirmarAlteracao()">
+        Confirmar
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
 </div>

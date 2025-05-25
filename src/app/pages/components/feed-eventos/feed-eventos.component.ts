@@ -1,4 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { EventoService } from '../../../services/evento.service';
 import { IEventoCard } from '../../../interfaces/evento-card.interface';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
@@ -11,10 +17,11 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./feed-eventos.component.css'],
   imports: [AngularMaterialModule, CommonModule, RouterModule],
 })
-export class FeedEventosComponent implements OnInit {
+export class FeedEventosComponent implements OnChanges {
   eventos: IEventoCard[] = [];
   isLoading = false;
-  categoriaSelecionada: number | null = null;
+
+  @Input() categoriaSelecionada: number | null = null;
 
   private page = 0;
   private readonly limit = 3;
@@ -22,7 +29,16 @@ export class FeedEventosComponent implements OnInit {
 
   constructor(private eventoService: EventoService) {}
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['categoriaSelecionada']) {
+      this.resetarFeed();
+    }
+  }
+
+  resetarFeed(): void {
+    this.eventos = [];
+    this.page = 0;
+    this.allLoaded = false;
     this.carregarMaisEventos();
   }
 
@@ -38,10 +54,21 @@ export class FeedEventosComponent implements OnInit {
 
     this.eventoService.listarEventos(this.categoriaSelecionada).subscribe({
       next: (todosEventos) => {
-        const novosEventos = todosEventos.slice(
+        // filtrar por categoria caso o backend não faça
+        const categoriaStr = this.categoriaSelecionada?.toString() ?? null;
+
+        let eventosFiltrados = todosEventos;
+        if (categoriaStr !== null) {
+          eventosFiltrados = todosEventos.filter(
+            (e) => e.categoriaid === categoriaStr
+          );
+        }
+
+        const novosEventos = eventosFiltrados.slice(
           this.page * this.limit,
           (this.page + 1) * this.limit
         );
+
         if (novosEventos.length > 0) {
           this.eventos = [...this.eventos, ...novosEventos];
           this.page++;

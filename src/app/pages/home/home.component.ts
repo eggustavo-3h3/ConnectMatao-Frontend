@@ -19,4 +19,10 @@ import { Perfil } from '../../enums/perfil.enum';
   styleUrl: './home.component.css',
   standalone: true,
 })
-export class HomeComponent {}
+export class HomeComponent {
+  categoriaSelecionada: number | null = null;
+
+  onCategoriaChange(categoriaId: number | null) {
+    this.categoriaSelecionada = categoriaId;
+  }
+}

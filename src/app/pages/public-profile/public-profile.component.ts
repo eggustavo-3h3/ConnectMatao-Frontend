@@ -137,7 +137,7 @@ export class PublicProfileComponent implements OnInit {
       return;
     }
 
-    const eventoId = this.eventoParaExcluir.id!;
+    const eventoId = Number(this.eventoParaExcluir.id);
 
     this.eventoService.removerEvento(eventoId).subscribe({
       next: () => {
@@ -146,7 +146,6 @@ export class PublicProfileComponent implements OnInit {
         this.snackBar.open('Evento excluído com sucesso!', 'Fechar', {
           duration: 3000,
         });
-        this.loadUserEvents(eventoId.toString());
       },
       error: (error) => {
         console.error('Erro ao excluir evento:', error);

@@ -40,6 +40,8 @@ export class DivulgarEventoComponent implements OnInit {
   selectedFiles: File[] = [];
   isProcessing = false; // Controle de envio do evento
   currentImageIndex = 0;
+  formTriedSubmit = false;
+  isDragOver = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -148,6 +150,15 @@ export class DivulgarEventoComponent implements OnInit {
     });
   }
 
+  removeCurrentImage(): void {
+    this.selectedFiles.splice(this.currentImageIndex, 1);
+    this.imagemPreview.splice(this.currentImageIndex, 1);
+
+    if (this.currentImageIndex >= this.imagemPreview.length) {
+      this.currentImageIndex = Math.max(this.imagemPreview.length - 1, 0);
+    }
+  }
+
   carregarCategorias(): void {
     this.categoriaService.listarCategorias().subscribe({
       next: (categorias) => {
@@ -163,31 +174,38 @@ export class DivulgarEventoComponent implements OnInit {
   }
 
   onFileChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
 
-    if (target.files && target.files.length > 0) {
-      this.selectedFiles = Array.from(target.files);
+    const files = Array.from(input.files);
 
-      // Display previews for all selected images
-      const imagePreviews: string[] = [];
-      this.selectedFiles.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          imagePreviews.push(reader.result as string);
-          this.imagemPreview = imagePreviews;
-          console.log('Imagem Previews:', this.imagemPreview);
-        };
-        reader.readAsDataURL(file); // Read each file
-      });
-    }
+    // adiciona as novas imagens às já existentes
+    this.selectedFiles = [...this.selectedFiles, ...files];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagemPreview.push(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    input.value = '';
   }
 
   onSubmit(): void {
-    if (this.eventoForm.invalid || this.isProcessing) return;
-    if (this.selectedFiles.length > 5) {
-      this.snackBar.open('Você só pode enviar até 5 imagens.', 'Fechar', {
-        duration: 3000,
-      });
+    this.formTriedSubmit = true;
+
+    if (
+      this.eventoForm.invalid ||
+      !this.usuario ||
+      this.selectedFiles.length === 0
+    ) {
+      if (this.selectedFiles.length === 0) {
+        this.snackBar.open('Adicione pelo menos uma imagem.', 'Fechar', {
+          duration: 3000,
+        });
+      }
       return;
     }
 
@@ -261,6 +279,39 @@ export class DivulgarEventoComponent implements OnInit {
   previousImage(): void {
     if (this.currentImageIndex > 0) {
       this.currentImageIndex--;
+    }
+  }
+
+  // parte para arrastar imagem
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      const files = Array.from(event.dataTransfer.files);
+
+      // adiciona as novas imagens às já existentes
+      this.selectedFiles = [...this.selectedFiles, ...files];
+
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagemPreview.push(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      event.dataTransfer.clearData();
     }
   }
 }
