@@ -1,0 +1,38 @@
+<h2>Redefinir Senha</h2>
+
+<form [formGroup]="resetarSenhaForm" (ngSubmit)="resetarSenha()">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Chave de Redefinição</mat-label>
+    <input matInput formControlName="chaveResetSenha" />
+    <mat-error
+      *ngIf="resetarSenhaForm.get('chaveResetSenha')?.hasError('required')"
+    >
+      A chave é obrigatória.
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Nova Senha</mat-label>
+    <input matInput type="password" formControlName="novaSenha" />
+    <mat-error *ngIf="resetarSenhaForm.get('novaSenha')?.hasError('required')">
+      A nova senha é obrigatória.
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Confirmar Nova Senha</mat-label>
+    <input matInput type="password" formControlName="confirmarNovaSenha" />
+    <mat-error
+      *ngIf="resetarSenhaForm.get('confirmarNovaSenha')?.hasError('required')"
+    >
+      A confirmação da senha é obrigatória.
+    </mat-error>
+    <mat-error *ngIf="resetarSenhaForm.hasError('passwordMismatch')">
+      As senhas não coincidem.
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+    Redefinir Senha
+  </button>
+</form>

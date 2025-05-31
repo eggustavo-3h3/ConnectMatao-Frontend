@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
@@ -20,6 +20,7 @@ import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
     AngularMaterialModule,
     ReactiveFormsModule,
     NavbarComponent,
+    RouterLink,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',

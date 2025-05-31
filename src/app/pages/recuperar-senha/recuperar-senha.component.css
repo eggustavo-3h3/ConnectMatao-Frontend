@@ -1,0 +1,44 @@
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #333;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 150px;
+}
+
+button {
+  min-width: 140px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1565c0;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+mat-error {
+  font-size: 0.9rem;
+  color: #d32f2f;
+}

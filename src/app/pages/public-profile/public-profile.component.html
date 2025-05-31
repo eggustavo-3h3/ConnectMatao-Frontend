@@ -1,4 +1,10 @@
-<div *ngIf="user" class="profile-container">
+<!-- Spinner de carregamento -->
+<div *ngIf="isLoading" class="spinner-container">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+<!-- Conteúdo do perfil -->
+<div *ngIf="!isLoading && user" class="profile-container">
+  <!-- Cabeçalho do Perfil -->
   <div class="profile-header">
     <div class="profile-image">
       <img
@@ -33,7 +39,7 @@
     </div>
   </div>
 
-  <!-- Modal editar nome -->
+  <!-- Modal: Editar Nome -->
   <div *ngIf="isEditNameModalOpen" class="edit-modal">
     <h3>Alterar Nome</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateName()">
@@ -43,59 +49,68 @@
     </form>
   </div>
 
-  <!-- Modal editar imagem -->
+  <!-- Modal: Editar Imagem -->
   <div *ngIf="isEditImageModalOpen" class="edit-modal">
     <h3>Alterar Imagem</h3>
-
     <form [formGroup]="editForm" (ngSubmit)="updateImage()">
       <input
         type="file"
         (change)="handleImageUpload($event)"
         accept="image/*"
       />
-
       <div class="image-preview-container" *ngIf="imagePreviewUrl">
         <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
       </div>
-
       <button type="submit" [disabled]="!editForm.value.imagem">Salvar</button>
       <button type="button" (click)="closeEditImageModal()">Cancelar</button>
     </form>
   </div>
 
-  <!-- Lista de eventos -->
-  <div *ngIf="userEvents.length > 0">
-    <h3>Eventos</h3>
-    <div class="event-list">
-      <div *ngFor="let evento of userEvents" class="event-card">
-        <h4>{{ evento.titulo }}</h4>
-        <p class="descricao-evento">{{ evento.descricao }}</p>
-        <p><strong>Data:</strong> {{ evento.data | date : "dd/MM/yyyy" }}</p>
+  <!-- Lista de Eventos do Usuário -->
+  <div>
+    <h3 *ngIf="canEditProfile">Meus Eventos</h3>
+    <h3 *ngIf="!canEditProfile">Eventos</h3>
 
-        <p>
-          <strong>Local:</strong> {{ evento.logradouro }}, {{ evento.numero }} -
-          {{ evento.bairro }}
-        </p>
-        <p><strong>Contato:</strong> {{ evento.telefone }}</p>
-        <button
-          mat-raised-button
-          class="button-excluir"
-          *ngIf="canEditProfile"
-          (click)="confirmDeleteEvent(evento)"
-        >
-          Excluir
-        </button>
-        <button
-          mat-raised-button
-          [routerLink]="['/detalhe-evento/', evento.id]"
-        >
-          Detalhes
-        </button>
+    <ng-container *ngIf="userEvents.length > 0; else semEventos">
+      <div class="event-list">
+        <div *ngFor="let evento of userEvents" class="event-card">
+          <h4>{{ evento.titulo }}</h4>
+          <p class="descricao-evento">{{ evento.descricao }}</p>
+          <p><strong>Data:</strong> {{ evento.data | date : "dd/MM/yyyy" }}</p>
+          <p>
+            <strong>Local:</strong> {{ evento.logradouro }},
+            {{ evento.numero }} -
+            {{ evento.bairro }}
+          </p>
+          <p><strong>Contato:</strong> {{ evento.telefone }}</p>
+          <button
+            mat-raised-button
+            class="button-excluir"
+            *ngIf="canEditProfile"
+            (click)="confirmDeleteEvent(evento)"
+          >
+            Excluir
+          </button>
+          <button
+            mat-raised-button
+            [routerLink]="['/detalhe-evento/', evento.id]"
+          >
+            Detalhes
+          </button>
+        </div>
       </div>
-    </div>
+    </ng-container>
+
+    <!-- Texto quando não houver eventos -->
+    <ng-template #semEventos>
+      <p *ngIf="canEditProfile">Você ainda não publicou nenhum evento.</p>
+      <p *ngIf="!canEditProfile">
+        Este usuário ainda não publicou nenhum evento.
+      </p>
+    </ng-template>
   </div>
 
-  <!-- Modal de confirmação de exclusão -->
+  <!-- Modal: Confirmação de Exclusão -->
   <div *ngIf="excluirModalAberto" class="delete-modal">
     <h4>Você tem certeza que deseja excluir este evento?</h4>
     <p>
@@ -105,7 +120,7 @@
     <button mat-raised-button (click)="cancelDeleteEvent()">Cancelar</button>
   </div>
 
-  <!-- Avaliações -->
+  <!-- Avaliações Recebidas -->
   <div *ngIf="avaliacoes.length > 0">
     <h3>Avaliações</h3>
     <div class="avaliacoes">
@@ -119,7 +134,7 @@
     <h4>Média geral: {{ mediaAvaliacoes | number : "1.1-1" }}</h4>
   </div>
 
-  <!-- Avaliação do usuário -->
+  <!-- Avaliação do Usuário -->
   <div *ngIf="avaliacaoUsuario > 0">
     <h3>Sua Avaliação</h3>
     <p>Você avaliou com nota: {{ avaliacaoUsuario }}</p>

@@ -6,6 +6,7 @@ import { PublicProfileComponent } from './pages/public-profile/public-profile.co
 import { DivulgarEventoComponent } from './pages/components/divulgar-evento/divulgar-evento.component';
 import { CardEventoDetalhesComponent } from './pages/components/card-evento-detalhes/card-evento-detalhes.component';
 import { AlterarSenhaComponent } from './pages/alterar-senha/alterar-senha.component';
+import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,4 +17,6 @@ export const routes: Routes = [
   { path: 'perfil/:id', component: PublicProfileComponent },
   { path: 'detalhe-evento/:eventId', component: CardEventoDetalhesComponent },
   { path: 'alterar-senha', component: AlterarSenhaComponent },
+  { path: 'recuperar-senha', component: RecuperarSenhaComponent },
+  { path: 'profile/usuario/:id', component: PublicProfileComponent },
 ];

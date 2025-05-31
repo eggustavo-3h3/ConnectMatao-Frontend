@@ -52,24 +52,6 @@
           (click)="abrirModalImagemEvento()"
         />
 
-        <!-- Modal da imagem do evento -->
-        <div
-          *ngIf="imagemEventoModalAberta"
-          class="modal"
-          (click)="fecharModalImagemEvento()"
-        >
-          <div class="modal-content" (click)="$event.stopPropagation()">
-            <img
-              [src]="'data:image/jpeg;base64,' + event.imagens[imagemAtual]"
-              alt="Imagem ampliada do evento"
-              class="event-logo-modal"
-            />
-            <button class="close-btn" (click)="fecharModalImagemEvento()">
-              ×
-            </button>
-          </div>
-        </div>
-
         <!-- Botões Like/Dislike dentro da imagem -->
         <div class="like-dislike-container">
           <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
@@ -92,65 +74,106 @@
       </div>
     </ng-template>
 
-    <!-- Card com detalhes do evento -->
-    <div class="event-card">
-      <h2 class="event-title">{{ event.titulo }}</h2>
-
-      <p class="event-description">
-        <strong>Descrição:</strong>
-        {{ event.descricao || "Sem descrição disponível." }}
-      </p>
-
-      <div class="event-info-grid">
-        <p><strong>Data:</strong> {{ event.data | date : "dd/MM/yyyy" }}</p>
-        <p><strong>Horário:</strong> {{ event.horario }}</p>
-        <p>
-          <strong>Faixa Etária:</strong>
-          {{ event.faixaEtaria === 0 ? "Todas" : event.faixaEtaria + "+" }}
-        </p>
-        <p>
-          <strong>Endereço:</strong>
-          <ng-container
-            *ngIf="
-              event.logradouro || event.numero || event.bairro || event.cep;
-              else noAddress
-            "
-          >
-            {{ event.logradouro }}, {{ event.numero }} – {{ event.bairro }} –
-            CEP: {{ event.cep }}
-          </ng-container>
-          <ng-template #noAddress>Não informado</ng-template>
-        </p>
+    <!-- MODAL DA IMAGEM DO EVENTO (SEMPRE VISÍVEL NO DOM) -->
+    <div
+      *ngIf="imagemEventoModalAberta"
+      class="modal"
+      (click)="fecharModalImagemEvento()"
+    >
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <img
+          [src]="'data:image/jpeg;base64,' + event.imagens[imagemAtual]"
+          alt="Imagem ampliada do evento"
+          class="event-logo-modal"
+        />
+        <button class="close-btn" (click)="fecharModalImagemEvento()">×</button>
       </div>
     </div>
+  </div>
 
-    <!-- Informações do organizador -->
-    <div class="user-info-footer">
+  <!-- Card com detalhes do evento -->
+  <div class="event-card">
+    <h2 class="event-title">{{ event.titulo }}</h2>
+
+    <p class="event-description">
+      <strong>Descrição:</strong>
+      {{ event.descricao || "Sem descrição disponível." }}
+    </p>
+
+    <div class="event-info-grid">
+      <p><strong>Data:</strong> {{ event.data | date : "dd/MM/yyyy" }}</p>
+      <p><strong>Horário:</strong> {{ event.horario }}</p>
+      <p>
+        <strong>Faixa Etária:</strong>
+        {{ event.faixaEtaria === 0 ? "Todas" : event.faixaEtaria + "+" }}
+      </p>
+      <p>
+        <strong>Endereço:</strong>
+        <ng-container
+          *ngIf="
+            event.logradouro || event.numero || event.bairro || event.cep;
+            else noAddress
+          "
+        >
+          {{ event.logradouro }}, {{ event.numero }} – {{ event.bairro }} – CEP:
+          {{ event.cep }}
+        </ng-container>
+        <ng-template #noAddress>Não informado</ng-template>
+      </p>
+    </div>
+  </div>
+
+  <!-- Informações do organizador -->
+  <div class="user-info-footer">
+    <img
+      *ngIf="usuarioImagemUrl"
+      [src]="usuarioImagemUrl"
+      alt="Foto de {{ usuario?.nome }}"
+      class="user-profile-img"
+      (click)="openModal()"
+    />
+    <h3>
+      <a [routerLink]="['/perfil', usuario?.id]">{{ usuario?.nome }}</a>
+    </h3>
+  </div>
+  <button
+    *ngIf="podeApagarEvento()"
+    (click)="abrirModalConfirmacao()"
+    aria-label="Apagar Evento"
+    class="btn-delete-icon"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+
+  <!-- Spinner de carregamento -->
+  <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
+
+  <!-- Modal da imagem de perfil -->
+  <div *ngIf="modalOpen" class="modal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
       <img
         *ngIf="usuarioImagemUrl"
         [src]="usuarioImagemUrl"
-        alt="Foto de {{ usuario?.nome }}"
-        class="user-profile-img"
-        (click)="openModal()"
+        alt="Imagem do usuário"
+        class="event-logo-modal"
       />
-      <h3>
-        <a [routerLink]="['/perfil', usuario?.id]">{{ usuario?.nome }}</a>
-      </h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
     </div>
+  </div>
 
-    <!-- Spinner de carregamento -->
-    <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
-
-    <!-- Modal da imagem de perfil -->
-    <div *ngIf="modalOpen" class="modal" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <img
-          *ngIf="usuarioImagemUrl"
-          [src]="usuarioImagemUrl"
-          alt="Imagem do usuário"
-          class="event-logo-modal"
-        />
-        <button class="close-btn" (click)="closeModal()">×</button>
+  <!-- Modal de confirmação para apagar evento -->
+  <div
+    *ngIf="confirmarModalAberto"
+    class="modalApagar confirmation-modal"
+    (click)="fecharModalConfirmacao()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Tem certeza que deseja apagar este evento?</h3>
+      <div class="modal-buttons">
+        <button mat-button color="warn" (click)="confirmarRemoverEvento()">
+          Sim, apagar
+        </button>
+        <button mat-button (click)="fecharModalConfirmacao()">Cancelar</button>
       </div>
     </div>
   </div>

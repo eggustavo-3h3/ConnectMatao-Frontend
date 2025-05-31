@@ -54,11 +54,10 @@ export class FeedEventosComponent implements OnChanges {
 
     this.eventoService.listarEventos(this.categoriaSelecionada).subscribe({
       next: (todosEventos) => {
-        // filtrar por categoria caso o backend não faça
-        const categoriaStr = this.categoriaSelecionada?.toString() ?? null;
-
         let eventosFiltrados = todosEventos;
-        if (categoriaStr !== null) {
+
+        if (this.categoriaSelecionada !== null) {
+          const categoriaStr = this.categoriaSelecionada.toString();
           eventosFiltrados = todosEventos.filter(
             (e) => e.categoriaid === categoriaStr
           );
@@ -75,6 +74,7 @@ export class FeedEventosComponent implements OnChanges {
         } else {
           this.allLoaded = true;
         }
+
         this.isLoading = false;
       },
       error: (error) => {

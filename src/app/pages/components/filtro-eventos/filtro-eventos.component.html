@@ -28,7 +28,6 @@
       <form (ngSubmit)="applyFilters()">
         <label for="category">Categoria:</label>
         <select id="category" name="category" [(ngModel)]="filters.categoryId">
-          <option value="">Todas</option>
           <option *ngFor="let cat of categorias" [value]="cat.id">
             {{ cat.descricao }}
           </option>

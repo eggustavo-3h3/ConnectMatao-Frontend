@@ -1,4 +1,13 @@
 <div class="feed-container">
+  <!-- Mensagem quando não há eventos -->
+  <div
+    *ngIf="!isLoading && eventos.length === 0 && categoriaSelecionada !== null"
+    class="mensagem-vazia"
+  >
+    <p>Não há eventos publicados com essa categoria.</p>
+  </div>
+
+  <!-- Lista de eventos -->
   <div *ngFor="let evento of eventos" class="evento-card">
     <div class="evento-header">
       <img

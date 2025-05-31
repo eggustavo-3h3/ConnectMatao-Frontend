@@ -229,3 +229,10 @@ button {
   border-radius: 50%;
   margin-top: 10px;
 }
+
+.spinner-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}

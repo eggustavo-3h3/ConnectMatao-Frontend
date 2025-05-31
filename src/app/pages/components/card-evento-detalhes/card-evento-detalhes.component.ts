@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventoService } from '../../../services/evento.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -10,14 +10,15 @@ import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
 import { switchMap } from 'rxjs/operators';
-import { RouterModule } from '@angular/router'; // ✅ IMPORTAÇÃO NECESSÁRIA
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-card-evento-detalhes',
   standalone: true,
   templateUrl: './card-evento-detalhes.component.html',
   styleUrls: ['./card-evento-detalhes.component.css'],
-  imports: [CommonModule, RouterModule, NavbarComponent, AngularMaterialModule], // ✅ RouterModule incluído
+  imports: [CommonModule, RouterModule, NavbarComponent, AngularMaterialModule],
 })
 export class CardEventoDetalhesComponent implements OnInit {
   eventId!: string | null;
@@ -31,12 +32,15 @@ export class CardEventoDetalhesComponent implements OnInit {
   usuarioImagemUrl: SafeUrl | null = null;
   imagemAtual = 0;
   imagemEventoModalAberta = false;
+  confirmarModalAberto = false;
 
   constructor(
     private route: ActivatedRoute,
     private eventoService: EventoService,
     private usuarioService: UsuarioService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +51,32 @@ export class CardEventoDetalhesComponent implements OnInit {
       } else {
         console.error('eventId não encontrado');
       }
+    });
+  }
+
+  // Método para verificar se o usuário atual é administrador
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  //  método para controlar se mostra o botão ou não
+  podeApagarEvento(): boolean {
+    return this.isAdmin;
+  }
+
+  removerEvento(eventoId: string): void {
+    if (!eventoId || eventoId.trim() === '') {
+      console.error('ID do evento inválido:', eventoId);
+      return;
+    }
+    this.eventoService.removerEvento(eventoId).subscribe({
+      next: () => {
+        console.log('Evento removido com sucesso');
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Erro ao remover evento:', error);
+      },
     });
   }
 
@@ -188,6 +218,23 @@ export class CardEventoDetalhesComponent implements OnInit {
             );
 
       seq$.subscribe(() => this.carregarDetalhesEvento(this.eventId!));
+    }
+  }
+
+  abrirModalConfirmacao(): void {
+    this.confirmarModalAberto = true;
+  }
+
+  fecharModalConfirmacao(): void {
+    this.confirmarModalAberto = false;
+  }
+
+  confirmarRemoverEvento(): void {
+    this.fecharModalConfirmacao();
+    if (this.eventId) {
+      this.removerEvento(this.eventId);
+    } else {
+      console.error('EventoId não disponível para remover');
     }
   }
 }

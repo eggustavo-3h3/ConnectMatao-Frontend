@@ -121,3 +121,10 @@
   width: 24px;
   height: 24px;
 }
+
+.mensagem-vazia {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}

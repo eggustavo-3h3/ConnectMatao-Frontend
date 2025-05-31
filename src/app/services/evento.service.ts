@@ -44,7 +44,7 @@ export class EventoService {
     });
   }
 
-  removerEvento(eventoId: number): Observable<any> {
+  removerEvento(eventoId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/evento/remover/${eventoId}`, {
       headers: this.getAuthHeaders(),
     });

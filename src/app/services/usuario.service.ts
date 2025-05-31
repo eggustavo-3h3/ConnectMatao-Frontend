@@ -124,4 +124,24 @@ export class UsuarioService {
       })
     );
   }
+
+  solicitarRecuperacaoSenha(email: string): Observable<any> {
+    const url = `${this.apiUrl}/gerar-chave-reset-senha`;
+    return this.http.post(url, { email }).pipe(
+      catchError((error) => {
+        console.error('Erro ao solicitar recuperação de senha:', error);
+        return throwError(() => new Error('Erro ao solicitar recuperação.'));
+      })
+    );
+  }
+
+  resetarSenhaComChave(chave: string, novaSenha: string): Observable<any> {
+    const url = `${this.apiUrl}/resetar-senha`;
+    return this.http.put(url, { chave, novaSenha }).pipe(
+      catchError((error) => {
+        console.error('Erro ao resetar senha com chave:', error);
+        return throwError(() => new Error('Erro ao redefinir senha.'));
+      })
+    );
+  }
 }

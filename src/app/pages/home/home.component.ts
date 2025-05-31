@@ -25,4 +25,10 @@ export class HomeComponent {
   onCategoriaChange(categoriaId: number | null) {
     this.categoriaSelecionada = categoriaId;
   }
+  get mostrarCarrossel(): boolean {
+    return (
+      this.categoriaSelecionada === null ||
+      this.categoriaSelecionada === undefined
+    );
+  }
 }

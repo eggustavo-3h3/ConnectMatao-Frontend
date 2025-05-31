@@ -1,0 +1,18 @@
+<h2>Recuperar Senha</h2>
+
+<form [formGroup]="recuperarSenhaForm" (ngSubmit)="enviarEmail()">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput type="email" formControlName="email" />
+    <mat-error *ngIf="recuperarSenhaForm.get('email')?.hasError('required')">
+      O e-mail é obrigatório.
+    </mat-error>
+    <mat-error *ngIf="recuperarSenhaForm.get('email')?.hasError('email')">
+      Informe um e-mail válido.
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+    Enviar link
+  </button>
+</form>

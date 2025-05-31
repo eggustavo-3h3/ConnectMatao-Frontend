@@ -48,6 +48,7 @@ export class PublicProfileComponent implements OnInit {
   mediaAvaliacoes: number = 0;
   avaliacaoUsuario: number = 0;
   canEditProfile: boolean = false;
+  isLoading: boolean = false;
 
   snackBar = inject(MatSnackBar);
 
@@ -82,19 +83,20 @@ export class PublicProfileComponent implements OnInit {
       }
     });
   }
-
   loadUserProfile(userId: string): void {
+    this.isLoading = true;
+
     this.usuarioService.getUserProfileById(userId).subscribe({
       next: (userProfile) => {
         this.user = userProfile;
-        if (this.user) {
-          this.canEditProfile = this.loggedInUserId === this.user.id.toString();
-          // Preencher o formulário com os dados atuais do usuário
-          this.editForm.patchValue({
-            nome: this.user.nome,
-            imagem: this.user.imagem || '',
-          });
-        }
+        this.canEditProfile = this.loggedInUserId === this.user?.id.toString();
+
+        this.editForm.patchValue({
+          nome: this.user?.nome,
+          imagem: this.user?.imagem || '',
+        });
+
+        this.isLoading = false;
       },
       error: (error) => {
         this.snackBar.open('Erro ao carregar perfil do usuário', 'Fechar', {
@@ -102,14 +104,18 @@ export class PublicProfileComponent implements OnInit {
         });
         console.error('Erro ao carregar perfil do usuário:', error);
         this.user = null;
+        this.isLoading = false;
       },
     });
   }
 
   loadUserEvents(userId: string): void {
+    this.isLoading = true;
+
     this.eventoService.getEventosPorUsuario(userId).subscribe({
       next: (events: IEvento[]) => {
         this.userEvents = events;
+        this.isLoading = false;
       },
       error: (error: HttpErrorResponse) => {
         this.snackBar.open('Erro ao carregar eventos do usuário', 'Fechar', {
@@ -117,6 +123,7 @@ export class PublicProfileComponent implements OnInit {
         });
         console.error('Erro ao carregar eventos do usuário:', error);
         this.userEvents = [];
+        this.isLoading = false;
       },
     });
   }
@@ -137,7 +144,22 @@ export class PublicProfileComponent implements OnInit {
       return;
     }
 
-    const eventoId = Number(this.eventoParaExcluir.id);
+    const eventoId = String(this.eventoParaExcluir.id);
+
+    if (!eventoId) {
+      console.error(
+        'ID do evento inválido para exclusão:',
+        this.eventoParaExcluir.id
+      );
+      this.snackBar.open(
+        'ID do evento inválido. Exclusão cancelada.',
+        'Fechar',
+        {
+          duration: 3000,
+        }
+      );
+      return;
+    }
 
     this.eventoService.removerEvento(eventoId).subscribe({
       next: () => {
