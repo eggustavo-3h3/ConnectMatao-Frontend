@@ -22,6 +22,8 @@ import { AngularMaterialModule } from '../../angular_material/angular-material/a
 export class ResetarSenhaComponent implements OnInit {
   resetarSenhaForm!: FormGroup;
   loading = false;
+  chaveResetSenha: string = '';
+
 
   constructor(
     private fb: FormBuilder,
@@ -32,11 +34,11 @@ export class ResetarSenhaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const chaveResetSenha = this.route.snapshot.paramMap.get(':chave-reset');
+    this.chaveResetSenha = this.route.snapshot.paramMap.get('chave-reset') ?? '';
+    alert(this.chaveResetSenha);
 
     this.resetarSenhaForm = this.fb.group(
       {
-        chaveResetSenha: [chaveResetSenha, Validators.required],
         novaSenha: ['', Validators.required],
         confirmarNovaSenha: ['', Validators.required],
       },
@@ -51,34 +53,35 @@ export class ResetarSenhaComponent implements OnInit {
     return novaSenha === confirmarNovaSenha ? null : { passwordMismatch: true };
   }
 
-  // resetarSenha(): void {
-  //   if (this.resetarSenhaForm.invalid) {
-  //     this.resetarSenhaForm.markAllAsTouched();
-  //     return;
-  //   }
+  resetarSenha(): void {
+    if (this.resetarSenhaForm.invalid) {
+      this.resetarSenhaForm.markAllAsTouched();
+      return;
+    }
 
-  //   this.loading = true;
+    this.loading = true;
 
-  //   const dadosResetSenha = this.resetarSenhaForm.getRawValue();
+    const dadosResetSenha = this.resetarSenhaForm.getRawValue();
+    dadosResetSenha.chaveResetSenha = this.chaveResetSenha;
 
-  //   this.usuarioService
-  //     .resetarSenhaComChave(chaveResetSenha, novaSenha, confirmarNovaSenha)
-  //     .subscribe({
-  //       next: () => {
-  //         this.loading = false;
-  //         this.snackBar.open('Senha redefinida com sucesso!', 'Fechar', {
-  //           duration: 4000,
-  //         });
-  //         this.router.navigate(['/login']);
-  //       },
-  //       error: (err) => {
-  //         this.loading = false;
-  //         const msg =
-  //           typeof err?.error === 'string'
-  //             ? err.error
-  //             : 'Erro ao redefinir senha.';
-  //         this.snackBar.open(msg, 'Fechar', { duration: 4000 });
-  //       },
-  //     });
-  // }
+    this.usuarioService
+      .resetarSenhaComChave(dadosResetSenha)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.open('Senha redefinida com sucesso!', 'Fechar', {
+            duration: 4000,
+          });
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          this.loading = false;
+          const msg =
+            typeof err?.error === 'string'
+              ? err.error
+              : 'Erro ao redefinir senha.';
+          this.snackBar.open(msg, 'Fechar', { duration: 4000 });
+        },
+      });
+  }
 }

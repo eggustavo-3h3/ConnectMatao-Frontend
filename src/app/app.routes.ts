@@ -18,10 +18,10 @@ import { ResetarSenhaComponent } from './pages/resetar-senha/resetar-senha.compo
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'cadastre-se', component: CadastreSeComponent },
-  { path: 'recuperar-senha', component: RecuperarSenhaComponent },
+  { path: 'recuperar-senha/:p', component: RecuperarSenhaComponent },
   { path: 'detalhe-evento/:eventId', component: CardEventoDetalhesComponent },
   { path: 'acesso-negado', component: AccessDeniedComponent },
-  { path: 'reset-senha', component: ResetarSenhaComponent },
+  { path: 'reset-senha/:chave-reset', component: ResetarSenhaComponent },
   {
     path: '',
     component: HomeComponent,

@@ -135,9 +135,9 @@ export class UsuarioService {
     );
   }
 
-  resetarSenhaComChave(chave: string, novaSenha: string): Observable<any> {
+  resetarSenhaComChave(dadosFormulario: any): Observable<any> {
     const url = `${this.apiUrl}/resetar-senha`;
-    return this.http.put(url, { chave, novaSenha }).pipe(
+    return this.http.put(url, dadosFormulario).pipe(
       catchError((error) => {
         console.error('Erro ao resetar senha com chave:', error);
         return throwError(() => new Error('Erro ao redefinir senha.'));

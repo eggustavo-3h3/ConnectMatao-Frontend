@@ -14,7 +14,8 @@
 .logo-site {
   width: 192px;
   height: 199px;
-  border-radius: 50px;
+  border-radius: 50%;
+  background-color: white;
 }
 
 .full-width {
