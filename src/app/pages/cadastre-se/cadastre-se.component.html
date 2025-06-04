@@ -11,7 +11,6 @@
     <div class="right-panel">
       <h2 class="title-card">CRIE SUA CONTA</h2>
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <!-- Nome -->
         <div class="input-group">
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Nome</mat-label>
@@ -22,7 +21,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Email -->
         <div class="input-group">
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Email</mat-label>
@@ -41,7 +39,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Senha -->
         <div class="input-group">
           <mat-form-field
             appearance="fill"
@@ -73,7 +70,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Confirmar Senha -->
         <div class="input-group">
           <mat-form-field
             appearance="fill"
@@ -107,12 +103,27 @@
           </mat-form-field>
         </div>
 
-        <!-- Erro Geral -->
+        <div class="input-group">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Criar conta como:</mat-label>
+            <mat-select formControlName="perfil">
+              <mat-option
+                *ngFor="let perfil of perfisDisponiveis"
+                [value]="perfil"
+              >
+                {{ perfil }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="registerForm.get('perfil')?.hasError('required')">
+              A seleção do perfil é obrigatória.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
         <div *ngIf="registrationError" class="error-message">
           {{ registrationError }}
         </div>
 
-        <!-- Botão de cadastro -->
         <button
           mat-raised-button
           color="primary"

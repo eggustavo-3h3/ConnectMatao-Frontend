@@ -1,3 +1,4 @@
+// src/app/components/nav-bar/nav-bar.component.ts
 import {
   Component,
   OnInit,
@@ -12,10 +13,12 @@ import {
   distinctUntilChanged,
   switchMap,
   take,
+  filter,
 } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { EventoService } from '../../../services/evento.service';
+import { FormUsuarioParceiroService } from '../../../services/form-usuario-parceiro.service';
 import { IUsuario } from '../../../interfaces/usuario.interface';
 import { IEvento } from '../../../interfaces/evento.interface';
 import { CommonModule } from '@angular/common';
@@ -24,6 +27,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FormParceiroModalComponent } from '../form-parceiro-modal/form-parceiro-modal.component';
+import { Perfil } from '../../../enums/perfil.enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-navbar',
@@ -41,161 +48,317 @@ import { MatInputModule } from '@angular/material/input';
   ],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  isLoggedIn = false;
-  isDropdownVisible = false;
-  searchResults: IEvento[] = [];
-  isSearchFocused = false;
-  userImageUrl: string = '';
-  userName: string = '';
+  estaLogado = false;
+  dropdownVisivel = false;
+  resultadosPesquisa: IEvento[] = [];
+  pesquisaFocada = false;
+  urlImagemUsuario: string = 'assets/default-user.png';
+  nomeUsuario: string = '';
   usuario: IUsuario | null = null;
-  menuOpen = false;
-  isNavbarVisible = true;
-  lastScrollTop = 0;
+  menuAberto = false;
+  navbarVisivel = true;
+  ultimoScrollTop = 0;
 
-  @ViewChild('searchInput') searchInput!: ElementRef;
+  ehPapelParceiro: boolean = false;
+  parceiroAprovado: boolean = false;
+  formularioParceiroExiste: boolean = false;
+  statusParceiroCarregado: boolean = false;
 
-  private authSubscription?: Subscription;
-  private searchTerms = new Subject<string>();
+  private referenciaModal: MatDialogRef<FormParceiroModalComponent> | null =
+    null;
+
+  @ViewChild('campoPesquisa') campoPesquisa!: ElementRef;
+
+  private inscricaoAuth?: Subscription;
+  private termosPesquisa = new Subject<string>();
+  private inscricaoStatusParceiro?: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private usuarioService: UsuarioService,
-    private eventoService: EventoService,
-    private router: Router
+    public servicoAuth: AuthService,
+    private servicoUsuario: UsuarioService,
+    private servicoEvento: EventoService,
+    private servicoFormParceiro: FormUsuarioParceiroService,
+    private roteador: Router,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.authSubscription = this.authService.isLoggedIn$.subscribe(
-      (loggedIn) => {
-        this.isLoggedIn = loggedIn;
-        if (loggedIn) {
-          this.loadUserProfile();
+    this.inscricaoAuth = this.servicoAuth.isLoggedIn$
+      .pipe(distinctUntilChanged())
+      .subscribe((logado) => {
+        this.estaLogado = logado;
+        if (logado) {
+          this.carregarPerfilUsuario();
+          setTimeout(() => {
+            this.verificarStatusAprovacaoParceiro(true);
+          }, 50);
         } else {
-          this.userImageUrl = '';
-          this.userName = '';
+          this.urlImagemUsuario = 'assets/default-user.png';
+          this.nomeUsuario = '';
+          this.ehPapelParceiro = false;
+          this.parceiroAprovado = false;
+          this.formularioParceiroExiste = false;
+          this.statusParceiroCarregado = true;
+          this.fecharModalParceiro();
         }
-        window.addEventListener('scroll', this.onScroll.bind(this));
-      }
-    );
+        window.addEventListener('scroll', this.aoScroll.bind(this));
+      });
 
-    if (this.authService.isAuthenticated()) {
-      this.isLoggedIn = true;
-      this.loadUserProfile();
+    if (this.servicoAuth.isAuthenticated()) {
+      this.estaLogado = true;
+      this.carregarPerfilUsuario();
+      setTimeout(() => {
+        this.verificarStatusAprovacaoParceiro(true);
+      }, 50);
+    } else {
+      this.statusParceiroCarregado = true;
     }
 
-    this.searchTerms
+    this.termosPesquisa
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((term) => this.eventoService.searchEvents(term))
+        switchMap((termo) => this.servicoEvento.searchEvents(termo))
       )
       .subscribe({
-        next: (events) => {
-          this.searchResults = events;
+        next: (eventos) => {
+          this.resultadosPesquisa = eventos;
         },
         error: (err) => {
           console.error('Erro na pesquisa de eventos', err);
-          this.searchResults = [];
+          this.resultadosPesquisa = [];
         },
       });
   }
 
   ngOnDestroy(): void {
-    this.authSubscription?.unsubscribe();
-    window.removeEventListener('scroll', this.onScroll.bind(this));
+    this.inscricaoAuth?.unsubscribe();
+    this.inscricaoStatusParceiro?.unsubscribe();
+    window.removeEventListener('scroll', this.aoScroll.bind(this));
+    this.fecharModalParceiro();
   }
 
-  private loadUserProfile(): void {
-    if (!this.authService.isAuthenticated()) {
-      console.warn('Usuário não autenticado.');
-      this.userImageUrl = 'assets/default-user.png';
-      this.userName = '';
+  private carregarPerfilUsuario(): void {
+    if (!this.servicoAuth.isAuthenticated()) {
+      this.urlImagemUsuario = 'assets/default-user.png';
+      this.nomeUsuario = '';
       return;
     }
 
-    const userId = this.authService.getUserId();
+    const userId = this.servicoAuth.getUserId();
     if (!userId) {
-      console.warn('ID de usuário não disponível.');
-      this.userImageUrl = 'assets/default-user.png';
-      this.userName = '';
+      this.urlImagemUsuario = 'assets/default-user.png';
+      this.nomeUsuario = '';
       return;
     }
 
-    this.usuarioService
+    this.servicoUsuario
       .getPerfilUsuario()
       .pipe(take(1))
       .subscribe({
         next: (user) => {
-          this.userImageUrl = user.imagem
-            ? `data:image/jpeg;base64,${user.imagem}`
-            : 'assets/default-user.png';
-          this.userName = user.nome;
+          this.urlImagemUsuario =
+            user.imagem && user.imagem.length > 0
+              ? `data:image/jpeg;base64,${user.imagem}`
+              : './../../../../../../pngPadrao-NaoLogado.png';
+          this.nomeUsuario = user.nome;
         },
         error: (err) => {
           console.error('Erro ao carregar perfil:', err);
-          this.userImageUrl = 'assets/default-user.png';
-          this.userName = '';
+          this.urlImagemUsuario = './../../../../../../pngPadrao-NaoLogado.png';
+          this.nomeUsuario = '';
         },
       });
   }
 
-  onScroll(): void {
+  private verificarStatusAprovacaoParceiro(
+    deveAbrirModal: boolean = false
+  ): void {
+    const papelUsuario = this.servicoAuth.getRole();
+    this.ehPapelParceiro =
+      papelUsuario?.trim().toLowerCase() === Perfil.Parceiro.toLowerCase();
+    this.statusParceiroCarregado = false;
+
+    if (this.ehPapelParceiro) {
+      this.inscricaoStatusParceiro?.unsubscribe();
+      this.inscricaoStatusParceiro = this.servicoFormParceiro
+        .getLoggedUserPartnerStatus()
+        .subscribe({
+          next: (status) => {
+            this.parceiroAprovado = status.flagAprovadoParceiro ?? false;
+            this.formularioParceiroExiste = status.formParceiroExiste ?? false;
+            this.statusParceiroCarregado = true;
+
+            console.log('NavbarComponent - Status do Parceiro:', status);
+            console.log(
+              'NavbarComponent - parceiroAprovado:',
+              this.parceiroAprovado
+            );
+            console.log(
+              'NavbarComponent - formularioParceiroExiste:',
+              this.formularioParceiroExiste
+            );
+
+            if (
+              deveAbrirModal &&
+              !this.parceiroAprovado &&
+              !this.formularioParceiroExiste
+            ) {
+              this.abrirModalFormularioParceiroControlado();
+            } else {
+              this.fecharModalParceiro();
+            }
+          },
+          error: (err) => {
+            console.error(
+              'Erro ao verificar status de aprovação do parceiro na Navbar:',
+              err
+            );
+            this.parceiroAprovado = false;
+            this.formularioParceiroExiste = false;
+            this.statusParceiroCarregado = true;
+            this.fecharModalParceiro();
+          },
+        });
+    } else {
+      this.parceiroAprovado = false;
+      this.formularioParceiroExiste = false;
+      this.statusParceiroCarregado = true;
+      this.fecharModalParceiro();
+    }
+  }
+
+  abrirModalFormularioParceiroControlado(): void {
+    if (this.formularioParceiroExiste && !this.parceiroAprovado) {
+      return;
+    }
+
+    if (this.referenciaModal) {
+      return;
+    }
+
+    if (this.dialog.openDialogs.length > 0) {
+      this.dialog.closeAll();
+      setTimeout(() => this.abrirModalFormularioParceiroControlado(), 50);
+      return;
+    }
+
+    this.referenciaModal = this.dialog.open(FormParceiroModalComponent, {
+      width: '500px',
+      disableClose: true,
+      panelClass: 'custom-dialog-container',
+    });
+
+    this.referenciaModal.afterClosed().subscribe(() => {
+      this.referenciaModal = null;
+      setTimeout(() => {
+        this.verificarStatusAprovacaoParceiro(false);
+      }, 100);
+    });
+  }
+
+  fecharModalParceiro(): void {
+    if (this.referenciaModal) {
+      this.referenciaModal.close();
+      this.referenciaModal = null;
+    } else if (this.dialog.openDialogs.length > 0) {
+      this.dialog.closeAll();
+    }
+  }
+
+  abrirFormularioParceiroPeloCliqueNaNavbar(): void {
+    if (!this.parceiroAprovado && !this.formularioParceiroExiste) {
+      this.abrirModalFormularioParceiroControlado();
+    } else {
+      console.warn(
+        'Tentativa de abrir modal de parceiro quando não deveria ser permitido pelo clique.'
+      );
+      if (this.formularioParceiroExiste && !this.parceiroAprovado) {
+        this.snackBar.open(
+          'Seu cadastro de parceiro já foi enviado e está em análise.',
+          'Fechar',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-info'],
+          }
+        );
+      } else if (this.parceiroAprovado) {
+        this.snackBar.open('Você já é um parceiro aprovado!', 'Fechar', {
+          duration: 5000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    }
+  }
+
+  aoScroll(): void {
     const currentScrollTop =
       window.pageYOffset || document.documentElement.scrollTop;
 
-    if (currentScrollTop > this.lastScrollTop && currentScrollTop > 200) {
-      this.isNavbarVisible = false;
+    if (currentScrollTop > this.ultimoScrollTop && currentScrollTop > 200) {
+      this.navbarVisivel = false;
     } else {
-      this.isNavbarVisible = true;
+      this.navbarVisivel = true;
     }
 
-    this.lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    this.ultimoScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
   }
 
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
+  alternarMenu(): void {
+    this.menuAberto = !this.menuAberto;
   }
 
-  toggleDropdown(): void {
-    this.isDropdownVisible = !this.isDropdownVisible;
+  alternarDropdown(): void {
+    this.dropdownVisivel = !this.dropdownVisivel;
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-    this.isDropdownVisible = false;
-    this.isLoggedIn = false;
-    this.userImageUrl = '';
-    this.userName = '';
+  sair(): void {
+    this.servicoAuth.logout();
+    this.roteador.navigate(['/login']);
+    this.dropdownVisivel = false;
+    this.estaLogado = false;
+    this.urlImagemUsuario = 'assets/default-user.png';
+    this.nomeUsuario = '';
+    this.fecharModalParceiro();
   }
 
-  goToProfile(): void {
-    const userId = this.authService.getUserId();
+  irParaPerfil(): void {
+    const userId = this.servicoAuth.getUserId();
     if (userId) {
-      this.router.navigate([`/perfil/${userId}`]);
+      this.roteador.navigate([`/perfil/${userId}`]);
     } else {
-      console.warn('ID de usuário não disponível.');
-      this.isDropdownVisible = false;
+      console.warn('ID do usuário não encontrado para ir para o perfil.');
+      this.snackBar.open(
+        'Não foi possível encontrar o perfil do usuário.',
+        'Fechar',
+        { duration: 3000 }
+      );
+    }
+    this.dropdownVisivel = false;
+  }
+
+  aoFocarPesquisa(): void {
+    this.pesquisaFocada = true;
+  }
+
+  aoDesfocarPesquisa(): void {
+    setTimeout(() => {
+      this.pesquisaFocada = false;
+      this.resultadosPesquisa = [];
+    }, 200);
+  }
+
+  irParaDetalhesEvento(idEvento: number | string | undefined): void {
+    if (idEvento) {
+      this.roteador.navigate(['/detalhe-evento', idEvento.toString()]);
+      this.resultadosPesquisa = [];
+      this.campoPesquisa.nativeElement.value = '';
+      this.pesquisaFocada = false;
     }
   }
 
-  onSearchFocus(): void {
-    this.isSearchFocused = true;
-  }
-
-  onSearchBlur(): void {
-    setTimeout(() => (this.isSearchFocused = false), 200);
-  }
-
-  goToEventDetails(eventId: number | string | undefined): void {
-    if (eventId) {
-      this.router.navigate(['/detalhe-evento', eventId.toString()]);
-      this.searchResults = [];
-      this.searchInput.nativeElement.value = '';
-    }
-  }
-
-  search(term: string): void {
-    this.searchTerms.next(term);
+  pesquisar(termo: string): void {
+    this.termosPesquisa.next(termo);
   }
 }

@@ -1,0 +1,144 @@
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 150px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #20acf2; /* Cor primária do Material Design */
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  font-weight: 500;
+}
+
+.loading-spinner,
+.error-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1em;
+  color: #555;
+  background-color: #e3f2fd; /* Azul claro para loading */
+  border: 1px solid #90caf9;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #d32f2f; /* Vermelho para erro */
+  background-color: #ffebee;
+  border-color: #ef9a9a;
+}
+
+/* Estilo para quando não há solicitações */
+.no-applications {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.2em;
+  color: #757575;
+  background-color: #f0f0f0;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-applications-icon {
+  font-size: 4em; /* Tamanho grande para o ícone */
+  color: #9e9e9e; /* Cor cinza para o ícone */
+  margin-bottom: 15px;
+}
+
+.no-applications p {
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.application-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.application-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 8px;
+  overflow: hidden; /* Garante que o conteúdo não vaze da borda arredondada */
+}
+
+.application-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+mat-card-header {
+  background-color: #e8eaf6; /* Um azul claro para o cabeçalho do cartão */
+  padding: 15px;
+  border-bottom: 1px solid #c5cae9;
+}
+
+mat-card-title {
+  color: #3f51b5;
+  font-weight: 500;
+  font-size: 1.3em;
+}
+
+mat-card-subtitle {
+  color: #5c6bc0;
+}
+
+mat-card-content {
+  padding: 15px;
+  line-height: 1.6;
+}
+
+mat-card-content p {
+  margin-bottom: 8px;
+  color: #424242;
+}
+
+mat-card-content strong {
+  color: #212121;
+}
+
+mat-card-actions {
+  padding: 10px 15px 15px;
+  display: flex;
+  justify-content: flex-end; /* Alinha os botões à direita */
+  gap: 10px; /* Espaço entre os botões */
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+mat-raised-button {
+  padding: 8px 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+mat-raised-button mat-icon {
+  margin-right: 5px;
+}
+
+/* Responsividade básica */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin: 15px auto;
+  }
+
+  .application-list {
+    grid-template-columns: 1fr; /* Uma coluna em telas menores */
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+}

@@ -1,5 +1,4 @@
 <div *ngIf="event" class="event-container">
-  <!-- Banner com imagem -->
   <div class="event-banner">
     <ng-container *ngIf="possuiMultiplasImagens; else singleImage">
       <div class="carousel">
@@ -14,7 +13,6 @@
 
         <button class="nav right" (click)="nextImage()">❯</button>
 
-        <!-- Botões Like/Dislike dentro da imagem -->
         <div class="like-dislike-container">
           <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
             <mat-icon>{{
@@ -52,7 +50,6 @@
           (click)="abrirModalImagemEvento()"
         />
 
-        <!-- Botões Like/Dislike dentro da imagem -->
         <div class="like-dislike-container">
           <button (click)="toggleLike()" [class.liked]="usuarioInteragiu === 1">
             <mat-icon>{{
@@ -74,7 +71,6 @@
       </div>
     </ng-template>
 
-    <!-- MODAL DA IMAGEM DO EVENTO (SEMPRE VISÍVEL NO DOM) -->
     <div
       *ngIf="imagemEventoModalAberta"
       class="modal"
@@ -91,7 +87,6 @@
     </div>
   </div>
 
-  <!-- Card com detalhes do evento -->
   <div class="event-card">
     <h2 class="event-title">{{ event.titulo }}</h2>
 
@@ -105,7 +100,7 @@
       <p><strong>Horário:</strong> {{ event.horario }}</p>
       <p>
         <strong>Faixa Etária:</strong>
-        {{ event.faixaEtaria === 0 ? "Todas" : event.faixaEtaria + "+" }}
+        {{ event.faixaEtaria }}
       </p>
       <p>
         <strong>Endereço:</strong>
@@ -123,7 +118,6 @@
     </div>
   </div>
 
-  <!-- Informações do organizador -->
   <div class="user-info-footer">
     <img
       *ngIf="usuarioImagemUrl"
@@ -134,6 +128,13 @@
     />
     <h3>
       <a [routerLink]="['/perfil', usuario?.id]">{{ usuario?.nome }}</a>
+      <img
+        *ngIf="isCreatorPartner"
+        src="verificadoParceiro.png"
+        alt="Parceiro Verificado"
+        class="partner-icon-details"
+        title="Parceiro Verificado"
+      />
     </h3>
   </div>
   <button
@@ -145,10 +146,8 @@
     <mat-icon>delete</mat-icon>
   </button>
 
-  <!-- Spinner de carregamento -->
   <mat-spinner *ngIf="isLoading" class="spinner-overlay"></mat-spinner>
 
-  <!-- Modal da imagem de perfil -->
   <div *ngIf="modalOpen" class="modal" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <img
@@ -161,7 +160,6 @@
     </div>
   </div>
 
-  <!-- Modal de confirmação para apagar evento -->
   <div
     *ngIf="confirmarModalAberto"
     class="modalApagar confirmation-modal"

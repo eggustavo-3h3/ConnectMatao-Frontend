@@ -1,3 +1,4 @@
+// src/app/components/card-evento-detalhes/card-evento-detalhes.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventoService } from '../../../services/evento.service';
@@ -12,6 +13,7 @@ import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
 import { switchMap } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { ParceiroStatusService } from '../../../services/parceiro-status.service'; // Importar o serviço
 
 @Component({
   selector: 'app-card-evento-detalhes',
@@ -33,6 +35,7 @@ export class CardEventoDetalhesComponent implements OnInit {
   imagemAtual = 0;
   imagemEventoModalAberta = false;
   confirmarModalAberto = false;
+  isCreatorPartner: boolean = false; // Nova propriedade para o status de parceiro
 
   constructor(
     private route: ActivatedRoute,
@@ -40,7 +43,8 @@ export class CardEventoDetalhesComponent implements OnInit {
     private usuarioService: UsuarioService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private parceiroStatusService: ParceiroStatusService // Injetar o serviço
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +63,7 @@ export class CardEventoDetalhesComponent implements OnInit {
     return this.authService.isAdmin();
   }
 
-  //  método para controlar se mostra o botão ou não
+  // método para controlar se mostra o botão ou não
   podeApagarEvento(): boolean {
     return this.isAdmin;
   }
@@ -82,14 +86,29 @@ export class CardEventoDetalhesComponent implements OnInit {
 
   carregarDetalhesEvento(eventId: string): void {
     this.isLoading = true;
+    this.parceiroStatusService.clearCache(); // Limpar o cache para garantir dados frescos
     this.eventoService.getEventoPorId(eventId).subscribe({
       next: (evt) => {
         this.event = evt;
         this.likesCount = (evt as any).likes ?? 0;
         this.dislikesCount = (evt as any).deslikes ?? 0;
         this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
+
+        // Carrega o usuário e, em seguida, verifica o status de parceiro
         this.carregarUsuario(evt.usuarioParceiroid);
-        this.isLoading = false;
+        this.parceiroStatusService
+          .isUserApprovedPartner(evt.usuarioParceiroid)
+          .subscribe({
+            next: (isPartner) => {
+              this.isCreatorPartner = isPartner;
+              this.isLoading = false;
+            },
+            error: (err) => {
+              console.error('Erro ao verificar status de parceiro:', err);
+              this.isCreatorPartner = false; // Define como false em caso de erro
+              this.isLoading = false;
+            },
+          });
 
         console.log('Evento carregado:', evt);
       },
@@ -141,7 +160,6 @@ export class CardEventoDetalhesComponent implements OnInit {
   }
 
   // carousel de imagens do evento
-
   nextImage(): void {
     if (!this.event?.imagens) return;
     this.imagemAtual = (this.imagemAtual + 1) % this.event.imagens.length;

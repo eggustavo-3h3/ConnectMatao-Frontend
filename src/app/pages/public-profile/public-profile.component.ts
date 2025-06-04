@@ -1,3 +1,4 @@
+// src/app/components/public-profile/public-profile.component.ts
 import { Component, Inject, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -14,10 +15,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IEventoCard } from '../../interfaces/evento-card.interface';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../angular_material/angular-material/angular-material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ParceiroStatusService } from '../../services/parceiro-status.service'; // Importe o serviço
 
 @Component({
   selector: 'app-public-profile',
@@ -49,6 +50,7 @@ export class PublicProfileComponent implements OnInit {
   avaliacaoUsuario: number = 0;
   canEditProfile: boolean = false;
   isLoading: boolean = false;
+  isProfilePartner: boolean = false; // NOVA PROPRIEDADE AQUI
 
   snackBar = inject(MatSnackBar);
 
@@ -58,9 +60,9 @@ export class PublicProfileComponent implements OnInit {
     private authService: AuthService,
     private eventoService: EventoService,
     private usuarioService: UsuarioService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private parceiroStatusService: ParceiroStatusService // Injete o serviço
   ) {
-    // Inicializar o formulário
     this.editForm = this.fb.group({
       nome: ['', Validators.required],
       imagem: [''],
@@ -83,28 +85,55 @@ export class PublicProfileComponent implements OnInit {
       }
     });
   }
+
   loadUserProfile(userId: string): void {
     this.isLoading = true;
+    this.isProfilePartner = false; // Reset para cada carregamento de perfil
 
     this.usuarioService.getUserProfileById(userId).subscribe({
       next: (userProfile) => {
         this.user = userProfile;
-        this.canEditProfile = this.loggedInUserId === this.user?.id.toString();
+        this.canEditProfile = this.loggedInUserId === this.user?.id?.toString();
 
         this.editForm.patchValue({
           nome: this.user?.nome,
           imagem: this.user?.imagem || '',
         });
 
+        if (this.user?.id) {
+          console.log(
+            'Verificando status de parceiro para o ID:',
+            this.user.id
+          ); // DEBUG
+          this.parceiroStatusService
+            .isUserApprovedPartner(this.user.id.toString())
+            .subscribe({
+              next: (isPartner) => {
+                this.isProfilePartner = isPartner; // **Este é o que controla o selo!**
+                console.log('Status do serviço (isPartner):', isPartner); // DEBUG
+                console.log(
+                  'isProfilePartner (no componente):',
+                  this.isProfilePartner
+                ); // DEBUG
+              },
+              error: (err) => {
+                console.error(
+                  'Erro ao verificar status de parceiro no componente:',
+                  err
+                );
+                this.isProfilePartner = false;
+              },
+            });
+        } else {
+          this.isProfilePartner = false;
+          console.log('ID do perfil não encontrado, isProfilePartner = false.'); // DEBUG
+        }
+
         this.isLoading = false;
       },
       error: (error) => {
-        this.snackBar.open('Erro ao carregar perfil do usuário', 'Fechar', {
-          duration: 3000,
-        });
-        console.error('Erro ao carregar perfil do usuário:', error);
-        this.user = null;
-        this.isLoading = false;
+        // ... (código existente) ...
+        this.isProfilePartner = false; // Garante que seja false em caso de erro no perfil
       },
     });
   }
@@ -222,7 +251,8 @@ export class PublicProfileComponent implements OnInit {
   }
 
   updateImage(): void {
-    if (this.user && this.loggedInUserId === this.user.id.toString()) {
+    if (this.user && this.loggedInUserId === this.user.id?.toString()) {
+      // Usar .id?.toString()
       const updatedProfile: IUsuario = {
         ...this.user,
         imagem: this.editForm.value.imagem || '',
@@ -251,7 +281,8 @@ export class PublicProfileComponent implements OnInit {
   }
 
   updateName(): void {
-    if (this.user && this.loggedInUserId === this.user.id.toString()) {
+    if (this.user && this.loggedInUserId === this.user.id?.toString()) {
+      // Usar .id?.toString()
       if (!this.editForm.value.nome.trim()) {
         this.snackBar.open('O nome não pode estar vazio.', 'Fechar', {
           duration: 3000,
@@ -270,6 +301,10 @@ export class PublicProfileComponent implements OnInit {
             duration: 3000,
           });
           this.closeEditNameModal();
+          // Não é necessário carregar o perfil completo, apenas atualizar o nome localmente
+          if (this.user) {
+            this.user.nome = this.editForm.value.nome;
+          }
         },
         error: (error) => {
           console.error('Erro ao atualizar o nome:', error);

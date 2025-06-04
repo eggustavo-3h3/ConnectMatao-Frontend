@@ -1,17 +1,14 @@
-<!-- Spinner de carregamento -->
 <div *ngIf="isLoading" class="spinner-container">
   <mat-spinner diameter="50"></mat-spinner>
 </div>
-<!-- Conteúdo do perfil -->
 <div *ngIf="!isLoading && user" class="profile-container">
-  <!-- Cabeçalho do Perfil -->
   <div class="profile-header">
     <div class="profile-image">
       <img
         [src]="
           user.imagem
             ? 'data:image/jpeg;base64,' + user.imagem
-            : 'assets/default-avatar.png'
+            : './../../../../../../pngPadrao-NaoLogado.png'
         "
         alt="{{ user.nome }}"
       />
@@ -26,7 +23,20 @@
     </div>
 
     <div class="profile-info">
-      <h2>{{ user.nome }}</h2>
+      <h2>
+        {{ user.nome }}
+        <span
+          *ngIf="isProfilePartner"
+          class="partner-profile-badge"
+          title="Usuário Parceiro Verificado"
+        >
+          <img
+            src="./../../../../../../verificadoParceiro.png"
+            alt="Verificado"
+            class="partner-icon-img"
+          />
+        </span>
+      </h2>
       <img
         *ngIf="canEditProfile"
         (click)="openEditNameModal()"
@@ -39,7 +49,6 @@
     </div>
   </div>
 
-  <!-- Modal: Editar Nome -->
   <div *ngIf="isEditNameModalOpen" class="edit-modal">
     <h3>Alterar Nome</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateName()">
@@ -49,7 +58,6 @@
     </form>
   </div>
 
-  <!-- Modal: Editar Imagem -->
   <div *ngIf="isEditImageModalOpen" class="edit-modal">
     <h3>Alterar Imagem</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateImage()">
@@ -66,7 +74,6 @@
     </form>
   </div>
 
-  <!-- Lista de Eventos do Usuário -->
   <div>
     <h3 *ngIf="canEditProfile">Meus Eventos</h3>
     <h3 *ngIf="!canEditProfile">Eventos</h3>
@@ -101,7 +108,6 @@
       </div>
     </ng-container>
 
-    <!-- Texto quando não houver eventos -->
     <ng-template #semEventos>
       <p *ngIf="canEditProfile">Você ainda não publicou nenhum evento.</p>
       <p *ngIf="!canEditProfile">
@@ -110,7 +116,6 @@
     </ng-template>
   </div>
 
-  <!-- Modal: Confirmação de Exclusão -->
   <div *ngIf="excluirModalAberto" class="delete-modal">
     <h4>Você tem certeza que deseja excluir este evento?</h4>
     <p>
@@ -120,7 +125,6 @@
     <button mat-raised-button (click)="cancelDeleteEvent()">Cancelar</button>
   </div>
 
-  <!-- Avaliações Recebidas -->
   <div *ngIf="avaliacoes.length > 0">
     <h3>Avaliações</h3>
     <div class="avaliacoes">
@@ -134,7 +138,6 @@
     <h4>Média geral: {{ mediaAvaliacoes | number : "1.1-1" }}</h4>
   </div>
 
-  <!-- Avaliação do Usuário -->
   <div *ngIf="avaliacaoUsuario > 0">
     <h3>Sua Avaliação</h3>
     <p>Você avaliou com nota: {{ avaliacaoUsuario }}</p>

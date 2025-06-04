@@ -17,4 +17,5 @@ export interface IEvento {
   faixaEtaria: number;
   imagens: string[];
   usuarioInteragiu?: boolean;
+  isCreatorPartner?: boolean; // Propriedade para indicar se o criador é parceiro
 }

@@ -2,7 +2,6 @@
   <h2 class="event-form-title">Divulgue seu evento</h2>
 
   <form [formGroup]="eventoForm" (ngSubmit)="onSubmit()" class="event-form">
-    <!-- Upload de Imagem -->
     <section class="section image-section">
       <label
         for="imageInput"
@@ -64,7 +63,6 @@
           ›
         </button>
       </div>
-      <!-- Mensagem de erro se nenhuma imagem foi adicionada -->
       <div
         *ngIf="selectedFiles.length === 0 && formTriedSubmit"
         class="imagem-erro"
@@ -75,7 +73,6 @@
       </div>
     </section>
 
-    <!-- Dados do Evento -->
     <section class="section form-section">
       <div class="row">
         <mat-form-field appearance="outline" class="flex-1">
@@ -87,8 +84,21 @@
             maxlength="150"
             autocomplete="off"
           />
-          <mat-error *ngIf="eventoForm.controls['titulo'].hasError('required')">
-            O título é obrigatório.
+          <mat-error
+            *ngIf="
+              eventoForm.get('titulo')?.hasError('required') &&
+              (eventoForm.get('titulo')?.touched || formTriedSubmit)
+            "
+          >
+            O **título** é obrigatório.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('titulo')?.hasError('maxlength') &&
+              (eventoForm.get('titulo')?.touched || formTriedSubmit)
+            "
+          >
+            O título deve ter no máximo 150 caracteres.
           </mat-error>
         </mat-form-field>
 
@@ -98,10 +108,24 @@
             matInput
             type="text"
             formControlName="bairro"
+            maxlength="100"
             autocomplete="off"
           />
-          <mat-error *ngIf="eventoForm.controls['bairro'].hasError('required')">
-            O bairro é obrigatório.
+          <mat-error
+            *ngIf="
+              eventoForm.get('bairro')?.hasError('required') &&
+              (eventoForm.get('bairro')?.touched || formTriedSubmit)
+            "
+          >
+            O **bairro** é obrigatório.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('bairro')?.hasError('maxlength') &&
+              (eventoForm.get('bairro')?.touched || formTriedSubmit)
+            "
+          >
+            O bairro deve ter no máximo 100 caracteres.
           </mat-error>
         </mat-form-field>
       </div>
@@ -113,12 +137,24 @@
             matInput
             type="text"
             formControlName="logradouro"
+            maxlength="150"
             autocomplete="off"
           />
           <mat-error
-            *ngIf="eventoForm.controls['logradouro'].hasError('required')"
+            *ngIf="
+              eventoForm.get('logradouro')?.hasError('required') &&
+              (eventoForm.get('logradouro')?.touched || formTriedSubmit)
+            "
           >
-            O logradouro é obrigatório.
+            O **logradouro** é obrigatório.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('logradouro')?.hasError('maxlength') &&
+              (eventoForm.get('logradouro')?.touched || formTriedSubmit)
+            "
+          >
+            O logradouro deve ter no máximo 150 caracteres.
           </mat-error>
         </mat-form-field>
 
@@ -128,10 +164,24 @@
             matInput
             type="text"
             formControlName="numero"
+            maxlength="10"
             autocomplete="off"
           />
-          <mat-error *ngIf="eventoForm.controls['numero'].hasError('required')">
-            O número é obrigatório.
+          <mat-error
+            *ngIf="
+              eventoForm.get('numero')?.hasError('required') &&
+              (eventoForm.get('numero')?.touched || formTriedSubmit)
+            "
+          >
+            O **número** é obrigatório.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('numero')?.hasError('maxlength') &&
+              (eventoForm.get('numero')?.touched || formTriedSubmit)
+            "
+          >
+            O número deve ter no máximo 10 caracteres.
           </mat-error>
         </mat-form-field>
       </div>
@@ -143,14 +193,23 @@
             matInput
             type="text"
             formControlName="cep"
-            pattern="^\d{5}-\d{3}$"
             autocomplete="off"
           />
-          <mat-error *ngIf="eventoForm.controls['cep'].hasError('required')">
-            O CEP é obrigatório.
+          <mat-error
+            *ngIf="
+              eventoForm.get('cep')?.hasError('required') &&
+              (eventoForm.get('cep')?.touched || formTriedSubmit)
+            "
+          >
+            O **CEP** é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['cep'].hasError('pattern')">
-            O formato do CEP está inválido.
+          <mat-error
+            *ngIf="
+              eventoForm.get('cep')?.hasError('pattern') &&
+              (eventoForm.get('cep')?.touched || formTriedSubmit)
+            "
+          >
+            O formato do CEP está inválido. Use XXXXX-XXX ou XXXXXXXX.
           </mat-error>
         </mat-form-field>
 
@@ -163,9 +222,12 @@
             </mat-option>
           </mat-select>
           <mat-error
-            *ngIf="eventoForm.controls['categoria'].hasError('required')"
+            *ngIf="
+              eventoForm.get('categoria')?.hasError('required') &&
+              (eventoForm.get('categoria')?.touched || formTriedSubmit)
+            "
           >
-            A categoria é obrigatória.
+            A **categoria** é obrigatória.
           </mat-error>
         </mat-form-field>
       </div>
@@ -180,9 +242,20 @@
           autocomplete="off"
         ></textarea>
         <mat-error
-          *ngIf="eventoForm.controls['descricao'].hasError('required')"
+          *ngIf="
+            eventoForm.get('descricao')?.hasError('required') &&
+            (eventoForm.get('descricao')?.touched || formTriedSubmit)
+          "
         >
-          A descrição é obrigatória.
+          A **descrição** é obrigatória.
+        </mat-error>
+        <mat-error
+          *ngIf="
+            eventoForm.get('descricao')?.hasError('maxlength') &&
+            (eventoForm.get('descricao')?.touched || formTriedSubmit)
+          "
+        >
+          A descrição deve ter no máximo 800 caracteres.
         </mat-error>
       </mat-form-field>
 
@@ -193,13 +266,32 @@
             matInput
             type="email"
             formControlName="email"
+            maxlength="200"
             autocomplete="off"
           />
-          <mat-error *ngIf="eventoForm.controls['email'].hasError('required')">
-            O email é obrigatório.
+          <mat-error
+            *ngIf="
+              eventoForm.get('email')?.hasError('required') &&
+              (eventoForm.get('email')?.touched || formTriedSubmit)
+            "
+          >
+            O **email** é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['email'].hasError('email')">
+          <mat-error
+            *ngIf="
+              eventoForm.get('email')?.hasError('email') &&
+              (eventoForm.get('email')?.touched || formTriedSubmit)
+            "
+          >
             O formato do email está inválido.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('email')?.hasError('maxlength') &&
+              (eventoForm.get('email')?.touched || formTriedSubmit)
+            "
+          >
+            O email deve ter no máximo 200 caracteres.
           </mat-error>
         </mat-form-field>
 
@@ -210,18 +302,32 @@
             formControlName="telefone"
             placeholder="(00) 0000-0000"
             (input)="formatPhone($event, 'telefone')"
-            maxlength="15"
+            maxlength="20"
             autocomplete="off"
           />
           <mat-error
-            *ngIf="eventoForm.controls['telefone'].hasError('required')"
+            *ngIf="
+              eventoForm.get('telefone')?.hasError('required') &&
+              (eventoForm.get('telefone')?.touched || formTriedSubmit)
+            "
           >
-            O telefone é obrigatório.
+            O **telefone** é obrigatório.
           </mat-error>
           <mat-error
-            *ngIf="eventoForm.controls['telefone'].hasError('pattern')"
+            *ngIf="
+              eventoForm.get('telefone')?.hasError('pattern') &&
+              (eventoForm.get('telefone')?.touched || formTriedSubmit)
+            "
           >
-            Formato inválido. Use (00) 0000-0000
+            Formato inválido. Use (00) 0000-0000 ou (00) 90000-0000.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('telefone')?.hasError('maxlength') &&
+              (eventoForm.get('telefone')?.touched || formTriedSubmit)
+            "
+          >
+            O telefone deve ter no máximo 20 caracteres.
           </mat-error>
         </mat-form-field>
       </div>
@@ -234,37 +340,60 @@
             formControlName="whatsapp"
             placeholder="(00) 00000-0000"
             (input)="formatPhone($event, 'whatsapp')"
-            maxlength="15"
+            maxlength="20"
             autocomplete="off"
           />
           <mat-error
-            *ngIf="eventoForm.controls['whatsapp'].hasError('required')"
+            *ngIf="
+              eventoForm.get('whatsapp')?.hasError('required') &&
+              (eventoForm.get('whatsapp')?.touched || formTriedSubmit)
+            "
           >
-            O whatsapp é obrigatório.
+            O **whatsapp** é obrigatório.
           </mat-error>
           <mat-error
-            *ngIf="eventoForm.controls['whatsapp'].hasError('pattern')"
+            *ngIf="
+              eventoForm.get('whatsapp')?.hasError('pattern') &&
+              (eventoForm.get('whatsapp')?.touched || formTriedSubmit)
+            "
           >
-            Formato inválido. Use (00) 00000-0000
+            Formato inválido. Use (00) 90000-0000.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('whatsapp')?.hasError('maxlength') &&
+              (eventoForm.get('whatsapp')?.touched || formTriedSubmit)
+            "
+          >
+            O whatsapp deve ter no máximo 20 caracteres.
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="flex-1">
           <mat-label>Faixa Etária</mat-label>
-          <input
-            matInput
-            type="number"
-            formControlName="faixaEtaria"
-            min="1"
-            autocomplete="off"
-          />
+          <mat-select formControlName="faixaEtaria">
+            <mat-option
+              *ngFor="let faixa of faixasEtariasDisponiveis"
+              [value]="faixa"
+            >
+              {{ faixa }}
+            </mat-option>
+          </mat-select>
           <mat-error
-            *ngIf="eventoForm.controls['faixaEtaria'].hasError('required')"
+            *ngIf="
+              eventoForm.get('faixaEtaria')?.hasError('required') &&
+              (eventoForm.get('faixaEtaria')?.touched || formTriedSubmit)
+            "
           >
-            A faixa etária é obrigatória.
+            A **faixa etária** é obrigatória.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['faixaEtaria'].hasError('min')">
-            A faixa etária deve ser maior que 0.
+          <mat-error
+            *ngIf="
+              eventoForm.get('faixaEtaria')?.hasError('maxlength') &&
+              (eventoForm.get('faixaEtaria')?.touched || formTriedSubmit)
+            "
+          >
+            A faixa etária deve ter no máximo 50 caracteres.
           </mat-error>
         </mat-form-field>
       </div>
@@ -277,6 +406,7 @@
             [matDatepicker]="picker"
             formControlName="data"
             [min]="minDate"
+            readonly
             autocomplete="off"
           />
           <mat-datepicker-toggle
@@ -284,8 +414,21 @@
             [for]="picker"
           ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="eventoForm.controls['data'].hasError('required')">
-            A data é obrigatória.
+          <mat-error
+            *ngIf="
+              eventoForm.get('data')?.hasError('required') &&
+              (eventoForm.get('data')?.touched || formTriedSubmit)
+            "
+          >
+            A **data** é obrigatória.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              eventoForm.get('data')?.hasError('dataPassada') &&
+              (eventoForm.get('data')?.touched || formTriedSubmit)
+            "
+          >
+            A data não pode ser no passado.
           </mat-error>
         </mat-form-field>
 
@@ -301,12 +444,20 @@
           />
           <mat-icon matSuffix>access_time</mat-icon>
           <mat-error
-            *ngIf="eventoForm.controls['horario'].hasError('required')"
+            *ngIf="
+              eventoForm.get('horario')?.hasError('required') &&
+              (eventoForm.get('horario')?.touched || formTriedSubmit)
+            "
           >
-            O horário é obrigatório.
+            O **horário** é obrigatório.
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['horario'].hasError('pattern')">
-            O formato do horário está inválido.
+          <mat-error
+            *ngIf="
+              eventoForm.get('horario')?.hasError('pattern') &&
+              (eventoForm.get('horario')?.touched || formTriedSubmit)
+            "
+          >
+            O formato do horário está inválido (HH:MM).
           </mat-error>
         </mat-form-field>
       </div>
@@ -317,10 +468,17 @@
         type="submit"
         mat-raised-button
         color="primary"
-        [disabled]="eventoForm.invalid"
+        [disabled]="
+          eventoForm.invalid || selectedFiles.length === 0 || isProcessing
+        "
         class="submit-btn"
       >
-        Publicar evento
+        <span *ngIf="!isProcessing">Publicar evento</span>
+        <mat-spinner
+          *ngIf="isProcessing"
+          [diameter]="20"
+          color="accent"
+        ></mat-spinner>
       </button>
     </section>
   </form>

@@ -236,3 +236,27 @@ button {
   align-items: center;
   margin-top: 50px;
 }
+
+.profile-info h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adiciona espaçamento entre o nome e o selo */
+}
+
+.partner-profile-badge {
+  display: inline-flex; /* Permite que o badge se alinhe com o texto */
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  /* Ajuste o posicionamento se necessário */
+  margin-left: 5px; /* Pequeno espaçamento do nome */
+  vertical-align: middle; /* Alinha verticalmente com o texto */
+}
+
+.partner-profile-badge .partner-icon-img {
+  width: 24px; /* Ajuste o tamanho do ícone para o perfil */
+  height: 24px; /* Ajuste o tamanho do ícone para o perfil */
+}

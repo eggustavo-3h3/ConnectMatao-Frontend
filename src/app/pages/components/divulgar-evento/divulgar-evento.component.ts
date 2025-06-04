@@ -38,10 +38,19 @@ export class DivulgarEventoComponent implements OnInit {
   usuario: any = null;
   minDate: Date;
   selectedFiles: File[] = [];
-  isProcessing = false; // Controle de envio do evento
+  isProcessing = false;
   currentImageIndex = 0;
   formTriedSubmit = false;
   isDragOver = false;
+  // Certifique-se de que esta propriedade está definida!
+  faixasEtariasDisponiveis: string[] = [
+    'Livre',
+    '+10 anos',
+    '+12 anos',
+    '+14 anos',
+    '+16 anos',
+    '+18 anos',
+  ];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -54,36 +63,41 @@ export class DivulgarEventoComponent implements OnInit {
   ) {
     this.minDate = new Date();
     this.eventoForm = this.fb.group({
-      titulo: ['', [Validators.required, Validators.maxLength(100)]],
-      descricao: ['', Validators.required],
-      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
-      logradouro: ['', Validators.required],
-      numero: ['', Validators.required],
-      bairro: ['', Validators.required],
+      titulo: ['', [Validators.required, Validators.maxLength(150)]],
+      descricao: ['', [Validators.required, Validators.maxLength(800)]],
+      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
+      logradouro: ['', [Validators.required, Validators.maxLength(150)]],
+      numero: ['', [Validators.required, Validators.maxLength(10)]],
+      bairro: ['', [Validators.required, Validators.maxLength(100)]],
       telefone: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/), // (XX) XXXXX-XXXX
+          Validators.maxLength(20),
+          Validators.pattern(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/),
         ],
       ],
       whatsapp: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^\(\d{2}\) \d{5}-\d{4}$/), // (XX) XXXXX-XXXX
+          Validators.maxLength(20),
+          Validators.pattern(/^\(?\d{2}\)?\s?9?\d{4}-?\d{4}$/),
         ],
       ],
-      email: ['', [Validators.required, Validators.email]],
-      data: ['', Validators.required],
+      email: [
+        '',
+        [Validators.required, Validators.email, Validators.maxLength(200)],
+      ],
+      data: ['', [Validators.required]],
       horario: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^([0-1]\d|2[0-3]):([0-5]\d)$/),
+          Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/),
         ],
       ],
-      faixaEtaria: [0, [Validators.required, Validators.min(0)]],
+      faixaEtaria: ['', [Validators.required, Validators.maxLength(50)]],
       categoria: ['', Validators.required],
     });
   }
@@ -101,6 +115,23 @@ export class DivulgarEventoComponent implements OnInit {
 
     this.carregarCategorias();
     this.carregarUsuario();
+
+    this.eventoForm.get('data')?.valueChanges.subscribe((value) => {
+      if (value) {
+        const selectedDate = new Date(value);
+        selectedDate.setHours(0, 0, 0, 0);
+        this.minDate.setHours(0, 0, 0, 0);
+
+        if (selectedDate < this.minDate) {
+          this.eventoForm.get('data')?.setErrors({ dataPassada: true });
+        } else {
+          if (this.eventoForm.get('data')?.hasError('dataPassada')) {
+            delete this.eventoForm.get('data')?.errors?.['dataPassada'];
+            this.eventoForm.get('data')?.updateValueAndValidity();
+          }
+        }
+      }
+    });
   }
 
   formatPhone(event: any, field: string) {
@@ -111,8 +142,7 @@ export class DivulgarEventoComponent implements OnInit {
       if (value.length > 11) {
         value = value.substring(0, 11);
       }
-
-      value = value.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
+      value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
     }
 
     input.value = value;
@@ -151,11 +181,15 @@ export class DivulgarEventoComponent implements OnInit {
   }
 
   removeCurrentImage(): void {
-    this.selectedFiles.splice(this.currentImageIndex, 1);
-    this.imagemPreview.splice(this.currentImageIndex, 1);
+    if (this.imagemPreview.length > 0) {
+      this.selectedFiles.splice(this.currentImageIndex, 1);
+      this.imagemPreview.splice(this.currentImageIndex, 1);
 
-    if (this.currentImageIndex >= this.imagemPreview.length) {
-      this.currentImageIndex = Math.max(this.imagemPreview.length - 1, 0);
+      if (this.currentImageIndex >= this.imagemPreview.length) {
+        this.currentImageIndex = Math.max(this.imagemPreview.length - 1, 0);
+      }
+    } else {
+      this.currentImageIndex = 0;
     }
   }
 
@@ -179,7 +213,6 @@ export class DivulgarEventoComponent implements OnInit {
 
     const files = Array.from(input.files);
 
-    // adiciona as novas imagens às já existentes
     this.selectedFiles = [...this.selectedFiles, ...files];
 
     files.forEach((file) => {
@@ -195,6 +228,16 @@ export class DivulgarEventoComponent implements OnInit {
 
   onSubmit(): void {
     this.formTriedSubmit = true;
+    this.eventoForm.markAllAsTouched();
+
+    if (this.eventoForm.get('data')?.hasError('dataPassada')) {
+      this.snackBar.open(
+        'A data do evento não pode ser no passado.',
+        'Fechar',
+        { duration: 3000 }
+      );
+      return;
+    }
 
     if (
       this.eventoForm.invalid ||
@@ -205,6 +248,10 @@ export class DivulgarEventoComponent implements OnInit {
         this.snackBar.open('Adicione pelo menos uma imagem.', 'Fechar', {
           duration: 3000,
         });
+      } else {
+        this.snackBar.open('Preencha todos os campos corretamente.', 'Fechar', {
+          duration: 3000,
+        });
       }
       return;
     }
@@ -212,7 +259,6 @@ export class DivulgarEventoComponent implements OnInit {
     this.isProcessing = true;
     const fv = this.eventoForm.value;
 
-    // conversão de File → base64
     const toBase64 = (file: File) =>
       new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -223,43 +269,56 @@ export class DivulgarEventoComponent implements OnInit {
 
     Promise.all(this.selectedFiles.map((f) => toBase64(f)))
       .then((base64List) => {
-        // monta o payload de acordo com IEvento
         const payload: IEvento = {
           titulo: fv.titulo,
           descricao: fv.descricao,
-          cep: fv.cep,
+          cep: fv.cep.replace('-', ''),
           logradouro: fv.logradouro,
           numero: fv.numero,
           bairro: fv.bairro,
-          telefone: fv.telefone,
-          whatsapp: fv.whatsapp,
+          telefone: fv.telefone.replace(/\D/g, ''),
+          whatsapp: fv.whatsapp.replace(/\D/g, ''),
           email: fv.email,
           data: new Date(fv.data).toISOString(),
           horario: fv.horario,
           faixaEtaria: fv.faixaEtaria,
-          categoriaid: fv.categoria, // GUID em string
+          categoriaid: fv.categoria,
           flagAprovado: false,
-          usuarioParceiroid: this.usuario.id, // GUID em string
-          imagens: base64List, // array de base64
+          usuarioParceiroid: this.usuario.id,
+          imagens: base64List,
         };
 
         console.log('Payload do evento:', payload);
 
-        this.eventoService.criarEvento(payload).subscribe({
-          next: () => {
-            this.snackBar.open('Evento criado com sucesso', 'Fechar', {
-              duration: 3000,
-            });
-            this.router.navigate(['/']);
-          },
-          error: (err) => {
-            console.error('Erro ao criar evento:', err);
-            this.snackBar.open('Erro ao criar evento', 'Fechar', {
-              duration: 3000,
-            });
-            console.log('Payload do evento:', payload);
-          },
-        });
+        this.eventoService
+          .criarEvento(payload)
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Evento criado com sucesso', 'Fechar', {
+                duration: 3000,
+              });
+              this.router.navigate(['/']);
+            },
+            error: (err) => {
+              console.error('Erro ao criar evento:', err);
+              let errorMessage = 'Erro ao criar evento. Tente novamente.';
+
+              if (err.status === 400) {
+                if (err.error?.mensagem) {
+                  errorMessage = err.error.mensagem;
+                } else if (Array.isArray(err.error)) {
+                  errorMessage = `Erro de validação: ${err.error.join(', ')}`;
+                }
+              }
+              this.snackBar.open(errorMessage, 'Fechar', {
+                duration: 3000,
+              });
+              console.log('Payload do evento que causou o erro:', payload);
+            },
+          })
+          .add(() => {
+            this.isProcessing = false;
+          });
       })
       .catch((err) => {
         console.error('Falha na conversão de imagens:', err);
@@ -282,7 +341,6 @@ export class DivulgarEventoComponent implements OnInit {
     }
   }
 
-  // parte para arrastar imagem
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver = true;
@@ -300,7 +358,6 @@ export class DivulgarEventoComponent implements OnInit {
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
       const files = Array.from(event.dataTransfer.files);
 
-      // adiciona as novas imagens às já existentes
       this.selectedFiles = [...this.selectedFiles, ...files];
 
       files.forEach((file) => {

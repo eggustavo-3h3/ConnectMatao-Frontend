@@ -1,8 +1,11 @@
+// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { Perfil } from '../enums/perfil.enum';
+import { map, switchMap, catchError } from 'rxjs/operators';
+import { IParceiro } from '../interfaces/parceiro.interface'; // Se for utilizada
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +20,6 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Faz login e retorna token, role e userId
   logar(
     login: string,
     senha: string
@@ -28,22 +30,23 @@ export class AuthService {
     );
   }
 
-  // Cadastro de usuário
+  // **Este método já está definido para receber 6 argumentos separados.**
+  // A conversão da string Perfil para number deve acontecer antes de chamar este método.
   register(
     nome: string,
-    email: string,
+    email: string, // <-- Primeiro argumento real (depois de nome)
     senha: string,
     confirmacaoSenha: string,
     imagem: string = '',
-    perfil: Perfil = Perfil.Usuario
+    perfil: number // <--- O sexto argumento, um NUMBER
   ): Observable<IUsuario> {
     const payload = {
       nome,
-      login: email,
+      login: email, // O login será o email
       senha,
       confirmacaoSenha,
       imagem,
-      perfil,
+      perfil, // Este `perfil` já será o número que o backend espera
     };
 
     console.log('Payload de cadastro:', payload);
@@ -53,12 +56,11 @@ export class AuthService {
     );
   }
 
-  // Salva token e role no localStorage e atualiza BehaviorSubject
   saveAuthInfo(token: string, role: string): void {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.roleKey, role);
     this.isLoggedIn$.next(true);
-    this._userId = null; // Limpa o userId cacheado para forçar decodificação nova se necessário
+    this._userId = null;
   }
 
   getToken(): string | null {
@@ -69,7 +71,6 @@ export class AuthService {
     return localStorage.getItem(this.roleKey);
   }
 
-  // Decodifica o userId do token JWT e cacheia o resultado
   getUserId(): string | null {
     if (this._userId) return this._userId;
 
@@ -78,11 +79,7 @@ export class AuthService {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Payload do token:', payload); // log para debug
-
-      // Ajuste aqui para pegar a claim correta
       this._userId = payload['Id'] || null;
-
       return this._userId;
     } catch (e) {
       console.error('Erro ao decodificar o token:', e);
@@ -97,12 +94,10 @@ export class AuthService {
     this._userId = null;
     console.log('Usuário deslogado.');
 
-    // Limpar cookie authToken caso exista
     document.cookie =
       'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
-  // Verifica se o token existe e não expirou
   isAuthenticated(): boolean {
     const token = this.getToken();
     if (!token) return false;
@@ -123,14 +118,15 @@ export class AuthService {
   }
 
   isPartner(): boolean {
-    return this.isAuthenticated() && this.getRole() === 'Parceiro';
+    const roleFromToken = this.getRole();
+    return this.isAuthenticated() && roleFromToken === Perfil.Parceiro;
   }
 
   isAdmin(): boolean {
-    return this.isAuthenticated() && this.getRole() === 'Administrador';
+    const roleFromToken = this.getRole();
+    return this.isAuthenticated() && roleFromToken === Perfil.Administrador;
   }
 
-  // Cria HttpHeaders com o token JWT para autorização, se presente
   createAuthHeader(): HttpHeaders {
     const token = this.getToken();
     if (token) {
@@ -138,6 +134,29 @@ export class AuthService {
         Authorization: `Bearer ${token}`,
       });
     }
-    return new HttpHeaders(); // Não adiciona Authorization
+    return new HttpHeaders();
+  }
+
+  isPartnerApproved(): Observable<boolean> {
+    const userId = this.getUserId();
+    if (!userId || !this.isPartner()) {
+      return of(false);
+    }
+
+    return this.http
+      .get<{ flagAprovado: boolean; formExists: boolean }>(
+        `${this.apiUrl}/parceiro/status-cadastro`,
+        { headers: this.createAuthHeader() }
+      )
+      .pipe(
+        map((response) => response.flagAprovado),
+        catchError((error) => {
+          console.error(
+            'Erro ao verificar status de aprovação do parceiro:',
+            error
+          );
+          return of(false);
+        })
+      );
   }
 }

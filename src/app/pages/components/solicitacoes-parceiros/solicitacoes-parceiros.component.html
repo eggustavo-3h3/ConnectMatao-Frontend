@@ -1,0 +1,81 @@
+<div class="container">
+  <h2>Solicitações de Cadastro de Parceiros Pendentes</h2>
+
+  <div *ngIf="carregando" class="loading-spinner">
+    Carregando solicitações...
+  </div>
+
+  <div *ngIf="erro" class="error-message">{{ erro }}</div>
+
+  <div *ngIf="!carregando && !erro">
+    <div *ngIf="solicitacoesPendentes.length === 0" class="no-applications">
+      <mat-icon class="no-applications-icon">info</mat-icon>
+      <p>Nenhuma solicitação de parceiro pendente no momento.</p>
+      <p>Verifique novamente mais tarde.</p>
+    </div>
+
+    <div class="application-list">
+      <mat-card
+        *ngFor="let application of solicitacoesPendentes"
+        class="application-card"
+      >
+        <mat-card-header>
+          <mat-card-title>{{ application.nomeCompleto }}</mat-card-title>
+          <mat-card-subtitle
+            >Usuário: {{ application.usuarioNome }}</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            <strong>CPF:</strong>
+            {{ application.cpf ?? "" | mask : "000.000.000-00" }}
+          </p>
+          <p>
+            <strong>Telefone:</strong>
+            {{ application.telefone ?? "" | mask : "(00) 00000-0000" }}
+          </p>
+          <p>
+            <strong>Data de Envio:</strong>
+            {{ application.dataEnvio | date : "dd/MM/yyyy HH:mm" }}
+          </p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="aprovarSolicitacao(application.id!)"
+          >
+            <mat-icon>check_circle</mat-icon> Aprovar
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="rejeitarSolicitacao(application.id!)"
+          >
+            <mat-icon>cancel</mat-icon> Reprovar
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalConfirmacao>
+  <h2 mat-dialog-title>{{ dadosModal?.titulo }}</h2>
+  <mat-dialog-content>
+    <p [innerHTML]="dadosModal?.mensagem"></p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="false">
+      {{ dadosModal?.textoCancelar }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      [mat-dialog-close]="true"
+      cdkFocusInitial
+    >
+      {{ dadosModal?.textoConfirmar }}
+    </button>
+  </mat-dialog-actions>
+</ng-template>

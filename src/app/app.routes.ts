@@ -1,3 +1,4 @@
+// app.routes.ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { CadastreSeComponent } from './pages/cadastre-se/cadastre-se.component';
@@ -7,16 +8,50 @@ import { DivulgarEventoComponent } from './pages/components/divulgar-evento/divu
 import { CardEventoDetalhesComponent } from './pages/components/card-evento-detalhes/card-evento-detalhes.component';
 import { AlterarSenhaComponent } from './pages/alterar-senha/alterar-senha.component';
 import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
+import { SolicitacoesParceirosComponent } from './pages/components/solicitacoes-parceiros/solicitacoes-parceiros.component';
+import { AccessDeniedComponent } from './pages/components/access-denied/access-denied.component';
+
+import { authGuard } from './guards/auth.guard';
+import { Perfil } from './enums/perfil.enum';
+import { ResetarSenhaComponent } from './pages/resetar-senha/resetar-senha.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'cadastre-se', component: CadastreSeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'profile/usuario/id', component: PublicProfileComponent },
-  { path: 'divulgarEvento', component: DivulgarEventoComponent },
-  { path: 'perfil/:id', component: PublicProfileComponent },
-  { path: 'detalhe-evento/:eventId', component: CardEventoDetalhesComponent },
-  { path: 'alterar-senha', component: AlterarSenhaComponent },
+  { path: 'cadastre-se', component: CadastreSeComponent },
   { path: 'recuperar-senha', component: RecuperarSenhaComponent },
-  { path: 'profile/usuario/:id', component: PublicProfileComponent },
+  { path: 'detalhe-evento/:eventId', component: CardEventoDetalhesComponent },
+  { path: 'acesso-negado', component: AccessDeniedComponent },
+  { path: 'reset-senha', component: ResetarSenhaComponent },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+
+  {
+    path: 'alterar-senha',
+    component: AlterarSenhaComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile/usuario/:id',
+    component: PublicProfileComponent,
+  },
+  {
+    path: 'perfil/:id',
+    component: PublicProfileComponent,
+  },
+  {
+    path: 'divulgarEvento',
+    component: DivulgarEventoComponent,
+    canActivate: [authGuard],
+    data: { roles: [Perfil.Parceiro, Perfil.Administrador] },
+  },
+  {
+    path: 'solicitacoes-parceiros',
+    component: SolicitacoesParceirosComponent,
+    canActivate: [authGuard],
+    data: { roles: [Perfil.Administrador] },
+  },
+
+  { path: '**', redirectTo: '' },
 ];

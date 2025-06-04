@@ -1,4 +1,4 @@
-<nav class="navbar" [class.hidden]="!isNavbarVisible">
+<nav class="navbar" [class.hidden]="!navbarVisivel">
   <div class="navbar">
     <a routerLink="/" class="navbar-img">
       <img
@@ -8,52 +8,76 @@
       />
     </a>
 
-    <!-- Botão Hamburguer ao lado da logo -->
-    <button class="menu-toggle" (click)="toggleMenu()">
+    <button class="menu-toggle" (click)="alternarMenu()">
       <img src="../Menu_hamburguer.png" alt="" />
     </button>
   </div>
 
-  <!-- Links do menu -->
-  <ul class="navbar-links" [class.active]="menuOpen">
+  <ul class="navbar-links" [class.active]="menuAberto">
     <li class="nav-item"><a routerLink="/" class="nav-link">Início</a></li>
     <li class="nav-item">
       <a routerLink="/divulgarEvento" class="nav-link">Divulgar Evento</a>
     </li>
+    <li
+      class="nav-item"
+      *ngIf="
+        estaLogado &&
+        ehPapelParceiro &&
+        !parceiroAprovado &&
+        !formularioParceiroExiste &&
+        statusParceiroCarregado
+      "
+    >
+      <button
+        mat-button
+        class="nav-link"
+        (click)="abrirFormularioParceiroPeloCliqueNaNavbar()"
+      >
+        Cadastro de Parceiro
+      </button>
+    </li>
+    <li class="nav-item" *ngIf="estaLogado && servicoAuth.isAdmin()">
+      <a routerLink="/solicitacoes-parceiros" class="nav-link"
+        >Solicitações Parceiros</a
+      >
+    </li>
   </ul>
 
   <div class="itens">
-    <ng-container *ngIf="!isLoggedIn">
+    <ng-container *ngIf="!estaLogado">
       <a routerLink="/login" class="btn-login">Login</a>
       <a routerLink="/cadastre-se" class="btn-cadastro">Cadastre-se</a>
     </ng-container>
 
-    <div class="nav-user" *ngIf="isLoggedIn">
-      <div class="user-circle" (click)="toggleDropdown()">
-        <img [src]="userImageUrl" alt="Foto do Usuário" *ngIf="userImageUrl" />
+    <div class="nav-user" *ngIf="estaLogado">
+      <div class="user-circle" (click)="alternarDropdown()">
+        <img
+          [src]="urlImagemUsuario"
+          alt="Foto do Usuário"
+          *ngIf="urlImagemUsuario"
+        />
       </div>
-      <ul class="dropdown-menu" [class.show]="isDropdownVisible">
-        <li class="username">{{ userName }}</li>
-        <li><a (click)="goToProfile()">Perfil</a></li>
-        <li><a (click)="logout()">Sair</a></li>
+      <ul class="dropdown-menu" [class.show]="dropdownVisivel">
+        <li class="username">{{ nomeUsuario }}</li>
+        <li><a (click)="irParaPerfil()">Perfil</a></li>
+        <li><a (click)="sair()">Sair</a></li>
         <li><a routerLink="alterar-senha">Alterar senha</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
-<!-- Segunda barra de navegação: busca -->
-<div class="navBar-2" [class.hidden]="!isNavbarVisible">
+<div class="navBar-2" [class.hidden]="!navbarVisivel">
   <div class="search">
     <input
-      #searchInput
+      #campoPesquisa
       type="search"
       class="form-control"
       placeholder="Pesquisar eventos"
       aria-label="Pesquisar eventos"
-      (focus)="onSearchFocus()"
-      (blur)="onSearchBlur()"
-      (input)="search(searchInput.value)"
+      (focus)="aoFocarPesquisa()"
+      (blur)="aoDesfocarPesquisa()"
+      (input)="pesquisar(campoPesquisa.value)"
     />
 
     <img
@@ -63,16 +87,16 @@
     />
 
     <div
-      *ngIf="isSearchFocused && searchResults.length > 0"
+      *ngIf="pesquisaFocada && resultadosPesquisa.length > 0"
       class="search-results"
     >
       <ul>
         <li
-          *ngFor="let event of searchResults"
+          *ngFor="let evento of resultadosPesquisa"
           class="search-result-item"
-          (click)="goToEventDetails(event.id)"
+          (click)="irParaDetalhesEvento(evento.id)"
         >
-          {{ event.titulo }}
+          {{ evento.titulo }}
         </li>
       </ul>
     </div>

@@ -106,7 +106,8 @@
 }
 
 /* Imagem do usuário no cabeçalho */
-.evento-header img {
+
+.evento-header .profile-image {
   max-width: 40px;
   margin-left: 5px;
   height: 40px;
@@ -214,6 +215,14 @@
 }
 
 /* ---------------------------------------------------------------- */
+
+.evento-header .partner-icon-small {
+  width: 20px; /* Ajuste o tamanho conforme o design */
+  height: 20px; /* Ajuste o tamanho conforme o design */
+  margin-left: 5px; /* Espaçamento entre o nome e o selo */
+  vertical-align: middle; /* Alinha o ícone verticalmente com o texto */
+}
+
 /* Estilos Responsivos para diferentes tamanhos de tela */
 
 /* Para telas menores que 1024px (tablets e dispositivos menores) */

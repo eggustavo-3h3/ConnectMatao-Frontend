@@ -1,0 +1,24 @@
+/* src/app/components/form-parceiro-modal/form-parceiro-modal.component.css */
+.full-width {
+  width: 100%;
+}
+
+.formContainer {
+  /* z-index: 29999; <-- REMOVA OU COMENTE ESTA LINHA */
+}
+
+mat-dialog-content {
+  padding: 20px;
+}
+
+mat-dialog-actions {
+  padding: 0 20px 20px 20px;
+}
+
+mat-form-field {
+  margin-bottom: 15px;
+}
+
+button {
+  margin-left: 8px;
+}

@@ -1,4 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+/* src/styles.css ou outro arquivo CSS global */
+
+/* Estilo para mensagens de erro */
+.snackbar-error {
+  background-color: #f44336 !important; /* Vermelho */
+  color: white !important;
+}
+
+/* Estilo para mensagens de aviso/alerta (formulário não preenchido) */
+.snackbar-warning {
+  background-color: #ff9800 !important; /* Laranja */
+  color: white !important;
+}
+
+/* Estilo para mensagens de informação (em análise) */
+.snackbar-info {
+  background-color: #2196f3 !important; /* Azul */
+  color: white !important;
+}
+
+/* Estilo para mensagens de sucesso (se quiser adicionar) */
+.snackbar-success {
+  background-color: #4caf50 !important; /* Verde */
+  color: white !important;
+}
+
+/* Opcional: Estilo para o painel do modal se você adicionou panelClass */
+/*
+.custom-dialog-container .mat-mdc-dialog-container {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+*/

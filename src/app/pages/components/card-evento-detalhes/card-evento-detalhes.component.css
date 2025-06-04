@@ -301,3 +301,11 @@ a:hover {
 .confirmation-modal .modal-buttons button:not([color="warn"]):hover {
   background-color: #b3b3b3;
 }
+
+.partner-icon-details {
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  vertical-align: middle;
+  transform: translateY(-2px);
+}

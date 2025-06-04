@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>Cadastro de Parceiro</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="partnerForm" (ngSubmit)="onSubmit()" class="formContainer">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome Completo</mat-label>
+      <input matInput formControlName="nomeCompleto" />
+      <mat-error
+        *ngIf="
+          f['nomeCompleto'].hasError('required') && f['nomeCompleto'].touched
+        "
+      >
+        Nome completo é obrigatório.
+      </mat-error>
+      <mat-error *ngIf="f['nomeCompleto'].hasError('maxlength')">
+        Nome completo não pode ter mais de 100 caracteres.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>CPF</mat-label>
+      <input
+        matInput
+        formControlName="cpf"
+        mask="000.000.000-00"
+        [dropSpecialCharacters]="false"
+        (input)="formatCpf($event)"
+      />
+      <mat-error *ngIf="f['cpf'].hasError('required') && f['cpf'].touched">
+        CPF é obrigatório.
+      </mat-error>
+      <mat-error *ngIf="f['cpf'].hasError('pattern') && f['cpf'].touched">
+        Formato de CPF inválido. Use 000.000.000-00.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Telefone</mat-label>
+      <input
+        matInput
+        formControlName="telefone"
+        mask="(00) 00000-0000||(00) 0000-0000"
+        [dropSpecialCharacters]="false"
+      />
+      <mat-error
+        *ngIf="f['telefone'].hasError('required') && f['telefone'].touched"
+      >
+        Telefone é obrigatório.
+      </mat-error>
+      <mat-error
+        *ngIf="f['telefone'].hasError('pattern') && f['telefone'].touched"
+      >
+        Formato de telefone inválido. Use (00) 0000-0000 ou (00) 00000-0000.
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Fechar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()">
+    Enviar Cadastro
+  </button>
+</mat-dialog-actions>

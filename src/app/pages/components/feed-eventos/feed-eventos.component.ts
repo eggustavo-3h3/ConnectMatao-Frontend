@@ -1,3 +1,4 @@
+// src/app/components/feed-eventos/feed-eventos.component.ts
 import {
   Component,
   HostListener,
@@ -6,16 +7,26 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { EventoService } from '../../../services/evento.service';
-import { IEventoCard } from '../../../interfaces/evento-card.interface';
+import { IEventoCard } from '../../../interfaces/evento-card.interface'; // Certifique-se que esta interface contém 'isCreatorPartner?: boolean;'
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ParceiroStatusService } from '../../../services/parceiro-status.service'; // Importar o serviço
+import { forkJoin, of } from 'rxjs'; // Importar forkJoin e of
+import { map, take } from 'rxjs/operators'; // Importar map e take
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // Para o spinner de carregamento
 
 @Component({
   selector: 'app-feed-eventos',
   templateUrl: './feed-eventos.component.html',
   styleUrls: ['./feed-eventos.component.css'],
-  imports: [AngularMaterialModule, CommonModule, RouterModule],
+  standalone: true, // Adicionado standalone: true se este é um componente standalone
+  imports: [
+    AngularMaterialModule,
+    CommonModule,
+    RouterModule,
+    MatProgressSpinnerModule, // Adicionado ao imports
+  ],
 })
 export class FeedEventosComponent implements OnChanges {
   eventos: IEventoCard[] = [];
@@ -27,7 +38,10 @@ export class FeedEventosComponent implements OnChanges {
   private readonly limit = 3;
   private allLoaded = false;
 
-  constructor(private eventoService: EventoService) {}
+  constructor(
+    private eventoService: EventoService,
+    private parceiroStatusService: ParceiroStatusService // Injetar o serviço
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['categoriaSelecionada']) {
@@ -51,6 +65,7 @@ export class FeedEventosComponent implements OnChanges {
 
   carregarMaisEventos(): void {
     this.isLoading = true;
+    this.parceiroStatusService.clearCache(); // Limpa o cache para garantir dados frescos
 
     this.eventoService.listarEventos(this.categoriaSelecionada).subscribe({
       next: (todosEventos) => {
@@ -69,13 +84,48 @@ export class FeedEventosComponent implements OnChanges {
         );
 
         if (novosEventos.length > 0) {
-          this.eventos = [...this.eventos, ...novosEventos];
-          this.page++;
+          // Processa cada novo evento para verificar o status do parceiro
+          const parceiroChecks = novosEventos.map((evento) => {
+            if (evento.usuarioParceiroid) {
+              return this.parceiroStatusService
+                .isUserApprovedPartner(evento.usuarioParceiroid)
+                .pipe(
+                  map((isPartner) => {
+                    evento.isCreatorPartner = isPartner;
+                    return evento;
+                  }),
+                  take(1) // Importante para que o forkJoin saiba quando o observable terminou
+                );
+            } else {
+              evento.isCreatorPartner = false;
+              return of(evento);
+            }
+          });
+
+          // Usa forkJoin para esperar todas as verificações de parceiro
+          forkJoin(parceiroChecks).subscribe(
+            (eventosComStatus) => {
+              this.eventos = [...this.eventos, ...eventosComStatus];
+              this.page++;
+              this.isLoading = false;
+            },
+            (error) => {
+              console.error(
+                'Erro ao verificar status de parceiro para novos eventos:',
+                error
+              );
+              // Em caso de erro, adicione os eventos sem o status de parceiro
+              this.eventos = [
+                ...this.eventos,
+                ...novosEventos.map((e) => ({ ...e, isCreatorPartner: false })),
+              ];
+              this.isLoading = false;
+            }
+          );
         } else {
           this.allLoaded = true;
+          this.isLoading = false;
         }
-
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Erro ao carregar eventos:', error.message);

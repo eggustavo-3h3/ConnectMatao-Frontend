@@ -30,6 +30,13 @@
             [routerLink]="['/perfil', evento.usuarioParceiroid]"
           >
             {{ evento.usuarioNome }}
+            <img
+              *ngIf="evento.isCreatorPartner"
+              src="verificadoParceiro.png"
+              alt="Parceiro Verificado"
+              class="partner-icon-small"
+              title="Parceiro Verificado"
+            />
           </h1>
         </div>
 
@@ -46,7 +53,6 @@
 
         <div class="info">
           <h3 class="single-line">{{ evento.titulo }}</h3>
-          <!-- Classe para uma linha única -->
           <p class="single-line">{{ evento.descricao }}</p>
         </div>
 
