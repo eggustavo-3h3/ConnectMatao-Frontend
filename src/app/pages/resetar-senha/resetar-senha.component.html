@@ -7,6 +7,24 @@
     <mat-error *ngIf="resetarSenhaForm.get('novaSenha')?.hasError('required')">
       A nova senha é obrigatória.
     </mat-error>
+    <mat-error
+      *ngIf="
+        !resetarSenhaForm.get('novaSenha')?.hasError('required') &&
+        resetarSenhaForm.get('novaSenha')?.hasError('minlength')
+      "
+    >
+      A senha deve ter no mínimo 8 caracteres.
+    </mat-error>
+    <mat-error
+      *ngIf="
+        !resetarSenhaForm.get('novaSenha')?.hasError('required') &&
+        !resetarSenhaForm.get('novaSenha')?.hasError('minlength') &&
+        resetarSenhaForm.get('novaSenha')?.hasError('pattern')
+      "
+    >
+      A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um
+      número e um caractere especial.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="fill" class="full-width">

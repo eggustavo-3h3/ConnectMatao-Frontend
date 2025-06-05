@@ -48,19 +48,21 @@ export class RecuperarSenhaComponent implements OnInit {
     this.usuarioService.solicitarRecuperacaoSenha(email).subscribe({
       next: () => {
         this.loading = false;
+        // Mensagem genérica para segurança: não revela se o email existe ou não
         this.snackBar.open(
-          'Email enviado com sucesso! Verifique sua caixa de entrada.',
+          'Se o e-mail estiver cadastrado, um link de recuperação foi enviado!',
           'Fechar',
           { duration: 4000 }
         );
-        this.router.navigate(['/login']); // Ou para outra rota que preferir
+        this.router.navigate(['/login']); // Redireciona para o login
       },
       error: (err) => {
         this.loading = false;
+        // Tenta pegar a mensagem de erro do backend, senão mostra uma genérica
         const msg =
           typeof err?.error === 'string'
             ? err.error
-            : 'Erro ao enviar email de recuperação.';
+            : 'Erro ao enviar e-mail de recuperação. Tente novamente.';
         this.snackBar.open(msg, 'Fechar', { duration: 4000 });
       },
     });
