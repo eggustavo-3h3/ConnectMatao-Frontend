@@ -126,7 +126,7 @@ button {
 }
 
 .edit-modal input {
-  width: 100%;
+  width: 90%;
   padding: 8px;
   margin: 10px 0;
   border: 1px solid #ddd;
@@ -229,6 +229,32 @@ button {
   object-fit: cover;
   border-radius: 50%;
   margin-top: 10px;
+}
+
+.enviar{
+  background-color: #20a2f2;
+  color: white;
+  transition: 300ms;
+}
+
+.enviar:hover{
+  background-color: #1b8acf;
+  transform: scale(1.1);
+}
+
+.cancelar{
+  background-color: #f44336;
+  color: white;
+  transition: 300ms;
+}
+
+.cancelar:hover{
+  background-color:  #d82417;
+  transform: scale(1.1);
+}
+
+.modalConfirm button{
+  margin-left:20px ;
 }
 
 .spinner-overlay {

@@ -71,7 +71,7 @@ nav {
   transition: 700ms;
   display: inline-block;
   position: relative;
-  padding-bottom: 4px; /* para dar espaço para a barra */
+  padding-bottom: 4px; 
 }
 
 .nav-link::after {

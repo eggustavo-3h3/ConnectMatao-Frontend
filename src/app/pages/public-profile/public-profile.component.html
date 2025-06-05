@@ -49,16 +49,16 @@
     </div>
   </div>
 
-  <div *ngIf="isEditNameModalOpen" class="edit-modal">
+  <div *ngIf="isEditNameModalOpen" class="edit-modal modalConfirm">
     <h3>Alterar Nome</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateName()">
       <input formControlName="nome" placeholder="Novo nome" />
-      <button type="submit" [disabled]="editForm.invalid">Salvar</button>
-      <button type="button" (click)="closeEditNameModal()">Cancelar</button>
+      <button type="submit"  class="enviar" [disabled]="editForm.invalid">Salvar</button>
+      <button type="button" class="cancelar" (click)="closeEditNameModal()">Cancelar</button>
     </form>
   </div>
 
-  <div *ngIf="isEditImageModalOpen" class="edit-modal">
+  <div *ngIf="isEditImageModalOpen" class="edit-modal modalConfirm">
     <h3>Alterar Imagem</h3>
     <form [formGroup]="editForm" (ngSubmit)="updateImage()">
       <input
@@ -69,8 +69,8 @@
       <div class="image-preview-container" *ngIf="imagePreviewUrl">
         <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
       </div>
-      <button type="submit" [disabled]="!editForm.value.imagem">Salvar</button>
-      <button type="button" (click)="closeEditImageModal()">Cancelar</button>
+      <button type="submit" class="enviar" [disabled]="!editForm.value.imagem">Salvar</button>
+      <button type="button" class="cancelar" (click)="closeEditImageModal()">Cancelar</button>
     </form>
   </div>
 
