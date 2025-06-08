@@ -54,7 +54,7 @@ export class RecuperarSenhaComponent implements OnInit {
           'Fechar',
           { duration: 4000 }
         );
-        this.router.navigate(['/login']); // Redireciona para o login
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.loading = false;

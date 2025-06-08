@@ -7,8 +7,6 @@
   padding: 20px;
   box-sizing: border-box;
   overflow-x: hidden;
-  zoom: 80%;
-  margin-top: 150px;
 }
 
 .logo-site {
@@ -16,13 +14,14 @@
   height: 199px;
   border-radius: 50%;
   background-color: white;
+  max-width: 100%;
+  height: auto;
 }
 
 .full-width {
   width: 100%;
 }
 
-/* Card de login */
 .card {
   display: flex;
   flex-direction: row;
@@ -34,9 +33,9 @@
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
-/* Lado esquerdo (formulário) */
 .left-panel {
   width: 60%;
   padding: 40px;
@@ -44,9 +43,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
 }
 
-/* Lado direito (logo) */
 .right-panel {
   width: 40%;
   background: #2196f3;
@@ -57,7 +56,6 @@
   box-sizing: border-box;
 }
 
-/* Título */
 h2 {
   color: #2196f3;
   margin-bottom: 20px;
@@ -65,7 +63,6 @@ h2 {
   font-weight: 600;
 }
 
-/* Campos de entrada */
 .input-group {
   margin-bottom: 15px;
   position: relative;
@@ -95,7 +92,6 @@ h2 {
   padding-left: 0;
 }
 
-/* Botão */
 button {
   width: 70%;
   padding: 10px;
@@ -107,7 +103,6 @@ button {
   margin-top: 0px;
 }
 
-/* Link */
 p {
   margin-top: 10px;
 }
@@ -123,7 +118,8 @@ a:hover {
 
 button[type="submit"] {
   margin: 20px auto;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 40px;
   color: #ffffff;
   padding: 12px;
@@ -134,7 +130,6 @@ button[type="submit"] {
   display: block;
 }
 
-/* Estilo do botão de alternar a visibilidade da senha */
 .password-group {
   position: relative;
   display: flex;
@@ -153,7 +148,6 @@ button[type="submit"] {
   background: none;
   top: 27%;
   transform: translateY(-50%);
-  background: none;
   border: none;
   cursor: pointer;
   padding: 0;
@@ -179,12 +173,11 @@ button[type="submit"] {
   left: 10px;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .card {
     flex-direction: column-reverse;
-    width: 100%;
-    max-width: 100%;
+    width: calc(100% - 40px);
+    margin: 0 20px;
   }
 
   .left-panel,
@@ -198,5 +191,9 @@ button[type="submit"] {
     display: flex;
     justify-content: center;
     padding: 20px;
+  }
+
+  h2 {
+    font-size: 32px;
   }
 }

@@ -71,7 +71,7 @@ nav {
   transition: 700ms;
   display: inline-block;
   position: relative;
-  padding-bottom: 4px; 
+  padding-bottom: 4px;
 }
 
 .nav-link::after {
@@ -193,7 +193,7 @@ nav {
 }
 
 .dropdown-menu li:hover {
-  background-color: #20a2f2; /* Cor azul clara ao passar o mouse */
+  background-color: #20a2f2;
 }
 
 .dropdown-menu li a {

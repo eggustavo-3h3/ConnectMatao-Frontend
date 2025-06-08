@@ -80,6 +80,7 @@ export class SolicitacoesParceirosComponent implements OnInit {
       },
     });
   }
+
   abrirModalConfirmacao(
     titulo: string,
     mensagem: string,

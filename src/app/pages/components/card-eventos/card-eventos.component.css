@@ -20,6 +20,12 @@
   margin-left: 140px;
 }
 
+.single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Estilo do Carrossel */
 .carousel {
   display: flex;
@@ -217,22 +223,18 @@
 /* ---------------------------------------------------------------- */
 
 .evento-header .partner-icon-small {
-  width: 20px; /* Ajuste o tamanho conforme o design */
-  height: 20px; /* Ajuste o tamanho conforme o design */
-  margin-left: 5px; /* Espaçamento entre o nome e o selo */
-  vertical-align: middle; /* Alinha o ícone verticalmente com o texto */
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
-/* Estilos Responsivos para diferentes tamanhos de tela */
-
-/* Para telas menores que 1024px (tablets e dispositivos menores) */
 @media (max-width: 1024px) {
   .evento-card {
     flex: 0 0 calc(100% / 2); /* Exibe 2 cards */
   }
 }
 
-/* Para telas menores que 768px (celulares e dispositivos muito pequenos) */
 @media (max-width: 768px) {
   .evento-card {
     flex: 0 0 100%; /* Exibe 1 card por vez */

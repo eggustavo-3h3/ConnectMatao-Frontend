@@ -1,4 +1,3 @@
-/* Reset e estrutura base */
 * {
   margin: 0;
   padding: 0;
@@ -79,7 +78,7 @@ body {
 
 /* Centralizando o botão de submit */
 button[type="submit"] {
-  margin: 20px auto; /* Centraliza o botão horizontalmente */
+  margin: 20px auto;
   width: 300px;
   height: 40px;
   color: #ffffff;
@@ -88,7 +87,7 @@ button[type="submit"] {
   font-size: 16px;
   border: none;
   cursor: pointer;
-  display: block; /* Garante que o botão seja tratado como bloco */
+  display: block;
 }
 
 .error-message {

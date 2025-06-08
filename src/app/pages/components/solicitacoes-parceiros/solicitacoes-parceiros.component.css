@@ -131,7 +131,7 @@ mat-raised-button mat-icon {
 @media (max-width: 768px) {
   .container {
     padding: 15px;
-    margin: 15px auto;
+    margin: 150px auto;
   }
 
   .application-list {
