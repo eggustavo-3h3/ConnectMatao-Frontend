@@ -20,10 +20,7 @@
         class="application-card"
       >
         <mat-card-header>
-          <mat-card-title>{{ application.nomeCompleto }}</mat-card-title>
-          <mat-card-subtitle
-            >Usuário: {{ application.usuarioNome }}</mat-card-subtitle
-          >
+          <mat-card-title>Nome: {{ application.nomeCompleto }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <p>
@@ -36,7 +33,11 @@
           </p>
           <p>
             <strong>Data de Envio:</strong>
-            {{ application.dataEnvio | date : "dd/MM/yyyy HH:mm" }}
+            {{
+              application.dataEnvio
+                ? (application.dataEnvio | date : "dd/MM/yyyy HH:mm")
+                : "Data não disponível"
+            }}
           </p>
         </mat-card-content>
         <mat-card-actions align="end">

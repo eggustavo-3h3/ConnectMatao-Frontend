@@ -1,4 +1,3 @@
-
 html,
 body {
   height: 100%;
@@ -10,7 +9,7 @@ body {
 }
 
 .snackbar-error {
-  background-color: #f1f1f1 !important; 
+  background-color: #f1f1f1 !important;
   color: white !important;
 }
 
@@ -20,11 +19,11 @@ body {
 }
 
 .snackbar-info {
-  background-color: #2196f3 !important; 
+  background-color: #2196f3 !important;
   color: white !important;
 }
 
 .snackbar-success {
-  background-color: #4caf50 !important; 
+  background-color: #4caf50 !important;
   color: white !important;
 }

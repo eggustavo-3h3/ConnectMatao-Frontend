@@ -14,7 +14,6 @@
   padding: 20px;
   margin-bottom: 50px;
   background-color: rgba(255, 255, 255, 0.1);
-
   border-radius: 8px;
 }
 
@@ -43,8 +42,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(167, 167, 167, 0.6);
-  border-radius: 50%;
+  background-color: rgba(173, 173, 173, 0.6);
+  border-radius: 20%;
   padding: 4px;
   cursor: pointer;
   transition: background-color 300ms ease;
@@ -53,6 +52,7 @@
 
 .profile-image:hover .edit-image-icon {
   display: block;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .profile-info {
@@ -77,8 +77,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 50%;
+  background-color: rgba(173, 173, 173, 0.6);
+  border-radius: 20%;
   padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -231,30 +231,90 @@ button {
   margin-top: 10px;
 }
 
-.enviar{
+.enviar {
   background-color: #20a2f2;
   color: white;
   transition: 300ms;
 }
 
-.enviar:hover{
+.enviar:hover {
   background-color: #1b8acf;
   transform: scale(1.1);
 }
 
-.cancelar{
+.cancelar {
   background-color: #f44336;
   color: white;
   transition: 300ms;
 }
 
-.cancelar:hover{
-  background-color:  #d82417;
+.cancelar:hover {
+  background-color: #d82417;
   transform: scale(1.1);
 }
 
-.modalConfirm button{
-  margin-left:20px ;
+.modalConfirm button {
+  margin-left: 20px;
+}
+
+/* Estilo para o modal de exibição da imagem de perfil */
+.image-display-modal {
+  position: relative;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  text-align: center;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.image-display-modal img {
+  width: 300px;
+  height: 300px;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.image-display-modal .close-modal-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: rgb(0, 0, 0);
+  border: none;
+  width: 30px;
+  height: 30px;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  z-index: 1001;
+}
+
+.image-display-modal .close-modal-btn:hover {
+  color: #000;
+}
+
+/* Overlay para os modais */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .spinner-overlay {
@@ -270,20 +330,18 @@ button {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 10px; /* Adiciona espaçamento entre o nome e o selo */
+  gap: 10px;
 }
 
 .partner-profile-badge {
-  display: inline-flex; /* Permite que o badge se alinhe com o texto */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: help;
-  /* Ajuste o posicionamento se necessário */
-  margin-left: 5px; /* Pequeno espaçamento do nome */
-  vertical-align: middle; /* Alinha verticalmente com o texto */
+  margin-left: 5px;
 }
 
 .partner-profile-badge .partner-icon-img {
-  width: 24px; /* Ajuste o tamanho do ícone para o perfil */
-  height: 24px; /* Ajuste o tamanho do ícone para o perfil */
+  width: 24px;
+  height: 24px;
 }

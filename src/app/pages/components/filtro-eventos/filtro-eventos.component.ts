@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ICategoria } from '../../../interfaces/categoria.interface';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -9,12 +9,13 @@ import { CommonModule } from '@angular/common';
   templateUrl: './filtro-eventos.component.html',
   styleUrls: ['./filtro-eventos.component.css'],
   imports: [FormsModule, CommonModule],
+  standalone: true,
 })
-export class FiltroEventosComponent {
+export class FiltroEventosComponent implements OnInit {
   isModalOpen = false;
   filters: { categoryId: number | null } = { categoryId: null };
   categorias: ICategoria[] = [];
-  @Output() filterChanged = new EventEmitter<number | null>(); // Adiciona o EventEmitter
+  @Output() filterChanged = new EventEmitter<number | null>();
 
   private apiUrl = 'https://connectmatao-api.tccnapratica.com.br';
 

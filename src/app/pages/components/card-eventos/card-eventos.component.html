@@ -20,7 +20,11 @@
       <div class="evento-card">
         <div class="evento-header">
           <img
-            [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
+            [src]="
+              evento.usuarioImagem
+                ? 'data:image/jpeg;base64,' + evento.usuarioImagem
+                : 'assets/default-user.png'
+            "
             [alt]="evento.usuarioNome"
             class="profile-image"
             [routerLink]="['/perfil', evento.usuarioParceiroid]"
@@ -42,7 +46,7 @@
 
         <img
           [src]="
-            evento.eventoImagem.length
+            evento.eventoImagem && evento.eventoImagem.length > 0
               ? 'data:image/jpeg;base64,' + evento.eventoImagem[0]
               : 'ConnectMataoIcon.png'
           "

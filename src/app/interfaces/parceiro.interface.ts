@@ -1,11 +1,11 @@
 export interface IParceiro {
-  id?: string; // Making ID optional as it might not exist until saved
-  usuarioId?: string; // Making usuarioId optional too
-  nomeCompleto: string | null; // Allow null if not yet provided
-  cpf: string | null; // Allow null if not yet provided
-  telefone: string | null; // Allow null if not yet provided
+  id?: string;
+  usuarioId?: string;
+  nomeCompleto: string | null;
+  cpf: string | null;
+  telefone: string | null;
   flagAprovado: boolean;
-  dataEnvio: Date | null; // Date can be null if not submitted
-  usuarioNome?: string; // Optional, as discussed previously
+  dataEnvio: Date | null;
+  usuarioNome?: string;
   formParceiroExiste?: boolean;
 }

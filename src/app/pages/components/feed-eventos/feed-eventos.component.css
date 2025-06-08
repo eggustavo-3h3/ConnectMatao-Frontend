@@ -113,13 +113,14 @@
   transform: translateX(-50%);
   z-index: 1000;
   display: flex;
+  font-size: 15px;
   justify-content: center;
   align-items: center;
 }
 
 .spinner-overlay mat-spinner {
-  width: 24px;
-  height: 24px;
+  width: 14px;
+  height: 14px;
 }
 
 .mensagem-vazia {

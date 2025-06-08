@@ -80,21 +80,25 @@
       (input)="pesquisar(campoPesquisa.value)"
     />
 
-    <img
+    <!-- <img
       src="https://cdn-icons-png.flaticon.com/128/2319/2319177.png"
       alt="Ícone de lupa"
       class="search-icon"
-    />
+    /> -->
 
     <div
-      *ngIf="pesquisaFocada && resultadosPesquisa.length > 0"
+      *ngIf="
+        pesquisaFocada &&
+        resultadosPesquisa.length > 0 &&
+        campoPesquisa.value.length > 2
+      "
       class="search-results"
     >
       <ul>
         <li
           *ngFor="let evento of resultadosPesquisa"
           class="search-result-item"
-          (click)="irParaDetalhesEvento(evento.id)"
+          (mousedown)="irParaDetalhesEvento(evento.id)"
         >
           {{ evento.titulo }}
         </li>

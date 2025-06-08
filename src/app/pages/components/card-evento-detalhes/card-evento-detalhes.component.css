@@ -7,15 +7,14 @@
   background-color: #ffffff;
 }
 
-/* Banner e seus elementos */
 .event-banner {
   position: relative;
 }
 
 .btn-delete-icon {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 30px;
+  right: 30px;
   background: #fff;
   border: none;
   cursor: pointer;
@@ -42,6 +41,11 @@
 }
 
 .like-dislike-container {
+  background-color: #333030;
+  padding: 10px;
+  border: 1px solid rgb(66, 62, 62);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  border-radius: 22px;
   position: absolute;
   bottom: 20px;
   right: 20px;
@@ -51,13 +55,14 @@
 }
 
 .like-dislike-container button {
-  background: rgba(255, 255, 255, );
+  background: rgb(59, 59, 59);
   border: none;
   padding: 8px;
-  border-radius: 1000px;
+  border-radius: 15px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: transform 500ms;
+  transition: transform 500ms, background-color 0.3s ease, color 0.3s ease;
+  color: #beb6b6;
 }
 
 .like-dislike-container button:hover {
@@ -66,7 +71,8 @@
 
 .like-dislike-container .liked,
 .like-dislike-container .disliked {
-  background-color: #ebebeb;
+  background-color: #525252 !important;
+  color: rgb(235, 230, 230) !important;
 }
 
 a {
@@ -80,7 +86,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Card de informações do evento */
 .event-card {
   background-color: rgb(255, 255, 255);
   padding: 20px;
@@ -116,7 +121,6 @@ a:hover {
   gap: 10px;
 }
 
-/* Footer com informações do usuário */
 .user-info-footer {
   display: flex;
   align-items: center;
@@ -133,7 +137,6 @@ a:hover {
   object-fit: cover;
 }
 
-/* Spinner de carregamento */
 .spinner-overlay {
   position: fixed;
   top: 30%;
@@ -146,7 +149,6 @@ a:hover {
   z-index: 1000;
 }
 
-/* Carousel */
 .carousel {
   position: relative;
   display: flex;
@@ -194,7 +196,6 @@ a:hover {
   background-color: #333;
 }
 
-/* Modal base, comum para todos */
 .modal {
   position: fixed;
   inset: 0;
@@ -205,7 +206,6 @@ a:hover {
   z-index: 21100;
 }
 
-/* Conteúdo base do modal */
 .modal-content {
   border-radius: 8px;
   position: relative;
@@ -216,7 +216,6 @@ a:hover {
   text-align: center;
 }
 
-/* Botão fechar */
 .close-btn {
   position: absolute;
   top: 25px;
@@ -228,7 +227,6 @@ a:hover {
   color: #c4b9b9;
 }
 
-/* Modal de imagem do evento */
 .event-logo-modal {
   width: 800px;
   max-width: 90vw;
@@ -237,11 +235,9 @@ a:hover {
   object-fit: contain;
 }
 
-/* ==== MODAL DE CONFIRMAÇÃO - prefixado para isolamento ==== */
-
 .confirmation-modal .modal-content {
   max-width: 400px;
-  width: 100%; /* para responsividade */
+  width: 100%;
   background-color: #fff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
@@ -252,7 +248,6 @@ a:hover {
   box-sizing: border-box;
 }
 
-/* Título do modal de confirmação */
 .confirmation-modal h3 {
   margin: 0;
   font-weight: 600;
@@ -262,17 +257,16 @@ a:hover {
 
 .confirmation-modal {
   position: fixed;
-  inset: 0; 
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 21100;
-  padding: 20px; 
+  padding: 20px;
   box-sizing: border-box;
 }
 
-/* Botões com estilo */
 .confirmation-modal .modal-buttons button {
   min-width: 100px;
   padding: 8px 16px;
@@ -284,7 +278,6 @@ a:hover {
   transition: background-color 0.3s ease;
 }
 
-/* Botão de apagar (warn) */
 .confirmation-modal .modal-buttons button[color="warn"] {
   background-color: #e61414;
   color: white;
@@ -294,7 +287,6 @@ a:hover {
   background-color: #af3f3f;
 }
 
-/* Botão cancelar */
 .confirmation-modal .modal-buttons button:not([color="warn"]) {
   background-color: #ccc;
   color: #333;

@@ -29,12 +29,10 @@ import { IParceiro } from '../../../interfaces/parceiro.interface';
   styleUrls: ['./solicitacoes-parceiros.component.css'],
 })
 export class SolicitacoesParceirosComponent implements OnInit {
-  // Propriedades
-  solicitacoesPendentes: IParceiro[] = [];
+  solicitacoesPendentes: (IParceiro & { dataEnvio: Date | null })[] = [];
   carregando: boolean = true;
   erro: string | null = null;
 
-  // Para o modal de confirmação genérico
   @ViewChild('modalConfirmacao') modalConfirmacao!: TemplateRef<any>;
   referenciaModalAtual!: MatDialogRef<any>;
   dadosModal: {
@@ -56,13 +54,18 @@ export class SolicitacoesParceirosComponent implements OnInit {
     this.carregarSolicitacoesPendentes();
   }
 
-  // Métodos
   carregarSolicitacoesPendentes(): void {
     this.carregando = true;
     this.erro = null;
     this.servicoFormUsuarioParceiro.getPendingPartnerApplications().subscribe({
       next: (data) => {
-        this.solicitacoesPendentes = data;
+        this.solicitacoesPendentes = data.map((solicitacao: any) => ({
+          ...solicitacao,
+          dataEnvio: solicitacao.dataEnvio
+            ? new Date(solicitacao.dataEnvio)
+            : null,
+          usuarioNome: solicitacao.NomeUsuario, // <--- Esta linha já faz o mapeamento
+        }));
         this.carregando = false;
       },
       error: (err) => {
@@ -77,16 +80,6 @@ export class SolicitacoesParceirosComponent implements OnInit {
       },
     });
   }
-
-  /**
-   * Abre um modal de confirmação genérico usando um template local.
-   * @param titulo O título do modal.
-   * @param mensagem A mensagem exibida no modal.
-   * @param textoConfirmar O texto do botão de confirmar.
-   * @param textoCancelar O texto do botão de cancelar.
-   * @param acaoConfirmada A função a ser executada se confirmado.
-   * @param id O ID da aplicação sendo processada.
-   */
   abrirModalConfirmacao(
     titulo: string,
     mensagem: string,
@@ -105,15 +98,14 @@ export class SolicitacoesParceirosComponent implements OnInit {
     };
     this.referenciaModalAtual = this.dialog.open(this.modalConfirmacao, {
       width: '400px',
-      disableClose: true, // O usuário deve escolher uma opção
+      disableClose: true,
     });
 
     this.referenciaModalAtual.afterClosed().subscribe((resultado: boolean) => {
       if (resultado && this.dadosModal) {
-        // Se confirmado e os dados do modal existirem
         this.dadosModal.acaoConfirmada(this.dadosModal.id);
       }
-      this.dadosModal = null; // Limpa os dados do modal
+      this.dadosModal = null;
     });
   }
 
@@ -123,12 +115,11 @@ export class SolicitacoesParceirosComponent implements OnInit {
       'Tem certeza de que deseja **aprovar** esta solicitação de parceiro? Esta ação concederá ao usuário acesso para divulgar eventos.',
       'Aprovar',
       'Cancelar',
-      this._aprovarSolicitacao, // Passa o método privado
+      this._aprovarSolicitacao,
       id
     );
   }
 
-  // Método privado para encapsular a lógica de aprovação
   private _aprovarSolicitacao = (id: string): void => {
     this.servicoFormUsuarioParceiro.approvePartner(id).subscribe({
       next: () => {
@@ -136,7 +127,7 @@ export class SolicitacoesParceirosComponent implements OnInit {
           duration: 3000,
           panelClass: ['snackbar-success'],
         });
-        this.carregarSolicitacoesPendentes(); // Recarrega a lista
+        this.carregarSolicitacoesPendentes();
       },
       error: (err) => {
         console.error('Erro ao aprovar solicitação:', err);
@@ -155,12 +146,11 @@ export class SolicitacoesParceirosComponent implements OnInit {
       'Tem certeza de que deseja **reprovar** esta solicitação? Esta ação é irreversível e removerá a solicitação da lista.',
       'Reprovar',
       'Cancelar',
-      this._rejeitarSolicitacao, // Passa o método privado
+      this._rejeitarSolicitacao,
       id
     );
   }
 
-  // Método privado para encapsular a lógica de reprovação
   private _rejeitarSolicitacao = (id: string): void => {
     this.servicoFormUsuarioParceiro.rejectPartner(id).subscribe({
       next: () => {
@@ -168,7 +158,7 @@ export class SolicitacoesParceirosComponent implements OnInit {
           duration: 3000,
           panelClass: ['snackbar-info'],
         });
-        this.carregarSolicitacoesPendentes(); // Recarrega a lista
+        this.carregarSolicitacoesPendentes();
       },
       error: (err) => {
         console.error('Erro ao reprovar solicitação:', err);

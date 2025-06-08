@@ -11,6 +11,9 @@
             : './../../../../../../pngPadrao-NaoLogado.png'
         "
         alt="{{ user.nome }}"
+        (click)="openImageModal()"
+        style="cursor: pointer"
+        title="Visualizar imagem"
       />
       <img
         *ngIf="canEditProfile"
@@ -36,44 +39,73 @@
             class="partner-icon-img"
           />
         </span>
+        <img
+          *ngIf="canEditProfile"
+          (click)="openEditNameModal()"
+          class="edit-name-icon"
+          src="../lapis.png"
+          alt="Editar nome"
+          title="Alterar nome"
+        />
       </h2>
-      <img
-        *ngIf="canEditProfile"
-        (click)="openEditNameModal()"
-        class="edit-name-icon"
-        src="../lapis.png"
-        alt="Editar nome"
-        title="Alterar nome"
-      />
       <p>E-mail: {{ user.login }}</p>
     </div>
   </div>
 
-  <div *ngIf="isEditNameModalOpen" class="edit-modal modalConfirm">
-    <h3>Alterar Nome</h3>
-    <form [formGroup]="editForm" (ngSubmit)="updateName()">
-      <input formControlName="nome" placeholder="Novo nome" />
-      <button type="submit"  class="enviar" [disabled]="editForm.invalid">Salvar</button>
-      <button type="button" class="cancelar" (click)="closeEditNameModal()">Cancelar</button>
-    </form>
+  <div *ngIf="isEditNameModalOpen" class="modal-overlay">
+    <div class="edit-modal modalConfirm">
+      <h3>Alterar Nome</h3>
+      <form [formGroup]="editForm" (ngSubmit)="updateName()">
+        <input formControlName="nome" placeholder="Novo nome" />
+        <button type="submit" class="enviar" [disabled]="editForm.invalid">
+          Salvar
+        </button>
+        <button type="button" class="cancelar" (click)="closeEditNameModal()">
+          Cancelar
+        </button>
+      </form>
+    </div>
   </div>
 
-  <div *ngIf="isEditImageModalOpen" class="edit-modal modalConfirm">
-    <h3>Alterar Imagem</h3>
-    <form [formGroup]="editForm" (ngSubmit)="updateImage()">
-      <input
-        type="file"
-        (change)="handleImageUpload($event)"
-        accept="image/*"
+  <div *ngIf="isEditImageModalOpen" class="modal-overlay">
+    <div class="edit-modal modalConfirm">
+      <h3>Alterar Imagem</h3>
+      <form [formGroup]="editForm" (ngSubmit)="updateImage()">
+        <input
+          type="file"
+          (change)="handleImageUpload($event)"
+          accept="image/*"
+        />
+        <div class="image-preview-container" *ngIf="imagePreviewUrl">
+          <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
+        </div>
+        <button
+          type="submit"
+          class="enviar"
+          [disabled]="!editForm.value.imagem"
+        >
+          Salvar
+        </button>
+        <button type="button" class="cancelar" (click)="closeEditImageModal()">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="isImageModalOpen" class="modal-overlay">
+    <div class="image-display-modal">
+      <img
+        [src]="
+          user.imagem
+            ? 'data:image/jpeg;base64,' + user.imagem
+            : './../../../../../../pngPadrao-NaoLogado.png'
+        "
+        alt="{{ user.nome }}"
       />
-      <div class="image-preview-container" *ngIf="imagePreviewUrl">
-        <img [src]="imagePreviewUrl" alt="Pré-visualização da imagem" />
-      </div>
-      <button type="submit" class="enviar" [disabled]="!editForm.value.imagem">Salvar</button>
-      <button type="button" class="cancelar" (click)="closeEditImageModal()">Cancelar</button>
-    </form>
+      <button class="close-modal-btn" (click)="closeImageModal()">X</button>
+    </div>
   </div>
-
   <div>
     <h3 *ngIf="canEditProfile">Meus Eventos</h3>
     <h3 *ngIf="!canEditProfile">Eventos</h3>

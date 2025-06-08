@@ -25,6 +25,9 @@ export class ResetarSenhaComponent implements OnInit {
   loading = false;
   chaveResetSenha: string = '';
 
+  mostrarNovaSenha = false;
+  mostrarConfirmarNovaSenha = false;
+
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
@@ -56,29 +59,32 @@ export class ResetarSenhaComponent implements OnInit {
     );
   }
 
-  // Validador personalizado para verificar se as senhas são iguais
+  toggleSenha(field: 'novaSenha' | 'confirmarNovaSenha'): void {
+    if (field === 'novaSenha') {
+      this.mostrarNovaSenha = !this.mostrarNovaSenha;
+    } else if (field === 'confirmarNovaSenha') {
+      this.mostrarConfirmarNovaSenha = !this.mostrarConfirmarNovaSenha;
+    }
+  }
+
   senhasIguais(group: AbstractControl): ValidationErrors | null {
     const novaSenha = group.get('novaSenha')?.value;
     const confirmarNovaSenha = group.get('confirmarNovaSenha')?.value;
 
-    // Retorna null se as senhas forem iguais, ou um erro 'passwordMismatch' se forem diferentes
     return novaSenha === confirmarNovaSenha ? null : { passwordMismatch: true };
   }
 
   resetarSenha(): void {
-    // Se o formulário for inválido, marca todos os campos como "tocados" para exibir os erros
     if (this.resetarSenhaForm.invalid) {
       this.resetarSenhaForm.markAllAsTouched();
       return;
     }
 
-    this.loading = true; // Ativa o estado de carregamento
+    this.loading = true;
 
-    // Obtém os dados do formulário, incluindo a chave de reset da senha
     const dadosResetSenha = this.resetarSenhaForm.getRawValue();
     dadosResetSenha.chaveResetSenha = this.chaveResetSenha;
 
-    // Chama o serviço para redefinir a senha
     this.usuarioService.resetarSenhaComChave(dadosResetSenha).subscribe({
       next: () => {
         this.loading = false;

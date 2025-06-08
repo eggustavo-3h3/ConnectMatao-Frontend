@@ -1,4 +1,3 @@
-// src/app/pages/home/home.component.ts
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 import { CardEventosComponent } from '../components/card-eventos/card-eventos.component';
@@ -28,8 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   isPartnerRole: boolean = false;
   isPartnerApproved: boolean = false;
-  formParceiroExists: boolean = false; // Novo estado para controlar se o formulário já foi enviado
-
+  formParceiroExists: boolean = false;
   private authSubscription!: Subscription;
   private dialogSubscription!: Subscription;
 
@@ -41,7 +39,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.isLoggedIn$.subscribe(
       (isLoggedIn) => {
         if (isLoggedIn) {
-          // Pequeno atraso para garantir que o estado de login esteja totalmente resolvido
           setTimeout(() => {
             this.checkPartnerApprovalStatusAndMaybeOpenModal();
           }, 50);
@@ -49,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.dialog.closeAll();
           this.isPartnerRole = false;
           this.isPartnerApproved = false;
-          this.formParceiroExists = false; // Resetar
+          this.formParceiroExists = false;
         }
       }
     );
@@ -68,7 +65,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.dialogSubscription) {
       this.dialogSubscription.unsubscribe();
     }
-    this.dialog.closeAll(); // Garantir que todos os modais sejam fechados ao destruir o componente
+    this.dialog.closeAll();
   }
 
   checkPartnerApprovalStatusAndMaybeOpenModal(): void {
@@ -80,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.formParceiroService.getLoggedUserPartnerStatus().subscribe({
         next: (status) => {
           this.isPartnerApproved = status.flagAprovadoParceiro ?? false;
-          this.formParceiroExists = status.formParceiroExiste ?? false; // Atualiza o novo estado
+          this.formParceiroExists = status.formParceiroExiste ?? false;
 
           console.log('HomeComponent - Partner Status:', status);
           console.log(
@@ -92,22 +89,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.formParceiroExists
           );
 
-          // Lógica crucial:
-          // Abre o modal SE:
-          // 1. É um parceiro
-          // 2. NÃO está aprovado
-          // 3. O FORMULÁRIO AINDA NÃO EXISTE (não foi enviado)
-          // 4. Nenhum modal já está aberto
           if (
             this.isPartnerRole &&
             !this.isPartnerApproved &&
-            !this.formParceiroExists && // Condição adicionada/ajustada
+            !this.formParceiroExists &&
             this.dialog.openDialogs.length === 0
           ) {
             this.openPartnerFormModal();
           } else {
-            // Se o parceiro está aprovado, OU o formulário já existe (está em análise),
-            // OU não é um parceiro, garantir que o modal esteja fechado.
             this.dialog.closeAll();
           }
         },
@@ -118,7 +107,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           );
           this.isPartnerApproved = false;
           this.formParceiroExists = false;
-          this.dialog.closeAll(); // Fechar o modal em caso de erro na checagem
+          this.dialog.closeAll();
         },
       });
     } else {
@@ -136,12 +125,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialog.open(FormParceiroModalComponent, {
       width: '500px',
-      disableClose: true, // Manter disableClose: true para forçar o preenchimento ou logout
+      disableClose: true,
     });
 
     this.dialogSubscription = dialogRef.afterClosed().subscribe(() => {
-      // Re-verifique o status após o modal ser fechado (por submissão ou logout)
-      // Um pequeno atraso pode ajudar a evitar corrida de condições
       setTimeout(() => {
         this.checkPartnerApprovalStatusAndMaybeOpenModal();
       }, 100);

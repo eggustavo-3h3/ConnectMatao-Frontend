@@ -1,4 +1,3 @@
-// app.routes.ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { CadastreSeComponent } from './pages/cadastre-se/cadastre-se.component';
@@ -26,6 +25,10 @@ export const routes: Routes = [
     path: '',
     component: HomeComponent,
   },
+  {
+    path: 'eventos/pesquisa',
+    component: HomeComponent,
+  },
 
   {
     path: 'alterar-senha',
@@ -51,6 +54,11 @@ export const routes: Routes = [
     component: SolicitacoesParceirosComponent,
     canActivate: [authGuard],
     data: { roles: [Perfil.Administrador] },
+  },
+
+  {
+    path: 'eventos/pesquisa',
+    component: HomeComponent,
   },
 
   { path: '**', redirectTo: '' },

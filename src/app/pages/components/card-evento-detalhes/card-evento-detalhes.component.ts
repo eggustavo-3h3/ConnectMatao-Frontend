@@ -1,4 +1,3 @@
-// src/app/components/card-evento-detalhes/card-evento-detalhes.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventoService } from '../../../services/evento.service';
@@ -10,10 +9,11 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, catchError, tap } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
-import { ParceiroStatusService } from '../../../services/parceiro-status.service'; // Importar o serviço
+import { ParceiroStatusService } from '../../../services/parceiro-status.service';
+import { of, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-card-evento-detalhes',
@@ -23,236 +23,275 @@ import { ParceiroStatusService } from '../../../services/parceiro-status.service
   imports: [CommonModule, RouterModule, NavbarComponent, AngularMaterialModule],
 })
 export class CardEventoDetalhesComponent implements OnInit {
-  eventId!: string | null;
-  event: IEvento | null = null;
+  idEvento!: string | null;
+  evento: IEvento | null = null;
   usuario: IUsuario | null = null;
-  modalOpen = false;
-  isLoading = true;
-  likesCount = 0;
-  dislikesCount = 0;
+  modalUsuarioAberto = false;
+  carregando = true;
+  contagemLikes = 0;
+  contagemDislikes = 0;
   usuarioInteragiu = 0;
-  usuarioImagemUrl: SafeUrl | null = null;
+  urlImagemUsuario: SafeUrl | null = null;
   imagemAtual = 0;
-  imagemEventoModalAberta = false;
-  confirmarModalAberto = false;
-  isCreatorPartner: boolean = false; // Nova propriedade para o status de parceiro
+  modalImagemEventoAberto = false;
+  modalConfirmacaoAberto = false;
+  isCriadorParceiro: boolean = false;
 
   constructor(
-    private route: ActivatedRoute,
-    private eventoService: EventoService,
-    private usuarioService: UsuarioService,
-    private sanitizer: DomSanitizer,
-    private authService: AuthService,
-    private router: Router,
-    private parceiroStatusService: ParceiroStatusService // Injetar o serviço
+    private rotaAtiva: ActivatedRoute,
+    private servicoEvento: EventoService,
+    private servicoUsuario: UsuarioService,
+    private sanitizador: DomSanitizer,
+    private servicoAuth: AuthService,
+    private roteador: Router,
+    private servicoStatusParceiro: ParceiroStatusService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      this.eventId = params.get('eventId');
-      if (this.eventId) {
-        this.carregarDetalhesEvento(this.eventId);
+    this.rotaAtiva.paramMap.subscribe((params) => {
+      this.idEvento = params.get('eventId');
+      if (this.idEvento) {
+        this.carregarDetalhesDoEvento(this.idEvento);
       } else {
-        console.error('eventId não encontrado');
+        console.error('ID do evento não encontrado');
       }
     });
   }
 
-  // Método para verificar se o usuário atual é administrador
-  get isAdmin(): boolean {
-    return this.authService.isAdmin();
+  get ehAdmin(): boolean {
+    return this.servicoAuth.isAdmin();
   }
 
-  // método para controlar se mostra o botão ou não
   podeApagarEvento(): boolean {
-    return this.isAdmin;
+    return this.ehAdmin;
   }
 
-  removerEvento(eventoId: string): void {
-    if (!eventoId || eventoId.trim() === '') {
-      console.error('ID do evento inválido:', eventoId);
+  removerEvento(idEvento: string): void {
+    if (!idEvento || idEvento.trim() === '') {
+      console.error('ID do evento inválido:', idEvento);
       return;
     }
-    this.eventoService.removerEvento(eventoId).subscribe({
+    this.servicoEvento.removerEvento(idEvento).subscribe({
       next: () => {
         console.log('Evento removido com sucesso');
-        this.router.navigate(['/']);
+        this.roteador.navigate(['/']);
       },
-      error: (error) => {
-        console.error('Erro ao remover evento:', error);
+      error: (erro) => {
+        console.error('Erro ao remover evento:', erro);
       },
     });
   }
 
-  carregarDetalhesEvento(eventId: string): void {
-    this.isLoading = true;
-    this.parceiroStatusService.clearCache(); // Limpar o cache para garantir dados frescos
-    this.eventoService.getEventoPorId(eventId).subscribe({
+  carregarDetalhesDoEvento(idEvento: string): void {
+    this.carregando = true;
+    this.servicoStatusParceiro.clearCache();
+    this.servicoEvento.getEventoPorId(idEvento).subscribe({
       next: (evt) => {
-        this.event = evt;
-        this.likesCount = (evt as any).likes ?? 0;
-        this.dislikesCount = (evt as any).deslikes ?? 0;
+        this.evento = evt;
+        this.contagemLikes = (evt as any).likes ?? 0;
+        this.contagemDislikes = (evt as any).deslikes ?? 0;
         this.usuarioInteragiu = (evt as any).usuarioInteragiu ?? 0;
 
-        // Carrega o usuário e, em seguida, verifica o status de parceiro
-        this.carregarUsuario(evt.usuarioParceiroid);
-        this.parceiroStatusService
+        this.carregarDadosUsuario(evt.usuarioParceiroid);
+        this.servicoStatusParceiro
           .isUserApprovedPartner(evt.usuarioParceiroid)
           .subscribe({
-            next: (isPartner) => {
-              this.isCreatorPartner = isPartner;
-              this.isLoading = false;
+            next: (isParceiro) => {
+              this.isCriadorParceiro = isParceiro;
+              this.carregando = false;
             },
-            error: (err) => {
-              console.error('Erro ao verificar status de parceiro:', err);
-              this.isCreatorPartner = false; // Define como false em caso de erro
-              this.isLoading = false;
+            error: (erro) => {
+              console.error('Erro ao verificar status de parceiro:', erro);
+              this.isCriadorParceiro = false;
+              this.carregando = false;
             },
           });
-
-        console.log('Evento carregado:', evt);
       },
-      error: (err) => {
-        console.error('Erro ao carregar detalhes do evento:', err);
-        this.isLoading = false;
+      error: (erro) => {
+        console.error('Erro ao carregar detalhes do evento:', erro);
+        this.carregando = false;
       },
     });
   }
 
-  carregarUsuario(usuarioParceiroid: string): void {
-    this.usuarioService.getUserProfileById(usuarioParceiroid).subscribe({
-      next: (user) => {
-        this.usuario = user;
-        this.usuarioService.getImagemUsuarioPorId(usuarioParceiroid).subscribe({
+  carregarDadosUsuario(idUsuarioParceiro: string): void {
+    this.servicoUsuario.getUserProfileById(idUsuarioParceiro).subscribe({
+      next: (usuario) => {
+        this.usuario = usuario;
+        this.servicoUsuario.getImagemUsuarioPorId(idUsuarioParceiro).subscribe({
           next: (imagemBase64) => {
-            this.usuarioImagemUrl = imagemBase64
-              ? this.sanitizer.bypassSecurityTrustResourceUrl(
+            this.urlImagemUsuario = imagemBase64
+              ? this.sanitizador.bypassSecurityTrustResourceUrl(
                   `data:image/png;base64,${imagemBase64}`
                 )
-              : this.sanitizer.bypassSecurityTrustResourceUrl(
+              : this.sanitizador.bypassSecurityTrustResourceUrl(
                   'assets/perfil-placeholder.png'
                 );
           },
-          error: (err) =>
-            console.error('Erro ao buscar imagem do usuário:', err),
+          error: (erro) =>
+            console.error('Erro ao buscar imagem do usuário:', erro),
         });
       },
-      error: (err) => console.error('Erro ao carregar usuário:', err),
+      error: (erro) => console.error('Erro ao carregar usuário:', erro),
     });
   }
 
-  // modal de imagem do evento
-  abrirModalImagemEvento(): void {
-    this.imagemEventoModalAberta = true;
+  abrirModalImagemDoEvento(): void {
+    this.modalImagemEventoAberto = true;
   }
 
-  fecharModalImagemEvento(): void {
-    this.imagemEventoModalAberta = false;
+  fecharModalImagemDoEvento(): void {
+    this.modalImagemEventoAberto = false;
   }
 
-  // modal de imagem do usuario
-  openModal(): void {
-    this.modalOpen = true;
+  abrirModalUsuario(): void {
+    this.modalUsuarioAberto = true;
   }
 
-  closeModal(): void {
-    this.modalOpen = false;
+  fecharModalUsuario(): void {
+    this.modalUsuarioAberto = false;
   }
 
-  // carousel de imagens do evento
-  nextImage(): void {
-    if (!this.event?.imagens) return;
-    this.imagemAtual = (this.imagemAtual + 1) % this.event.imagens.length;
+  proximaImagem(): void {
+    if (!this.evento?.imagens) return;
+    this.imagemAtual = (this.imagemAtual + 1) % this.evento.imagens.length;
   }
 
-  prevImage(): void {
-    if (!this.event?.imagens) return;
+  imagemAnterior(): void {
+    if (!this.evento?.imagens) return;
     this.imagemAtual =
-      (this.imagemAtual - 1 + this.event.imagens.length) %
-      this.event.imagens.length;
+      (this.imagemAtual - 1 + this.evento.imagens.length) %
+      this.evento.imagens.length;
   }
 
-  irParaImagem(index: number): void {
-    this.imagemAtual = index;
+  irParaImagem(indice: number): void {
+    this.imagemAtual = indice;
   }
-  // -----------------------
 
   get possuiMultiplasImagens(): boolean {
-    return !!this.event?.imagens && this.event.imagens.length > 1;
+    return !!this.evento?.imagens && this.evento.imagens.length > 1;
   }
 
-  toggleLike(): void {
-    if (!this.eventId) return;
+  alternarLike(): void {
+    if (!this.idEvento) return;
 
-    if (this.usuarioInteragiu === 1) {
-      this.eventoService
-        .removerLike(this.eventId)
-        .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
-    } else {
-      const seq$ =
-        this.usuarioInteragiu === 2
-          ? this.eventoService
-              .removerDislike(this.eventId)
-              .pipe(
-                switchMap(() =>
-                  this.eventoService.interagirEvento(
-                    this.eventId!,
-                    TipoEstatistica.like
-                  )
-                )
-              )
-          : this.eventoService.interagirEvento(
-              this.eventId,
+    let acao$: Observable<void>;
+    let novoUsuarioInteragiu: number;
+
+    const oldLikes = this.contagemLikes;
+    const oldDislikes = this.contagemDislikes;
+    const oldUsuarioInteragiu = this.usuarioInteragiu;
+
+    if (this.usuarioInteragiu === TipoEstatistica.like) {
+      this.contagemLikes--;
+      novoUsuarioInteragiu = 0;
+      acao$ = this.servicoEvento.removerLike(this.idEvento);
+    } else if (this.usuarioInteragiu === TipoEstatistica.deslike) {
+      this.contagemDislikes--;
+      this.contagemLikes++;
+      novoUsuarioInteragiu = TipoEstatistica.like;
+      acao$ = this.servicoEvento
+        .removerDislike(this.idEvento)
+        .pipe(
+          switchMap(() =>
+            this.servicoEvento.interagirEvento(
+              this.idEvento!,
               TipoEstatistica.like
-            );
-
-      seq$.subscribe(() => this.carregarDetalhesEvento(this.eventId!));
+            )
+          )
+        );
+    } else {
+      this.contagemLikes++;
+      novoUsuarioInteragiu = TipoEstatistica.like;
+      acao$ = this.servicoEvento.interagirEvento(
+        this.idEvento,
+        TipoEstatistica.like
+      );
     }
+
+    this.usuarioInteragiu = novoUsuarioInteragiu;
+
+    acao$
+      .pipe(
+        tap(() => {}),
+        catchError((erro) => {
+          console.error('Erro durante a operação de curtir:', erro);
+          this.contagemLikes = oldLikes;
+          this.contagemDislikes = oldDislikes;
+          this.usuarioInteragiu = oldUsuarioInteragiu;
+          return of(undefined);
+        })
+      )
+      .subscribe();
   }
 
-  toggleDislike(): void {
-    if (!this.eventId) return;
+  alternarDislike(): void {
+    if (!this.idEvento) return;
 
-    if (this.usuarioInteragiu === 2) {
-      this.eventoService
-        .removerDislike(this.eventId)
-        .subscribe(() => this.carregarDetalhesEvento(this.eventId!));
-    } else {
-      const seq$ =
-        this.usuarioInteragiu === 1
-          ? this.eventoService
-              .removerLike(this.eventId)
-              .pipe(
-                switchMap(() =>
-                  this.eventoService.interagirEvento(
-                    this.eventId!,
-                    TipoEstatistica.deslike
-                  )
-                )
-              )
-          : this.eventoService.interagirEvento(
-              this.eventId,
+    let acao$: Observable<void>;
+    let novoUsuarioInteragiu: number;
+
+    const oldLikes = this.contagemLikes;
+    const oldDislikes = this.contagemDislikes;
+    const oldUsuarioInteragiu = this.usuarioInteragiu;
+
+    if (this.usuarioInteragiu === TipoEstatistica.deslike) {
+      this.contagemDislikes--;
+      novoUsuarioInteragiu = 0;
+      acao$ = this.servicoEvento.removerDislike(this.idEvento);
+    } else if (this.usuarioInteragiu === TipoEstatistica.like) {
+      this.contagemLikes--;
+      this.contagemDislikes++;
+      novoUsuarioInteragiu = TipoEstatistica.deslike;
+      acao$ = this.servicoEvento
+        .removerLike(this.idEvento)
+        .pipe(
+          switchMap(() =>
+            this.servicoEvento.interagirEvento(
+              this.idEvento!,
               TipoEstatistica.deslike
-            );
-
-      seq$.subscribe(() => this.carregarDetalhesEvento(this.eventId!));
+            )
+          )
+        );
+    } else {
+      this.contagemDislikes++;
+      novoUsuarioInteragiu = TipoEstatistica.deslike;
+      acao$ = this.servicoEvento.interagirEvento(
+        this.idEvento,
+        TipoEstatistica.deslike
+      );
     }
+
+    this.usuarioInteragiu = novoUsuarioInteragiu;
+
+    acao$
+      .pipe(
+        tap(() => {}),
+        catchError((erro) => {
+          console.error('Erro durante a operação de descurtir:', erro);
+          this.contagemLikes = oldLikes;
+          this.contagemDislikes = oldDislikes;
+          this.usuarioInteragiu = oldUsuarioInteragiu;
+          return of(undefined);
+        })
+      )
+      .subscribe();
   }
 
   abrirModalConfirmacao(): void {
-    this.confirmarModalAberto = true;
+    this.modalConfirmacaoAberto = true;
   }
 
   fecharModalConfirmacao(): void {
-    this.confirmarModalAberto = false;
+    this.modalConfirmacaoAberto = false;
   }
 
   confirmarRemoverEvento(): void {
     this.fecharModalConfirmacao();
-    if (this.eventId) {
-      this.removerEvento(this.eventId);
+    if (this.idEvento) {
+      this.removerEvento(this.idEvento);
     } else {
-      console.error('EventoId não disponível para remover');
+      console.error('ID do evento não disponível para remover');
     }
   }
 }

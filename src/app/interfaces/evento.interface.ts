@@ -1,3 +1,5 @@
+import { ICategoria } from './categoria.interface';
+
 export interface IEvento {
   id?: string;
   titulo: string;
@@ -18,4 +20,5 @@ export interface IEvento {
   imagens: string[];
   usuarioInteragiu?: boolean;
   isCreatorPartner?: boolean; // Propriedade para indicar se o criador é parceiro
+  categoriaNome?: string;
 }

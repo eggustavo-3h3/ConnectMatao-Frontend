@@ -9,7 +9,7 @@
 
 h2 {
   text-align: center;
-  color: #20acf2; /* Cor primária do Material Design */
+  color: #20acf2;
   margin-bottom: 25px;
   font-size: 1.8em;
   font-weight: 500;
@@ -21,14 +21,14 @@ h2 {
   padding: 20px;
   font-size: 1.1em;
   color: #555;
-  background-color: #e3f2fd; /* Azul claro para loading */
+  background-color: #e3f2fd;
   border: 1px solid #90caf9;
   border-radius: 5px;
   margin-bottom: 20px;
 }
 
 .error-message {
-  color: #d32f2f; /* Vermelho para erro */
+  color: #d32f2f;
   background-color: #ffebee;
   border-color: #ef9a9a;
 }
@@ -50,8 +50,8 @@ h2 {
 }
 
 .no-applications-icon {
-  font-size: 4em; /* Tamanho grande para o ícone */
-  color: #9e9e9e; /* Cor cinza para o ícone */
+  font-size: 4em;
+  color: #9e9e9e;
   margin-bottom: 15px;
 }
 
@@ -70,7 +70,7 @@ h2 {
 .application-card {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   border-radius: 8px;
-  overflow: hidden; /* Garante que o conteúdo não vaze da borda arredondada */
+  overflow: hidden;
 }
 
 .application-card:hover {
@@ -79,7 +79,7 @@ h2 {
 }
 
 mat-card-header {
-  background-color: #e8eaf6; /* Um azul claro para o cabeçalho do cartão */
+  background-color: #e8eaf6;
   padding: 15px;
   border-bottom: 1px solid #c5cae9;
 }
@@ -111,8 +111,8 @@ mat-card-content strong {
 mat-card-actions {
   padding: 10px 15px 15px;
   display: flex;
-  justify-content: flex-end; /* Alinha os botões à direita */
-  gap: 10px; /* Espaço entre os botões */
+  justify-content: flex-end;
+  gap: 10px;
   border-top: 1px solid #e0e0e0;
   background-color: #fafafa;
 }

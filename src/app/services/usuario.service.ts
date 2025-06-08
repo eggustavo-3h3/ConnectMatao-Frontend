@@ -12,7 +12,6 @@ export class UsuarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  // Recuperar perfil do usuário pelo ID
   getUserProfileById(userId: string): Observable<IUsuario> {
     const url = `${this.apiUrl}/usuario/${userId}`;
     return this.http.get<IUsuario>(url).pipe(
@@ -23,7 +22,6 @@ export class UsuarioService {
     );
   }
 
-  // Criar cabeçalho com o token de autenticação
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     let headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -33,7 +31,6 @@ export class UsuarioService {
     return headers;
   }
 
-  // Método para tratar erros e logar as falhas
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`${operation} failed: ${error.message}`);
@@ -41,7 +38,6 @@ export class UsuarioService {
     };
   }
 
-  // Obter usuário pelo ID
   getUser(userId: string | number): Observable<IUsuario> {
     const url = `${this.apiUrl}/usuario/${userId}`;
     return this.http.get<IUsuario>(url).pipe(
@@ -52,21 +48,17 @@ export class UsuarioService {
     );
   }
 
-  // Atualizar perfil do usuário
   updateUserProfile(profileData: IUsuario): Observable<any> {
     const userId = this.authService.getUserId();
 
-    // Verificar se o usuário está autenticado
     if (!userId) {
       console.error('Erro: usuário não autenticado');
       return throwError(() => new Error('Usuário não autenticado.'));
     }
 
-    // Normalizar os IDs antes de comparar
     const normalizedUserId = userId.trim().toLowerCase();
     const normalizedProfileId = String(profileData.id).trim().toLowerCase();
 
-    // Verificar se o ID do perfil corresponde ao ID do usuário autenticado
     if (normalizedProfileId !== normalizedUserId) {
       console.error(
         `Erro: ID do perfil (${normalizedProfileId}) não corresponde ao ID do usuário autenticado (${normalizedUserId})`
@@ -104,7 +96,6 @@ export class UsuarioService {
     );
   }
 
-  // Obter o perfil do usuário autenticado
   getPerfilUsuario(): Observable<IUsuario> {
     const userId = this.authService.getUserId();
     if (!userId) {
@@ -113,7 +104,6 @@ export class UsuarioService {
     return this.getUser(userId);
   }
 
-  // Obter imagem do usuário pelo ID
   getImagemUsuarioPorId(usuarioId: string): Observable<string> {
     const url = `${this.apiUrl}/usuario/${usuarioId}/imagem`;
     return this.http.get<{ imagem: string }>(url).pipe(

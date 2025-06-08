@@ -1,11 +1,9 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { IUsuario } from '../interfaces/usuario.interface';
 import { Perfil } from '../enums/perfil.enum';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { IParceiro } from '../interfaces/parceiro.interface'; // Se for utilizada
 
 @Injectable({
   providedIn: 'root',
@@ -30,15 +28,13 @@ export class AuthService {
     );
   }
 
-  // **Este método já está definido para receber 6 argumentos separados.**
-  // A conversão da string Perfil para number deve acontecer antes de chamar este método.
   register(
     nome: string,
-    email: string, // <-- Primeiro argumento real (depois de nome)
+    email: string,
     senha: string,
     confirmacaoSenha: string,
     imagem: string = '',
-    perfil: number // <--- O sexto argumento, um NUMBER
+    perfil: number
   ): Observable<IUsuario> {
     const payload = {
       nome,
@@ -46,7 +42,7 @@ export class AuthService {
       senha,
       confirmacaoSenha,
       imagem,
-      perfil, // Este `perfil` já será o número que o backend espera
+      perfil,
     };
 
     console.log('Payload de cadastro:', payload);

@@ -1,6 +1,9 @@
 <h2>Recuperar Senha</h2>
 
 <form [formGroup]="recuperarSenhaForm" (ngSubmit)="enviarEmail()">
+  <h1 class="instrucao-email">
+    digite o e-mail cadastrado. Enviaremos um link de recuperação para você.
+  </h1>
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Email</mat-label>
     <input matInput type="email" formControlName="email" />

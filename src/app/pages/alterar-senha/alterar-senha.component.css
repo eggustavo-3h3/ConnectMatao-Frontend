@@ -30,7 +30,14 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="password"] {
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input[type="password"],
+input[type="text"] {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid #ddd;
@@ -39,12 +46,31 @@ input[type="password"] {
   color: #333;
   background-color: #f9f9f9;
   transition: border 0.3s ease;
+  padding-right: 50px;
 }
 
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="text"]:focus {
   border-color: #20acf2;
   outline: none;
   background-color: #fff;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+}
+
+.toggle-password-btn:hover {
+  color: #000000;
 }
 
 .error {
@@ -88,15 +114,14 @@ button.btn-primary:disabled {
   }
 
   input[type="password"],
+  input[type="text"],
   button.btn-primary {
     font-size: 14px;
   }
 }
 
-/* Estilos para os botões do modal Angular Material */
-
 .btn-confirm {
-  background-color: #20acf2 !important; /* azul */
+  background-color: #20acf2 !important;
   color: white !important;
   border-radius: 4px;
   padding: 6px 12px;
@@ -107,7 +132,7 @@ button.btn-primary:disabled {
 }
 
 .btn-cancel {
-  background-color: #f44336 !important; /* vermelho */
+  background-color: #f44336 !important;
   color: white !important;
   border-radius: 4px;
   padding: 6px 12px;

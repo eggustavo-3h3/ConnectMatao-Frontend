@@ -64,8 +64,8 @@
 }
 
 .carousel-image-wrapper {
-  position: relative; /* necessário para posicionamento absoluto do botão */
-  width: 3225px; /* ajuste correto do valor */
+  position: relative;
+  width: 3225px;
   height: 400px;
   border-radius: 15px;
   overflow: hidden;
@@ -132,7 +132,7 @@
   width: 220px;
   font-size: 1.15rem;
   font-weight: 700;
-  background-color: #20acf2 !important; /* forçado mesmo quando habilitado */
+  background-color: #20acf2 !important;
   padding: 14px 0;
   border-radius: 35px;
   box-shadow: 0 6px 15px rgba(32, 172, 242, 0.3);

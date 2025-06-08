@@ -1,10 +1,10 @@
-/* src/app/components/form-parceiro-modal/form-parceiro-modal.component.css */
 .full-width {
   width: 100%;
+  zoom: 80%;
 }
 
 .formContainer {
-  /* z-index: 29999; <-- REMOVA OU COMENTE ESTA LINHA */
+  z-index: 29999;
 }
 
 mat-dialog-content {

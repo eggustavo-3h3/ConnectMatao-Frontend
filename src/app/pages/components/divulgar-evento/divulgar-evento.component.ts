@@ -17,6 +17,7 @@ import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { IEvento } from '../../../interfaces/evento.interface';
+
 registerLocaleData(localePt);
 
 @Component({
@@ -42,7 +43,6 @@ export class DivulgarEventoComponent implements OnInit {
   currentImageIndex = 0;
   formTriedSubmit = false;
   isDragOver = false;
-  // Certifique-se de que esta propriedade está definida!
   faixasEtariasDisponiveis: string[] = [
     'Livre',
     '+10 anos',
@@ -65,16 +65,23 @@ export class DivulgarEventoComponent implements OnInit {
     this.eventoForm = this.fb.group({
       titulo: ['', [Validators.required, Validators.maxLength(150)]],
       descricao: ['', [Validators.required, Validators.maxLength(800)]],
-      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
+      cep: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{5}-?\d{3}$/),
+        ],
+      ],
       logradouro: ['', [Validators.required, Validators.maxLength(150)]],
-      numero: ['', [Validators.required, Validators.maxLength(10)]],
+      numero: ['', [Validators.required, Validators.maxLength(5)]],
       bairro: ['', [Validators.required, Validators.maxLength(100)]],
       telefone: [
         '',
         [
           Validators.required,
           Validators.maxLength(20),
-          Validators.pattern(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/),
+          Validators.pattern(/^\(?\d{2}\)?\s?(9?\d{4}-?\d{4})$/),
         ],
       ],
       whatsapp: [
@@ -82,7 +89,7 @@ export class DivulgarEventoComponent implements OnInit {
         [
           Validators.required,
           Validators.maxLength(20),
-          Validators.pattern(/^\(?\d{2}\)?\s?9?\d{4}-?\d{4}$/),
+          Validators.pattern(/^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/), // Assume 9 digitos
         ],
       ],
       email: [
@@ -97,7 +104,7 @@ export class DivulgarEventoComponent implements OnInit {
           Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/),
         ],
       ],
-      faixaEtaria: ['', [Validators.required, Validators.maxLength(50)]],
+      faixaEtaria: ['', [Validators.required]],
       categoria: ['', Validators.required],
     });
   }
@@ -134,15 +141,52 @@ export class DivulgarEventoComponent implements OnInit {
     });
   }
 
-  formatPhone(event: any, field: string) {
-    const input = event.target;
+  formatInput(event: Event, field: string) {
+    const input = event.target as HTMLInputElement;
     let value = input.value.replace(/\D/g, '');
 
-    if (field === 'telefone' || field === 'whatsapp') {
+    if (field === 'telefone') {
       if (value.length > 11) {
         value = value.substring(0, 11);
       }
-      value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+      if (value.length > 10) {
+        // (XX) XXXXX-XXXX
+        value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+      } else if (value.length > 6) {
+        // (XX) XXXX-XXXX (para números fixos com 8 digitos)
+        value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (value.length > 2) {
+        // (XX) XXXX
+        value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+      } else if (value.length > 0) {
+        // (XX
+        value = value.replace(/^(\d*)/, '($1');
+      }
+    } else if (field === 'whatsapp') {
+      if (value.length > 11) {
+        value = value.substring(0, 11);
+      }
+      // Sempre 9 digitos para WhatsApp em Matão
+      if (value.length > 10) {
+        // (XX) XXXXX-XXXX
+        value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+      } else if (value.length > 6) {
+        // (XX) XXXXX-X (para números com 9 digitos)
+        value = value.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (value.length > 2) {
+        // (XX) XXXXX
+        value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+      } else if (value.length > 0) {
+        // (XX
+        value = value.replace(/^(\d*)/, '($1');
+      }
+    } else if (field === 'cep') {
+      if (value.length > 8) {
+        value = value.substring(0, 8);
+      }
+      if (value.length > 5) {
+        value = value.replace(/^(\d{5})(\d{0,3}).*/, '$1-$2');
+      }
     }
 
     input.value = value;
@@ -272,7 +316,7 @@ export class DivulgarEventoComponent implements OnInit {
         const payload: IEvento = {
           titulo: fv.titulo,
           descricao: fv.descricao,
-          cep: fv.cep.replace('-', ''),
+          cep: fv.cep.replace(/\D/g, ''),
           logradouro: fv.logradouro,
           numero: fv.numero,
           bairro: fv.bairro,

@@ -1,4 +1,3 @@
-// src/app/components/public-profile/public-profile.component.ts
 import { Component, Inject, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -15,10 +14,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../angular_material/angular-material/angular-material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ParceiroStatusService } from '../../services/parceiro-status.service'; // Importe o serviço
+import { ParceiroStatusService } from '../../services/parceiro-status.service';
 
 @Component({
   selector: 'app-public-profile',
@@ -29,7 +27,6 @@ import { ParceiroStatusService } from '../../services/parceiro-status.service'; 
     ReactiveFormsModule,
     AngularMaterialModule,
     CommonModule,
-    NavbarComponent,
     RouterLink,
   ],
 })
@@ -41,6 +38,7 @@ export class PublicProfileComponent implements OnInit {
   loggedInUserId: string | null = null;
   isEditNameModalOpen: boolean = false;
   isEditImageModalOpen: boolean = false;
+  isImageModalOpen: boolean = false; // para controlar o modal de exibição da imagem
   editForm: FormGroup;
   imagePreviewUrl: string | null = null;
   excluirModalAberto: boolean = false;
@@ -50,8 +48,7 @@ export class PublicProfileComponent implements OnInit {
   avaliacaoUsuario: number = 0;
   canEditProfile: boolean = false;
   isLoading: boolean = false;
-  isProfilePartner: boolean = false; // NOVA PROPRIEDADE AQUI
-
+  isProfilePartner: boolean = false;
   snackBar = inject(MatSnackBar);
 
   constructor(
@@ -61,7 +58,7 @@ export class PublicProfileComponent implements OnInit {
     private eventoService: EventoService,
     private usuarioService: UsuarioService,
     private fb: FormBuilder,
-    private parceiroStatusService: ParceiroStatusService // Injete o serviço
+    private parceiroStatusService: ParceiroStatusService
   ) {
     this.editForm = this.fb.group({
       nome: ['', Validators.required],
@@ -88,7 +85,7 @@ export class PublicProfileComponent implements OnInit {
 
   loadUserProfile(userId: string): void {
     this.isLoading = true;
-    this.isProfilePartner = false; // Reset para cada carregamento de perfil
+    this.isProfilePartner = false;
 
     this.usuarioService.getUserProfileById(userId).subscribe({
       next: (userProfile) => {
@@ -104,17 +101,17 @@ export class PublicProfileComponent implements OnInit {
           console.log(
             'Verificando status de parceiro para o ID:',
             this.user.id
-          ); // DEBUG
+          );
           this.parceiroStatusService
             .isUserApprovedPartner(this.user.id.toString())
             .subscribe({
               next: (isPartner) => {
-                this.isProfilePartner = isPartner; // **Este é o que controla o selo!**
-                console.log('Status do serviço (isPartner):', isPartner); // DEBUG
+                this.isProfilePartner = isPartner;
+                console.log('Status do serviço (isPartner):', isPartner);
                 console.log(
                   'isProfilePartner (no componente):',
                   this.isProfilePartner
-                ); // DEBUG
+                );
               },
               error: (err) => {
                 console.error(
@@ -126,14 +123,13 @@ export class PublicProfileComponent implements OnInit {
             });
         } else {
           this.isProfilePartner = false;
-          console.log('ID do perfil não encontrado, isProfilePartner = false.'); // DEBUG
+          console.log('ID do perfil não encontrado, isProfilePartner = false.');
         }
 
         this.isLoading = false;
       },
       error: (error) => {
-        // ... (código existente) ...
-        this.isProfilePartner = false; // Garante que seja false em caso de erro no perfil
+        this.isProfilePartner = false;
       },
     });
   }
@@ -229,6 +225,15 @@ export class PublicProfileComponent implements OnInit {
     this.imagePreviewUrl = null;
   }
 
+  //Métodos para o modal de exibição da imagem
+  openImageModal(): void {
+    this.isImageModalOpen = true;
+  }
+
+  closeImageModal(): void {
+    this.isImageModalOpen = false;
+  }
+
   handleImageUpload(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -252,7 +257,6 @@ export class PublicProfileComponent implements OnInit {
 
   updateImage(): void {
     if (this.user && this.loggedInUserId === this.user.id?.toString()) {
-      // Usar .id?.toString()
       const updatedProfile: IUsuario = {
         ...this.user,
         imagem: this.editForm.value.imagem || '',
@@ -282,7 +286,6 @@ export class PublicProfileComponent implements OnInit {
 
   updateName(): void {
     if (this.user && this.loggedInUserId === this.user.id?.toString()) {
-      // Usar .id?.toString()
       if (!this.editForm.value.nome.trim()) {
         this.snackBar.open('O nome não pode estar vazio.', 'Fechar', {
           duration: 3000,
@@ -301,7 +304,6 @@ export class PublicProfileComponent implements OnInit {
             duration: 3000,
           });
           this.closeEditNameModal();
-          // Não é necessário carregar o perfil completo, apenas atualizar o nome localmente
           if (this.user) {
             this.user.nome = this.editForm.value.nome;
           }

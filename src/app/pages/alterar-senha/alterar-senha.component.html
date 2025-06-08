@@ -1,15 +1,27 @@
 <div class="alterar-senha-container">
   <h2>Alterar Senha</h2>
   <form [formGroup]="alterarSenhaForm" (ngSubmit)="onSubmit()">
-    <!-- Senha Atual -->
     <div class="form-group">
       <label for="senhaAtual">Senha Atual</label>
-      <input
-        type="password"
-        id="senhaAtual"
-        formControlName="senhaAtual"
-        class="form-control"
-      />
+      <div class="password-input-wrapper">
+        <input
+          type="password"
+          id="senhaAtual"
+          formControlName="senhaAtual"
+          class="form-control"
+          [type]="mostrarSenhaAtual ? 'text' : 'password'"
+        />
+        <button
+          type="button"
+          class="toggle-password-btn"
+          (click)="toggleSenha('senhaAtual')"
+          aria-label="Toggle visibility of password"
+        >
+          <mat-icon>{{
+            mostrarSenhaAtual ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+      </div>
       <div
         class="error"
         *ngIf="
@@ -27,15 +39,27 @@
       </div>
     </div>
 
-    <!-- Nova Senha -->
     <div class="form-group">
       <label for="novaSenha">Nova Senha</label>
-      <input
-        type="password"
-        id="novaSenha"
-        formControlName="novaSenha"
-        class="form-control"
-      />
+      <div class="password-input-wrapper">
+        <input
+          type="password"
+          id="novaSenha"
+          formControlName="novaSenha"
+          class="form-control"
+          [type]="mostrarNovaSenha ? 'text' : 'password'"
+        />
+        <button
+          type="button"
+          class="toggle-password-btn"
+          (click)="toggleSenha('novaSenha')"
+          aria-label="Toggle visibility of new password"
+        >
+          <mat-icon>{{
+            mostrarNovaSenha ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+      </div>
       <div
         class="error"
         *ngIf="
@@ -71,15 +95,27 @@
       </div>
     </div>
 
-    <!-- Confirmar Nova Senha -->
     <div class="form-group">
       <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
-      <input
-        type="password"
-        id="confirmarNovaSenha"
-        formControlName="confirmarNovaSenha"
-        class="form-control"
-      />
+      <div class="password-input-wrapper">
+        <input
+          type="password"
+          id="confirmarNovaSenha"
+          formControlName="confirmarNovaSenha"
+          class="form-control"
+          [type]="mostrarConfirmarNovaSenha ? 'text' : 'password'"
+        />
+        <button
+          type="button"
+          class="toggle-password-btn"
+          (click)="toggleSenha('confirmarNovaSenha')"
+          aria-label="Toggle visibility of confirm new password"
+        >
+          <mat-icon>{{
+            mostrarConfirmarNovaSenha ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+      </div>
       <div
         class="error"
         *ngIf="
@@ -91,13 +127,15 @@
       </div>
       <div
         class="error"
-        *ngIf="alterarSenhaForm.errors?.['senhasNaoConferem'] && alterarSenhaForm.get('confirmarNovaSenha')?.touched"
+        *ngIf="
+          alterarSenhaForm.errors?.['senhasNaoConferem'] &&
+          alterarSenhaForm.get('confirmarNovaSenha')?.touched
+        "
       >
         As senhas não coincidem.
       </div>
     </div>
 
-    <!-- Botão -->
     <button
       type="submit"
       class="btn btn-primary"
@@ -107,7 +145,6 @@
     </button>
   </form>
 
-  <!-- Modal Inline -->
   <ng-template #confirmDialog>
     <h2 mat-dialog-title>Confirmar alteração</h2>
     <mat-dialog-content>

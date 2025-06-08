@@ -1,4 +1,3 @@
-// src/app/components/nav-bar/nav-bar.component.ts
 import {
   Component,
   OnInit,
@@ -117,9 +116,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     this.termosPesquisa
       .pipe(
-        debounceTime(300),
+        debounceTime(10),
         distinctUntilChanged(),
-        switchMap((termo) => this.servicoEvento.searchEvents(termo))
+        filter((term) => term.length > 0 || term.length === 0),
+        switchMap((termo) => {
+          if (termo.length > 0) {
+            return this.servicoEvento.searchEvents(termo);
+          } else {
+            return new Subject<IEvento[]>();
+          }
+        })
       )
       .subscribe({
         next: (eventos) => {

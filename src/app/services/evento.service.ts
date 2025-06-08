@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { IEvento } from '../interfaces/evento.interface';
 import { IEventoCard } from '../interfaces/evento-card.interface';
 import { AuthService } from './auth.service';
@@ -36,6 +44,17 @@ export class EventoService {
       ),
       catchError(this.handleError<IEventoCard[]>('listarEventos', []))
     );
+  }
+
+  listarEventosMaisCurtidos(limite: number = 8): Observable<IEventoCard[]> {
+    const url = `${this.apiUrl}/evento/listar/destaque?limite=${limite}`;
+    return this.http
+      .get<IEventoCard[]>(url)
+      .pipe(
+        catchError(
+          this.handleError<IEventoCard[]>('listarEventosMaisCurtidos', [])
+        )
+      );
   }
 
   criarEvento(evento: IEvento): Observable<IEvento> {
@@ -145,59 +164,80 @@ export class EventoService {
     }
 
     return this.http
-      .post<void>(
-        url,
-        {},
-        {
-          headers: this.getAuthHeaders(),
-          observe: 'response',
-        }
-      )
+      .post<void>(url, {}, { headers: this.getAuthHeaders() })
       .pipe(
-        map((response) => {
-          if (response.status === 200) {
-            console.log(
-              `Evento ${eventoId} ${
-                tipo === TipoEstatistica.like ? 'curtido' : 'descurtido'
-              } com sucesso.`
-            );
-          } else {
-            console.error(
-              `Erro na interação do evento: status ${response.status}`
-            );
-          }
-          return;
+        tap(() => {
+          console.log(
+            `Evento ${eventoId} ${
+              tipo === TipoEstatistica.like ? 'curtido' : 'descurtido'
+            } com sucesso.`
+          );
         }),
         catchError((error) => {
           console.error(
-            `Erro ao interagir no evento ${eventoId}: ${error.message}`
+            `Erro ao interagir no evento ${eventoId} (${
+              tipo === TipoEstatistica.like ? 'like' : 'dislike'
+            }):`,
+            error
           );
-          return of(undefined);
+          throw error;
         })
       );
   }
 
   removerLike(eventoId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/eventos/${eventoId}/likes`, {
+    return this.http
+      .delete<void>(`${this.apiUrl}/eventos/${eventoId}/likes`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        tap(() => {
+          console.log(`Like removido do evento ${eventoId}.`);
+        }),
+        catchError((error) => {
+          console.error(`Erro ao remover like do evento ${eventoId}:`, error);
+          throw error;
+        })
+      );
+  }
+
+  removerDislike(eventoId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/eventos/${eventoId}/deslikes`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        tap(() => {
+          console.log(`Dislike removido do evento ${eventoId}.`);
+        }),
+        catchError((error) => {
+          console.error(
+            `Erro ao remover dislike do evento ${eventoId}:`,
+            error
+          );
+          throw error;
+        })
+      );
+  }
+
+  getEventoPorId(eventId: string): Observable<IEvento> {
+    return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}/detalhe`, {
       headers: this.getAuthHeaders(),
     });
   }
 
-  removerDislike(eventoId: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/eventos/${eventoId}/deslikes`,
-      { headers: this.getAuthHeaders() }
-    );
-  }
-
-  getEventoPorId(eventId: string): Observable<IEvento> {
-    return this.http.get<IEvento>(`${this.apiUrl}/evento/${eventId}/detalhe`);
-  }
-
   searchEvents(term: string): Observable<IEvento[]> {
-    const url = `${this.apiUrl}/evento/listar?search=${term}`;
+    if (!term || term.trim() === '') {
+      return of([]);
+    }
+    const url = `${
+      this.apiUrl
+    }/evento/listar/titulo?titulo=${encodeURIComponent(term)}`;
     return this.http.get<IEvento[]>(url).pipe(
-      catchError(() => of([])) // Retorna uma lista vazia em caso de erro
+      catchError((error) => {
+        console.error('Erro ao pesquisar eventos por título:', error);
+        return of([]);
+      })
     );
   }
 }

@@ -99,7 +99,7 @@ export class FormParceiroModalComponent implements OnInit {
           { duration: 3000 }
         );
         this.formCompleted.emit();
-        this.parceiroStatusService.clearCache(); // Clear cache on successful submission
+        this.parceiroStatusService.clearCache();
         this.dialogRef.close();
       },
       error: (error) => {

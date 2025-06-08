@@ -23,6 +23,10 @@ export class AlterarSenhaComponent implements OnInit {
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
+  mostrarSenhaAtual: boolean = false;
+  mostrarNovaSenha: boolean = false;
+  mostrarConfirmarNovaSenha: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
@@ -41,6 +45,16 @@ export class AlterarSenhaComponent implements OnInit {
         validators: [this.confirmarSenhasIguais, this.senhaAtualDiferenteNova],
       }
     );
+  }
+
+  toggleSenha(field: string): void {
+    if (field === 'senhaAtual') {
+      this.mostrarSenhaAtual = !this.mostrarSenhaAtual;
+    } else if (field === 'novaSenha') {
+      this.mostrarNovaSenha = !this.mostrarNovaSenha;
+    } else if (field === 'confirmarNovaSenha') {
+      this.mostrarConfirmarNovaSenha = !this.mostrarConfirmarNovaSenha;
+    }
   }
 
   confirmarSenhasIguais(group: FormGroup) {
@@ -88,7 +102,6 @@ export class AlterarSenhaComponent implements OnInit {
                 .get(campo)
                 ?.setErrors({ apiError: errors[campo][0] });
             } else {
-              // erro genérico
               this.snackBar.open(errors[campo][0], 'Fechar', {
                 duration: 4000,
               });

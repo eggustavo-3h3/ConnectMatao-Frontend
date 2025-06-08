@@ -84,6 +84,9 @@
             maxlength="150"
             autocomplete="off"
           />
+          <mat-hint align="end"
+            >{{ eventoForm.get("titulo")?.value?.length || 0 }}/150</mat-hint
+          >
           <mat-error
             *ngIf="
               eventoForm.get('titulo')?.hasError('required') &&
@@ -111,6 +114,9 @@
             maxlength="100"
             autocomplete="off"
           />
+          <mat-hint align="end"
+            >{{ eventoForm.get("bairro")?.value?.length || 0 }}/100</mat-hint
+          >
           <mat-error
             *ngIf="
               eventoForm.get('bairro')?.hasError('required') &&
@@ -140,6 +146,11 @@
             maxlength="150"
             autocomplete="off"
           />
+          <mat-hint align="end"
+            >{{
+              eventoForm.get("logradouro")?.value?.length || 0
+            }}/150</mat-hint
+          >
           <mat-error
             *ngIf="
               eventoForm.get('logradouro')?.hasError('required') &&
@@ -167,6 +178,9 @@
             maxlength="10"
             autocomplete="off"
           />
+          <mat-hint align="end"
+            >{{ eventoForm.get("numero")?.value?.length || 0 }}/10</mat-hint
+          >
           <mat-error
             *ngIf="
               eventoForm.get('numero')?.hasError('required') &&
@@ -194,6 +208,7 @@
             type="text"
             formControlName="cep"
             autocomplete="off"
+            (input)="formatInput($event, 'cep')"
           />
           <mat-error
             *ngIf="
@@ -241,6 +256,9 @@
           rows="4"
           autocomplete="off"
         ></textarea>
+        <mat-hint align="end"
+          >{{ eventoForm.get("descricao")?.value?.length || 0 }}/800</mat-hint
+        >
         <mat-error
           *ngIf="
             eventoForm.get('descricao')?.hasError('required') &&
@@ -269,6 +287,9 @@
             maxlength="200"
             autocomplete="off"
           />
+          <mat-hint align="end"
+            >{{ eventoForm.get("email")?.value?.length || 0 }}/200</mat-hint
+          >
           <mat-error
             *ngIf="
               eventoForm.get('email')?.hasError('required') &&
@@ -301,7 +322,7 @@
             matInput
             formControlName="telefone"
             placeholder="(00) 0000-0000"
-            (input)="formatPhone($event, 'telefone')"
+            (input)="formatInput($event, 'telefone')"
             maxlength="20"
             autocomplete="off"
           />
@@ -339,7 +360,7 @@
             matInput
             formControlName="whatsapp"
             placeholder="(00) 00000-0000"
-            (input)="formatPhone($event, 'whatsapp')"
+            (input)="formatInput($event, 'whatsapp')"
             maxlength="20"
             autocomplete="off"
           />
@@ -386,14 +407,6 @@
             "
           >
             A **faixa etária** é obrigatória.
-          </mat-error>
-          <mat-error
-            *ngIf="
-              eventoForm.get('faixaEtaria')?.hasError('maxlength') &&
-              (eventoForm.get('faixaEtaria')?.touched || formTriedSubmit)
-            "
-          >
-            A faixa etária deve ter no máximo 50 caracteres.
           </mat-error>
         </mat-form-field>
       </div>

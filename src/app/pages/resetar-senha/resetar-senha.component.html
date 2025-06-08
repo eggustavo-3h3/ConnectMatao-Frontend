@@ -3,7 +3,16 @@
 <form [formGroup]="resetarSenhaForm" (ngSubmit)="resetarSenha()">
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Nova Senha</mat-label>
-    <input matInput type="password" formControlName="novaSenha" />
+    <input
+      matInput
+      [type]="mostrarNovaSenha ? 'text' : 'password'"
+      formControlName="novaSenha"
+    />
+    <button mat-icon-button matSuffix (click)="toggleSenha('novaSenha')">
+      <mat-icon>{{
+        mostrarNovaSenha ? "visibility_off" : "visibility"
+      }}</mat-icon>
+    </button>
     <mat-error *ngIf="resetarSenhaForm.get('novaSenha')?.hasError('required')">
       A nova senha é obrigatória.
     </mat-error>
@@ -29,7 +38,20 @@
 
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Confirmar Nova Senha</mat-label>
-    <input matInput type="password" formControlName="confirmarNovaSenha" />
+    <input
+      matInput
+      [type]="mostrarConfirmarNovaSenha ? 'text' : 'password'"
+      formControlName="confirmarNovaSenha"
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      (click)="toggleSenha('confirmarNovaSenha')"
+    >
+      <mat-icon>{{
+        mostrarConfirmarNovaSenha ? "visibility_off" : "visibility"
+      }}</mat-icon>
+    </button>
     <mat-error
       *ngIf="resetarSenhaForm.get('confirmarNovaSenha')?.hasError('required')"
     >
