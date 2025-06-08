@@ -58,7 +58,7 @@ export const authGuard: CanActivateFn = (
               'Entendi',
               { duration: 5000, panelClass: ['snackbar-info'] }
             );
-            router.navigate(['/']);
+            router.navigate(['/login']);
             return false;
           } else {
             snackBar.open(
@@ -66,7 +66,7 @@ export const authGuard: CanActivateFn = (
               'Entendi',
               { duration: 5000, panelClass: ['snackbar-warning'] }
             );
-            router.navigate(['/']);
+            router.navigate(['/login']);
             return false;
           }
         }),
@@ -80,7 +80,7 @@ export const authGuard: CanActivateFn = (
             'Fechar',
             { duration: 5000, panelClass: ['snackbar-error'] }
           );
-          router.navigate(['/']);
+          router.navigate(['/login']);
           return of(false);
         })
       );
