@@ -218,7 +218,7 @@
 @media (max-width: 1024px) {
   .evento-card {
     flex: 0 0 calc(50% - 20px);
-    margin: 10px;
+    margin: 5px;
   }
 
   .carousel-wrapper {
@@ -226,11 +226,11 @@
   }
 
   .carousel-btn.left {
-    left: -50px;
+    left: -5px;
   }
 
   .carousel-btn.right {
-    right: -70px;
+    right: -10px;
   }
 }
 
@@ -277,7 +277,7 @@
   }
 
   .evento-card {
-    margin: 5px;
+    margin: 9px;
   }
 
   .info h3 {
