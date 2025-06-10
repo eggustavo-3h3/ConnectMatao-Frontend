@@ -10,7 +10,6 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +18,6 @@ import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
     CommonModule,
     AngularMaterialModule,
     ReactiveFormsModule,
-    NavbarComponent,
     RouterLink,
   ],
   templateUrl: './login.component.html',
