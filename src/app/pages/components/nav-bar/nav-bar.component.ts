@@ -6,13 +6,14 @@ import {
   ElementRef,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, of } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
   take,
   filter,
+  tap,
 } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
@@ -93,7 +94,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
             this.verificarStatusAprovacaoParceiro(true);
           }, 50);
         } else {
-          this.urlImagemUsuario = 'assets/default-user.png';
+          this.urlImagemUsuario = 'assets/pngPadrao-NaoLogado.png';
           this.nomeUsuario = '';
           this.ehPapelParceiro = false;
           this.parceiroAprovado = false;
@@ -116,21 +117,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     this.termosPesquisa
       .pipe(
-        debounceTime(10),
+        debounceTime(300),
         distinctUntilChanged(),
-        filter((term) => term.length > 0 || term.length === 0),
         switchMap((termo) => {
-          if (termo.length > 0) {
-            return this.servicoEvento.searchEvents(termo);
+          if (termo.length === 0) {
+            return this.servicoEvento.listarEventosMaisCurtidos(5).pipe(
+              tap((eventos) => {
+                this.resultadosPesquisa = eventos;
+              })
+            );
           } else {
-            return new Subject<IEvento[]>();
+            return this.servicoEvento.searchEvents(termo).pipe(
+              tap((eventos) => {
+                this.resultadosPesquisa = eventos;
+              })
+            );
           }
         })
       )
       .subscribe({
-        next: (eventos) => {
-          this.resultadosPesquisa = eventos;
-        },
         error: (err) => {
           console.error('Erro na pesquisa de eventos', err);
           this.resultadosPesquisa = [];
@@ -147,14 +152,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private carregarPerfilUsuario(): void {
     if (!this.servicoAuth.isAuthenticated()) {
-      this.urlImagemUsuario = 'assets/default-user.png';
+      this.urlImagemUsuario = 'assets/pngPadrao-NaoLogado.png';
       this.nomeUsuario = '';
       return;
     }
 
     const userId = this.servicoAuth.getUserId();
     if (!userId) {
-      this.urlImagemUsuario = 'assets/default-user.png';
+      this.urlImagemUsuario = 'assets/pngPadrao-NaoLogado.png';
       this.nomeUsuario = '';
       return;
     }
@@ -167,12 +172,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.urlImagemUsuario =
             user.imagem && user.imagem.length > 0
               ? `data:image/jpeg;base64,${user.imagem}`
-              : './../../../../../../pngPadrao-NaoLogado.png';
+              : './assets/pngPadrao-NaoLogado.png';
           this.nomeUsuario = user.nome;
         },
         error: (err) => {
           console.error('Erro ao carregar perfil:', err);
-          this.urlImagemUsuario = './../../../../../../pngPadrao-NaoLogado.png';
+          this.urlImagemUsuario = './assets/pngPadrao-NaoLogado.png';
           this.nomeUsuario = '';
         },
       });
@@ -195,16 +200,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
             this.parceiroAprovado = status.flagAprovadoParceiro ?? false;
             this.formularioParceiroExiste = status.formParceiroExiste ?? false;
             this.statusParceiroCarregado = true;
-
-            console.log('NavbarComponent - Status do Parceiro:', status);
-            console.log(
-              'NavbarComponent - parceiroAprovado:',
-              this.parceiroAprovado
-            );
-            console.log(
-              'NavbarComponent - formularioParceiroExiste:',
-              this.formularioParceiroExiste
-            );
 
             if (
               deveAbrirModal &&
@@ -277,9 +272,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!this.parceiroAprovado && !this.formularioParceiroExiste) {
       this.abrirModalFormularioParceiroControlado();
     } else {
-      console.warn(
-        'Tentativa de abrir modal de parceiro quando não deveria ser permitido pelo clique.'
-      );
       if (this.formularioParceiroExiste && !this.parceiroAprovado) {
         this.snackBar.open(
           'Seu cadastro de parceiro já foi enviado e está em análise.',
@@ -324,7 +316,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.roteador.navigate(['/login']);
     this.dropdownVisivel = false;
     this.estaLogado = false;
-    this.urlImagemUsuario = 'assets/default-user.png';
+    this.urlImagemUsuario = 'assets/pngPadrao-NaoLogado.png';
     this.nomeUsuario = '';
     this.fecharModalParceiro();
   }
@@ -334,7 +326,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (userId) {
       this.roteador.navigate([`/perfil/${userId}`]);
     } else {
-      console.warn('ID do usuário não encontrado para ir para o perfil.');
       this.snackBar.open(
         'Não foi possível encontrar o perfil do usuário.',
         'Fechar',
@@ -346,6 +337,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   aoFocarPesquisa(): void {
     this.pesquisaFocada = true;
+    this.pesquisar(this.campoPesquisa.nativeElement.value);
   }
 
   aoDesfocarPesquisa(): void {

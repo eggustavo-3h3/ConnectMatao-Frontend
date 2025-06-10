@@ -133,8 +133,9 @@
 
   <div class="user-info-footer">
     <img
-      *ngIf="urlImagemUsuario"
-      [src]="urlImagemUsuario"
+      [src]="
+        urlImagemUsuario ? urlImagemUsuario : './assets/pngPadrao-NaoLogado.png'
+      "
       alt="Foto de {{ usuario?.nome }}"
       class="user-profile-img"
       (click)="abrirModalUsuario()"
@@ -164,8 +165,11 @@
   <div *ngIf="modalUsuarioAberto" class="modal" (click)="fecharModalUsuario()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <img
-        *ngIf="urlImagemUsuario"
-        [src]="urlImagemUsuario"
+        [src]="
+          urlImagemUsuario
+            ? urlImagemUsuario
+            : './../../../../../../pngPadrao-NaoLogado.png'
+        "
         alt="Imagem do usuário"
         class="event-logo-modal"
       />

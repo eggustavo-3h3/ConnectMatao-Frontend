@@ -124,7 +124,7 @@ export class CardEventoDetalhesComponent implements OnInit {
                   `data:image/png;base64,${imagemBase64}`
                 )
               : this.sanitizador.bypassSecurityTrustResourceUrl(
-                  'assets/perfil-placeholder.png'
+                  './../../../../../../pngPadrao-NaoLogado.png'
                 );
           },
           error: (erro) =>

@@ -20,7 +20,11 @@
   <div *ngFor="let evento of eventos" class="evento-card">
     <div class="evento-header">
       <img
-        [src]="'data:image/jpeg;base64,' + evento.usuarioImagem"
+        [src]="
+          evento.usuarioImagem && evento.usuarioImagem.length > 0
+            ? 'data:image/jpeg;base64,' + evento.usuarioImagem
+            : './../../../../../../pngPadrao-NaoLogado.png'
+        "
         [alt]="evento.usuarioNome"
         class="profile-image"
         [routerLink]="['/perfil', evento.usuarioParceiroid]"

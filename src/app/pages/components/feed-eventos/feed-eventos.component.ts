@@ -64,7 +64,7 @@ export class FeedEventosComponent implements OnInit, OnChanges {
     this.page = 0;
     this.allLoaded = false;
     this.initialLoadDone = false;
-    this.showLoadingSpinner = false; // Garante que o spinner não apareça antes do carregamento inicial
+    this.showLoadingSpinner = false;
     this.carregarMaisEventos();
   }
 

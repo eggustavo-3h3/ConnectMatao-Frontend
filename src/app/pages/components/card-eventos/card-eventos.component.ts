@@ -31,7 +31,7 @@ export class CardEventosComponent implements OnInit, OnDestroy {
   isLoading = false;
 
   private subscriptions: Subscription = new Subscription();
-  private readonly MAX_DESTAQUES = 8; // Define o limite de eventos
+  private readonly MAX_DESTAQUES = 8;
 
   constructor(
     private eventoService: EventoService,
