@@ -6,7 +6,6 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { IEvento } from '../../../interfaces/evento.interface';
 import { IUsuario } from '../../../interfaces/usuario.interface';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
 import { TipoEstatistica } from '../../../enums/tipo-estatistica.enum';
 import { switchMap, catchError, tap } from 'rxjs/operators';
@@ -20,7 +19,7 @@ import { of, Observable } from 'rxjs';
   standalone: true,
   templateUrl: './card-evento-detalhes.component.html',
   styleUrls: ['./card-evento-detalhes.component.css'],
-  imports: [CommonModule, RouterModule, NavbarComponent, AngularMaterialModule],
+  imports: [CommonModule, RouterModule, AngularMaterialModule],
 })
 export class CardEventoDetalhesComponent implements OnInit {
   idEvento!: string | null;

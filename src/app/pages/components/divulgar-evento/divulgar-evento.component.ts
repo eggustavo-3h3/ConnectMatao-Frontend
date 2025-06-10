@@ -13,7 +13,6 @@ import { AuthService } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { CommonModule } from '@angular/common';
 import { AngularMaterialModule } from '../../../angular_material/angular-material/angular-material.module';
-import { NavbarComponent } from '../nav-bar/nav-bar.component';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { IEvento } from '../../../interfaces/evento.interface';
@@ -26,8 +25,7 @@ registerLocaleData(localePt);
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    AngularMaterialModule,
-    NavbarComponent,
+    AngularMaterialModule
   ],
   templateUrl: './divulgar-evento.component.html',
   styleUrls: ['./divulgar-evento.component.css'],

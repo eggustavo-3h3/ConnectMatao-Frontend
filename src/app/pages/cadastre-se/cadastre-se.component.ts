@@ -6,10 +6,7 @@ import { AngularMaterialModule } from '../../angular_material/angular-material/a
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NavbarComponent } from '../components/nav-bar/nav-bar.component';
-import { LoginComponent } from '../login/login.component';
 import { Perfil } from '../../enums/perfil.enum';
-import { IUsuario } from '../../interfaces/usuario.interface';
 
 @Component({
   selector: 'app-cadastre-se',
@@ -18,9 +15,7 @@ import { IUsuario } from '../../interfaces/usuario.interface';
     CommonModule,
     ReactiveFormsModule,
     AngularMaterialModule,
-    RouterModule,
-    NavbarComponent,
-    LoginComponent,
+    RouterModule
   ],
   templateUrl: './cadastre-se.component.html',
   styleUrls: ['./cadastre-se.component.css'],
